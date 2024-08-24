@@ -1,0 +1,8 @@
+/home/svetoslav/PhotoContestWebApp/src/main/java/com/photo_contest/PhotoContestApplication.java
+/home/svetoslav/PhotoContestWebApp/src/main/java/com/photo_contest/models/AppUser.java
+/home/svetoslav/PhotoContestWebApp/src/main/java/com/photo_contest/models/Contest.java
+/home/svetoslav/PhotoContestWebApp/src/main/java/com/photo_contest/models/Phase.java
+/home/svetoslav/PhotoContestWebApp/src/main/java/com/photo_contest/models/PhotoReview.java
+/home/svetoslav/PhotoContestWebApp/src/main/java/com/photo_contest/models/PhotoSubmission.java
+/home/svetoslav/PhotoContestWebApp/src/main/java/com/photo_contest/models/Role.java
+/home/svetoslav/PhotoContestWebApp/src/main/java/com/photo_contest/models/UserProfile.java
