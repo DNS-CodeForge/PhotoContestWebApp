@@ -4,6 +4,7 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 
+
 ### STS ###
 .apt_generated
 .classpath
@@ -33,7 +34,8 @@ build/
 .vscode/
 .env.idea/
 .settings/
-target/
 .classpath
 .factorypath
 .project
+.env
+target/
