@@ -1,5 +1,6 @@
 package com.photo_contest.models;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
 import jakarta.validation.constraints.Email;
@@ -39,7 +40,10 @@ public class AppUser implements UserDetails {
     private String email;
 
     @OneToOne(mappedBy = "appUser", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonManagedReference
     private UserProfile userProfile;
+
+
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(

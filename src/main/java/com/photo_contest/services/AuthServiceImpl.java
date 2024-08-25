@@ -3,6 +3,8 @@ package com.photo_contest.services;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.photo_contest.models.UserProfile;
+import com.photo_contest.repos.UserProfileRepository;
 import jakarta.persistence.EntityNotFoundException;
 
 import com.photo_contest.models.AppUser;
@@ -20,11 +22,13 @@ public class AuthServiceImpl implements AuthService{
 
     private final RoleRepository roleRepository;
     private final UserRepository userRepository;
+    private final UserProfileRepository userProfileRepository;
 
     @Autowired
-    public AuthServiceImpl(RoleRepository roleRepository, UserRepository userRepository){
+    public AuthServiceImpl(RoleRepository roleRepository, UserRepository userRepository, UserProfileRepository userProfileRepository){
         this.roleRepository = roleRepository;
         this.userRepository = userRepository;
+        this.userProfileRepository = userProfileRepository;
     }
 
 
@@ -37,10 +41,16 @@ public class AuthServiceImpl implements AuthService{
 
         Role userRole = roleRepository.findByAuthority("USER")
                 .orElseThrow(() -> new EntityNotFoundException("Role not found"));
-
         Set<Role> roles = new HashSet<>();
+
         roles.add(userRole);
         user.setRoles(roles);
+
+        user = userRepository.save(user);
+
+        UserProfile userProfile = new UserProfile(user);
+
+        user.setUserProfile(userProfile);
 
         return userRepository.save(user);
      }

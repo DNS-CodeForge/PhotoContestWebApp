@@ -2,6 +2,7 @@ package com.photo_contest.models;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -12,6 +13,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.validation.constraints.Size;
+import jakarta.persistence.MapsId;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -22,19 +24,24 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserProfile {
+    public UserProfile(AppUser appUser) {
+        this.appUser = appUser;
+    }
 
     @Id
     private Long id;
+
+    @OneToOne
+    @MapsId
+    @JsonBackReference
+    @JoinColumn(name = "id")
+    private AppUser appUser;
 
     @Size(max = 26, message = "First name cannot be longer than 26 characters")
     private String firstName;
 
     @Size(max = 26, message = "Last name cannot be longer than 26 characters")
     private String lastName;
-
-    @OneToOne
-    @JoinColumn(name = "app_user_id")
-    private AppUser appUser;
 
     @OneToMany(mappedBy = "userProfile", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Contest> contests;
