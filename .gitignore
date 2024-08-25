@@ -34,3 +34,6 @@ build/
 .env.idea/
 .settings/
 target/
+.classpath
+.factorypath
+.project
