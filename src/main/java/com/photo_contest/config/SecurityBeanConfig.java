@@ -11,13 +11,10 @@ import com.photo_contest.utils.RSAKeyProps;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.ProviderManager;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.core.userdetails.UserDetailsService;
 
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
@@ -26,20 +23,19 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 
 @Configuration
-public class SecurityBeanGenerator {
+public class SecurityBeanConfig {
 
     private final RSAKeyProps keyProps;
 
     @Autowired
-    public SecurityBeanGenerator(RSAKeyProps keyProps) {
+    public SecurityBeanConfig(RSAKeyProps keyProps) {
         this.keyProps = keyProps;
     }
 
     @Bean
-    public BCryptPasswordEncoder passwordEncoder() {
+    public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-
 
 
 
@@ -53,12 +49,7 @@ public class SecurityBeanGenerator {
         return jwtConverter;
     }
 
-    @Bean
-    public  AuthenticationManager authManager(UserDetailsService userDetailsService) {
-        DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();
-        daoAuthenticationProvider.setUserDetailsService(userDetailsService);
-        return new ProviderManager(daoAuthenticationProvider);
-    }
+
 
     @Bean
     public JwtDecoder jwtDecoder(){
