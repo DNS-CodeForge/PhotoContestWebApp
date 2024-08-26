@@ -1,6 +1,8 @@
 package com.photo_contest.controllers;
 
 import com.photo_contest.models.AppUser;
+import com.photo_contest.models.DTO.LoginDTO;
+import com.photo_contest.models.DTO.LoginResponseDTO;
 import com.photo_contest.models.DTO.RegistrationDTO;
 import com.photo_contest.services.contracts.AuthService;
 
@@ -23,4 +25,10 @@ public class AuthController {
     public AppUser registerUser(@RequestBody RegistrationDTO registrationDTO) {
         return authService.registerUser(registrationDTO);
     }
+
+    @PostMapping("/login")
+    public LoginResponseDTO logInUser(@RequestBody LoginDTO loginDTO) {
+        return authService.logIn(loginDTO.getUsername(), loginDTO.getPassword());
+    }
+
 }
