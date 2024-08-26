@@ -3,9 +3,10 @@ package com.photo_contest.services;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.photo_contest.models.Role;
 import jakarta.persistence.EntityNotFoundException;
 
-import javax.management.relation.Role;
+
 
 import com.photo_contest.models.AppUser;
 import com.photo_contest.models.DTO.LoginResponseDTO;
@@ -20,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
