@@ -1,5 +1,6 @@
 package com.photo_contest.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -37,8 +38,9 @@ public class PhotoSubmission {
 
     @ManyToOne
     @JoinColumn(name = "contest_id", nullable = false)
+    @JsonBackReference
     private Contest contest;
 
-    @OneToMany(mappedBy = "photoSubmission", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "photoSubmission", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<PhotoReview> photoReviews;
 }

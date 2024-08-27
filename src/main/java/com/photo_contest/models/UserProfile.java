@@ -43,17 +43,30 @@ public class UserProfile {
     @Size(max = 26, message = "Last name cannot be longer than 26 characters")
     private String lastName;
 
-    @OneToMany(mappedBy = "userProfile", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "organizer", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JsonBackReference
     private List<Contest> contests;
 
     @Enumerated(EnumType.STRING)
     private Rank rank = Rank.JUNKIE;
+
 
     public enum Rank {
         JUNKIE,
         ENTHUSIAST,
         ORGANISER,
         MASTER
+    }
+
+    @Override
+    public String toString() {
+        return "UserProfile{" +
+                "id=" + id +
+                ", firstName='" + (firstName != null ? firstName : "not provided") + '\'' +
+                ", lastName='" + (lastName != null ? lastName : "not provided") + '\'' +
+                ", rank=" + rank +
+                ", contests=" + (contests != null ? contests : "not provided") +
+                '}';
     }
 
 }

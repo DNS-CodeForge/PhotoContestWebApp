@@ -40,6 +40,8 @@ public class AppUser implements UserDetails {
     @Column(unique = true, nullable = false)
     private String email;
 
+
+
     @OneToOne(mappedBy = "appUser", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonManagedReference
     @JsonIgnore
@@ -63,4 +65,14 @@ public class AppUser implements UserDetails {
     public Set<Role> getAuthoritySet() {
         return this.roles;
     }
+
+    @Override
+    public String toString() {
+        return "AppUser{" +
+                "id=" + id +
+                ", username='" + username + '\'' +
+                ", email='" + email + '\'' +
+                '}';
+    }
+
 }
