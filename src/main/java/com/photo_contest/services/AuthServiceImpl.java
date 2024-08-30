@@ -3,15 +3,13 @@ package com.photo_contest.services;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.photo_contest.models.Role;
 import jakarta.persistence.EntityNotFoundException;
 
-
-
 import com.photo_contest.models.AppUser;
+import com.photo_contest.models.Role;
+import com.photo_contest.models.UserProfile;
 import com.photo_contest.models.DTO.LoginResponseDTO;
 import com.photo_contest.models.DTO.RegistrationDTO;
-import com.photo_contest.models.UserProfile;
 import com.photo_contest.repos.RoleRepository;
 import com.photo_contest.repos.UserRepository;
 import com.photo_contest.services.contracts.AuthService;

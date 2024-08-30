@@ -10,42 +10,37 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
-@Profile("prod")
-public class SecurityConfig {
+@Profile("dev")
+public class DevSecurityConfig {
 
-    private final JwtAuthenticationConverter jwtAuthenticationConverter;
     private final PasswordEncoder passwordEncoder;
+    private final UserDetailsService userDetailsService;
 
-    public SecurityConfig(JwtAuthenticationConverter jwtAuthenticationConverter, PasswordEncoder passwordEncoder) {
-        this.jwtAuthenticationConverter = jwtAuthenticationConverter;
+    public DevSecurityConfig(PasswordEncoder passwordEncoder, UserDetailsService userDetailsService) {
         this.passwordEncoder = passwordEncoder;
+        this.userDetailsService = userDetailsService;
     }
 
     @Bean
-    public SecurityFilterChain apiSecurityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain devSecurityFilterChain(HttpSecurity http) throws Exception {
         http
             .csrf(csrf -> csrf.disable())
-            .authorizeHttpRequests(auth -> {
-                auth.requestMatchers("/api/auth/**").permitAll();
-                auth.requestMatchers("/api/**").authenticated();
-            })
-                .oauth2ResourceServer(oauth2 -> oauth2
-                        .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter)))
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-
+            .authorizeHttpRequests(auth -> auth
+                .anyRequest().permitAll()
+            )
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+        
         return http.build();
     }
 
     @Bean
-    public AuthenticationManager authManager(UserDetailsService userDetailsService) {
+    public AuthenticationManager devAuthManager() {
         DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();
         daoAuthenticationProvider.setUserDetailsService(userDetailsService);
         daoAuthenticationProvider.setPasswordEncoder(passwordEncoder);
         return new ProviderManager(daoAuthenticationProvider);
     }
 }
-

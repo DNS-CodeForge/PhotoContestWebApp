@@ -3,13 +3,15 @@ package com.photo_contest.config;
 
 import com.photo_contest.models.UserProfile;
 import com.photo_contest.repos.UserProfileRepository;
+
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 @Component
+@Profile("prod")
 public class AuthContextManager {
-
-    private final UserProfileRepository userRepository;
+    protected final UserProfileRepository userRepository;
 
     public AuthContextManager(UserProfileRepository userRepository) {
         this.userRepository = userRepository;
@@ -46,6 +48,4 @@ public class AuthContextManager {
         UserProfile user = getLoggedInUser();
         return user != null ? user.getAppUser().getUsername() : null;
     }
-
-
 }
