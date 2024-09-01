@@ -5,12 +5,14 @@ import com.photo_contest.models.Contest;
 import com.photo_contest.models.DTO.CreateContestDTO;
 import com.photo_contest.repos.ContestRepository;
 import com.photo_contest.services.contracts.ContestService;
+import jakarta.persistence.EntityExistsException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ContestServiceImpl implements ContestService {
@@ -25,6 +27,9 @@ public class ContestServiceImpl implements ContestService {
 
     @Override
     public Contest createContest(CreateContestDTO createContestDTO) {
+        if (contestRepository.findByTitle(createContestDTO.getTitle()).isPresent()) {
+            throw new EntityExistsException("Contest with this title already exists");
+        }
         LocalDateTime startDateTime = calculateStartDate();
         LocalDateTime endDateTime = calculateEndDate(startDateTime, createContestDTO.getPhaseDurationInDays());
 
@@ -48,6 +53,15 @@ public class ContestServiceImpl implements ContestService {
     public void deleteContest() {
 
     }
+
+    @Override
+    public Optional<Contest> getContestByName() {
+        if (contestRepository.findByTitle("title").isPresent()) {
+            return contestRepository.findByTitle("title");
+        }
+        return Optional.empty();
+    }
+
 
     @Override
     public Contest updateContest() {

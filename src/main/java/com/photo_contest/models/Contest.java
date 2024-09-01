@@ -35,7 +35,7 @@ public class Contest {
     @JsonManagedReference
     private UserProfile organizer;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JsonManagedReference
     @JoinTable(
             name = "contest_participants",
@@ -44,8 +44,8 @@ public class Contest {
     )
     private List<UserProfile> participants;
 
+    @ManyToMany(fetch = FetchType.EAGER)
     @JsonManagedReference
-    @ManyToMany
     @JoinTable(
             name = "contest_jury",
             joinColumns = @JoinColumn(name = "contest_id"),
