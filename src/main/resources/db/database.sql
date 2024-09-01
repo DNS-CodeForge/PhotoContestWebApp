@@ -180,3 +180,8 @@ INSERT INTO user_roles (user_id, role_id)
 SELECT u.id, r.role_id
 FROM "app_user" u, roles r
 WHERE u.username = 'admin' AND r.authority = 'ADMIN';
+
+INSERT INTO user_profile (id, first_name, last_name, rank)
+SELECT u.id, 'Admin', 'User', 'MASTER'
+FROM app_user u
+WHERE u.username = 'admin';

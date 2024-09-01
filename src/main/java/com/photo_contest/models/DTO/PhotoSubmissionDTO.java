@@ -19,5 +19,5 @@ public class PhotoSubmissionDTO {
     @NotBlank(message = "Photo URL is mandatory")
     private String photoUrl;
 
-    private Long contestId; // To associate the submission with a contest
+    private Long contestId;
 }

@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/photo-submissions")
+@RequestMapping("/api/photo-submission")
 public class PhotoSubmissionController {
 
     private final PhotoSubmissionService photoSubmissionService;
