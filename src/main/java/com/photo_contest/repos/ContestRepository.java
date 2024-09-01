@@ -10,4 +10,5 @@ import java.util.Optional;
 @Repository
 public interface ContestRepository extends JpaRepository<Contest,Long>{
     public Optional<Contest> findByTitle(String title);
+
 }

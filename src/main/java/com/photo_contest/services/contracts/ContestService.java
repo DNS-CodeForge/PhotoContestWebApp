@@ -8,11 +8,12 @@ import java.util.Optional;
 
 public interface ContestService {
     public Contest createContest(CreateContestDTO createContestDTO);
-    public void deleteContest();
-    public Optional<Contest> getContestByName();
-    public Contest updateContest();
+    public void deleteContest(Long contestId);
+    public Optional<Contest> getContestByTitle(String title);
+    public Contest updateContest(Long contestId, CreateContestDTO updateContestDTO);
     public List<Contest> getAllContest();
-    public Contest getContestById();
-    public Contest getContestByTitle();
+    public Optional<Contest> getContestById(Long contestId);
+    Contest saveContest(Contest contest);
+    void checkAndProgressPhasesDaily();
 
 }

@@ -17,12 +17,12 @@ public class PhaseController {
     }
 
     @PostMapping("/create")
-    public String createPhase(@RequestParam("contestId") Long contestId) {
+    public String createPhase(@RequestParam("contestId") Long contestId, @RequestParam("duration") int duration) {
 
         Contest contest = new Contest();
         contest.setId(contestId);
 
-        phaseService.createPhase(contest);
+        phaseService.createPhase(contest, duration);
 
         return "Phase created successfully!";
     }

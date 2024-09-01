@@ -1,5 +1,6 @@
 package com.photo_contest.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -25,9 +26,13 @@ public class Phase {
     @Column(nullable = false)
     private LocalDateTime endDateTime;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "contest_id", nullable = false)
+    @JsonBackReference
     private Contest contest;
+
+    @Column(nullable = false)
+    private boolean isConcluded;
 
     public enum PhaseType {
         PHASE_ONE,

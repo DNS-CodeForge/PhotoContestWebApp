@@ -22,9 +22,9 @@ public class Contest {
     @Enumerated(EnumType.STRING)
     private Category category;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "phase_id")
-    private Phase phase;
+    @OneToMany(mappedBy = "contest", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JsonManagedReference
+    private List<Phase> phases;
 
     @OneToMany(mappedBy = "contest", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JsonManagedReference
