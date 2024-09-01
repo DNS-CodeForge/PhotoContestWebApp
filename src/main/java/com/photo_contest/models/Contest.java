@@ -22,6 +22,9 @@ public class Contest {
     @Enumerated(EnumType.STRING)
     private Category category;
 
+    @Column(nullable = false)
+    private boolean isPrivate;
+
     @OneToMany(mappedBy = "contest", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JsonManagedReference
     private List<Phase> phases;

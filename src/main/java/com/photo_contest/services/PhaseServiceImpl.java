@@ -80,6 +80,7 @@ public class PhaseServiceImpl implements PhaseService {
     }
 
     @Override
+
     public void progressPhaseOne() {
         List<Phase> activePhases = phaseRepository.findByType(Phase.PhaseType.PHASE_ONE);
         LocalDateTime now = LocalDateTime.now();
@@ -106,7 +107,7 @@ public class PhaseServiceImpl implements PhaseService {
             }
         }
     }
-
+    //    #TODO: should be in hours set at creation
     @Override
     public void progressPhaseTwo() {
         List<Phase> activePhases = phaseRepository.findByType(Phase.PhaseType.PHASE_TWO);

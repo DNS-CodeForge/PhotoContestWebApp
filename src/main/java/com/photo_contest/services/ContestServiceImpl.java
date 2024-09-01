@@ -123,6 +123,7 @@ public class ContestServiceImpl implements ContestService {
             return executor;
         }
 
+//     #TODO: Implement the checkAndProgressPhasesHourly method
         @Override
         @Scheduled(cron = PHASE_CHECK_CRON)
         @Async("taskExecutor")
@@ -130,7 +131,6 @@ public class ContestServiceImpl implements ContestService {
             CompletableFuture<Void> phaseTwoTask = CompletableFuture.runAsync(phaseService::progressPhaseTwo);
 
             CompletableFuture<Void> phaseOneTask = phaseTwoTask.thenRunAsync(phaseService::progressPhaseOne);
-
 
             CompletableFuture.allOf(phaseTwoTask, phaseOneTask).join();
         }
