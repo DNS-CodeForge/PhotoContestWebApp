@@ -1,23 +1,25 @@
 package com.photo_contest.services;
 
-import com.photo_contest.config.AuthContextManager;
-import com.photo_contest.models.Contest;
-import com.photo_contest.models.DTO.CreateContestDTO;
-import com.photo_contest.models.Phase;
-import com.photo_contest.repos.ContestRepository;
-import com.photo_contest.services.contracts.ContestService;
-import com.photo_contest.services.contracts.PhaseService;
-import jakarta.persistence.EntityExistsException;
-import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import org.springframework.stereotype.Service;
-
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
+
+import jakarta.persistence.EntityExistsException;
+
+import com.photo_contest.config.AuthContextManager;
+import com.photo_contest.models.Contest;
+import com.photo_contest.models.Phase;
+import com.photo_contest.models.DTO.CreateContestDTO;
+import com.photo_contest.models.DTO.RankedUserResponseDTO;
+import com.photo_contest.repos.ContestRepository;
+import com.photo_contest.repos.PhotoSubmissionRepository;
+import com.photo_contest.services.contracts.ContestService;
+import com.photo_contest.services.contracts.PhaseService;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 
 
@@ -27,14 +29,16 @@ public class ContestServiceImpl implements ContestService {
     public static final int START_DELAY_PERIOD = 1;
 
     private final ContestRepository contestRepository;
+    private final PhotoSubmissionRepository photoSubmissionRepository;
     private final AuthContextManager authContextManager;
     private final PhaseService phaseService;
 
     @Autowired
-    public ContestServiceImpl(ContestRepository contestRepository, AuthContextManager authContextManager, PhaseService phaseService) {
+    public ContestServiceImpl(ContestRepository contestRepository, AuthContextManager authContextManager, PhaseService phaseService, PhotoSubmissionRepository photoSubmissionRepository) {
         this.contestRepository = contestRepository;
         this.authContextManager = authContextManager;
         this.phaseService = phaseService;
+        this.photoSubmissionRepository = photoSubmissionRepository;
     }
 
     @Override
@@ -119,5 +123,10 @@ public class ContestServiceImpl implements ContestService {
 
     private static LocalDateTime calculateEndDate(LocalDateTime phaseTwoStartDateTime, int phaseTwoDurationInHours) {
         return phaseTwoStartDateTime.plusHours(phaseTwoDurationInHours);
+    }
+
+    @Override
+    public List<RankedUserResponseDTO> getCurrentRanking(int contestId) {
+        return photoSubmissionRepository.getRankingsByContestId((long) contestId);
     }
 }
