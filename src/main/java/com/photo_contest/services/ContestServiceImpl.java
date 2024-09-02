@@ -8,30 +8,23 @@ import com.photo_contest.repos.ContestRepository;
 import com.photo_contest.services.contracts.ContestService;
 import com.photo_contest.services.contracts.PhaseService;
 import jakarta.persistence.EntityExistsException;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executor;
+
+
 
 @Service
 public class ContestServiceImpl implements ContestService {
-    public static final int START_DELAY_PERIOD = 2;
-    public static final int PHASE_CHECK_HOUR = 18;
-    private static final String PHASE_CHECK_CRON = "0 0 " + PHASE_CHECK_HOUR + " * * ?";
-    private static final int AVAILABLE_PROCESSORS = Runtime.getRuntime().availableProcessors();
-    private static final int CORE_POOL_SIZE = AVAILABLE_PROCESSORS;
-    private static final int MAX_POOL_SIZE = AVAILABLE_PROCESSORS * 2;
-    private static final int QUEUE_CAPACITY = 500;
-    private static final String THREAD_NAME_PREFIX = "PhaseCheck-";
+
+    public static final int START_DELAY_PERIOD = 1;
 
     private final ContestRepository contestRepository;
     private final AuthContextManager authContextManager;
@@ -44,105 +37,87 @@ public class ContestServiceImpl implements ContestService {
         this.phaseService = phaseService;
     }
 
-        @Override
-        public Contest createContest(CreateContestDTO createContestDTO) {
-            if (contestRepository.findByTitle(createContestDTO.getTitle()).isPresent()) {
-                throw new EntityExistsException("Contest with this title already exists");
-            }
-
-            LocalDateTime startDateTime = calculateStartDate();
-            LocalDateTime endDateTime = calculateEndDate(startDateTime, createContestDTO.getPhaseDurationInDays());
-
-            Contest contest = new Contest();
-            contest.setTitle(createContestDTO.getTitle());
-            contest.setCategory(createContestDTO.getCategory());
-            contest.setStartDate(startDateTime);
-            contest.setEndDate(endDateTime);
-
-            contest.setOrganizer(authContextManager.getLoggedInUser());
-
-
-            Contest savedContest = contestRepository.save(contest);
-
-
-
-            Phase initialPhase = phaseService.createPhase(savedContest, createContestDTO.getPhaseDurationInDays());
-
-
-            savedContest.setPhases(List.of(initialPhase));
-            return contestRepository.save(savedContest);
+    @Override
+    public Contest createContest(CreateContestDTO createContestDTO) {
+        if (contestRepository.findByTitle(createContestDTO.getTitle()).isPresent()) {
+            throw new EntityExistsException("Contest with this title already exists");
         }
 
-        @Override
-        public void deleteContest(Long contestId) {
-            contestRepository.deleteById(contestId);
-        }
+        LocalDateTime startDateTime = calculateStartDate().truncatedTo(ChronoUnit.MINUTES);
+        LocalDateTime phaseOneEndDate = calculatePhaseOneEndDate(startDateTime, createContestDTO.getPhaseDurationInDays()).truncatedTo(ChronoUnit.MINUTES);
+        LocalDateTime phaseTwoStartDateTime = phaseOneEndDate.plusDays(1).truncatedTo(ChronoUnit.MINUTES);
+        LocalDateTime contestEndDate = calculateEndDate(phaseTwoStartDateTime, createContestDTO.getPhaseTwoDurationInHours()).truncatedTo(ChronoUnit.MINUTES);
 
-        @Override
-        public Contest updateContest(Long contestId, CreateContestDTO updateContestDTO) {
-            Optional<Contest> contestOpt = contestRepository.findById(contestId);
-            if (contestOpt.isPresent()) {
-                Contest contest = contestOpt.get();
-                contest.setTitle(updateContestDTO.getTitle());
-                contest.setCategory(updateContestDTO.getCategory());
 
-                return contestRepository.save(contest);
-            } else {
-                throw new IllegalArgumentException("Contest with ID " + contestId + " not found");
-            }
-        }
+        Contest contest = new Contest();
+        contest.setTitle(createContestDTO.getTitle());
+        contest.setCategory(createContestDTO.getCategory());
+        contest.setStartDate(startDateTime);
+        contest.setEndDate(contestEndDate);
+        contest.setOrganizer(authContextManager.getLoggedInUser());
 
-        @Override
-        public List<Contest> getAllContest() {
-            return contestRepository.findAll();
-        }
+        Contest savedContest = contestRepository.save(contest);
 
-        @Override
-        public Optional<Contest> getContestById(Long contestId) {
-            return contestRepository.findById(contestId);
-        }
 
-        @Override
-        public Optional<Contest> getContestByTitle(String title) {
-            return contestRepository.findByTitle(title);
-        }
+        Phase phaseOne = phaseService.createPhase(savedContest, createContestDTO.getPhaseDurationInDays());
+        Phase phaseTwo = phaseService.createPhase(savedContest, phaseTwoStartDateTime, createContestDTO.getPhaseTwoDurationInHours());
 
-        @Override
-        public Contest saveContest(Contest contest) {
+
+        savedContest.setPhases(List.of(phaseOne, phaseTwo));
+        return contestRepository.save(savedContest);
+    }
+
+
+    @Override
+    public void deleteContest(Long contestId) {
+        contestRepository.deleteById(contestId);
+    }
+
+    @Override
+    public Contest updateContest(Long contestId, CreateContestDTO updateContestDTO) {
+        Optional<Contest> contestOpt = contestRepository.findById(contestId);
+        if (contestOpt.isPresent()) {
+            Contest contest = contestOpt.get();
+            contest.setTitle(updateContestDTO.getTitle());
+            contest.setCategory(updateContestDTO.getCategory());
+
             return contestRepository.save(contest);
+        } else {
+            throw new IllegalArgumentException("Contest with ID " + contestId + " not found");
         }
+    }
 
-        @Bean
-        public Executor taskExecutor() {
-            ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-            executor.setCorePoolSize(CORE_POOL_SIZE);
-            executor.setMaxPoolSize(MAX_POOL_SIZE);
-            executor.setQueueCapacity(QUEUE_CAPACITY);
-            executor.setThreadNamePrefix(THREAD_NAME_PREFIX);
-            executor.initialize();
-            return executor;
-        }
+    @Override
+    public List<Contest> getAllContest() {
+        return contestRepository.findAll();
+    }
 
-//     #TODO: Implement the checkAndProgressPhasesHourly method
-        @Override
-        @Scheduled(cron = PHASE_CHECK_CRON)
-        @Async("taskExecutor")
-        public void checkAndProgressPhasesDaily() {
-            CompletableFuture<Void> phaseTwoTask = CompletableFuture.runAsync(phaseService::progressPhaseTwo);
+    @Override
+    public Optional<Contest> getContestById(Long contestId) {
+        return contestRepository.findById(contestId);
+    }
 
-            CompletableFuture<Void> phaseOneTask = phaseTwoTask.thenRunAsync(phaseService::progressPhaseOne);
+    @Override
+    public Optional<Contest> getContestByTitle(String title) {
+        return contestRepository.findByTitle(title);
+    }
 
-            CompletableFuture.allOf(phaseTwoTask, phaseOneTask).join();
-        }
+    @Override
+    public Contest saveContest(Contest contest) {
+        return contestRepository.save(contest);
+    }
 
-        private static LocalDateTime calculateStartDate() {
-            LocalDateTime now = LocalDateTime.now();
-            LocalTime phaseStartTime = LocalTime.of(18, 0);
-            return now.plusDays(START_DELAY_PERIOD).with(phaseStartTime);
-        }
+    private static LocalDateTime calculateStartDate() {
+        LocalDateTime now = LocalDateTime.now();
+        LocalTime phaseStartTime = LocalTime.of(18, 0);
+        return now.plusDays(START_DELAY_PERIOD).with(phaseStartTime);
+    }
 
-        private static LocalDateTime calculateEndDate(LocalDateTime startDateTime, int phaseDurationInDays) {
-            return startDateTime.plusDays(phaseDurationInDays * 2L + 1);
-        }
+    private static LocalDateTime calculatePhaseOneEndDate(LocalDateTime startDateTime, int phaseDurationInDays) {
+        return startDateTime.plusDays(phaseDurationInDays);
+    }
 
+    private static LocalDateTime calculateEndDate(LocalDateTime phaseTwoStartDateTime, int phaseTwoDurationInHours) {
+        return phaseTwoStartDateTime.plusHours(phaseTwoDurationInHours);
+    }
 }

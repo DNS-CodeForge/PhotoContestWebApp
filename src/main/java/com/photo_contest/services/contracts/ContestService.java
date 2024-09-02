@@ -14,6 +14,7 @@ public interface ContestService {
     public List<Contest> getAllContest();
     public Optional<Contest> getContestById(Long contestId);
     Contest saveContest(Contest contest);
-    void checkAndProgressPhasesDaily();
+//    void checkAndProgressPhaseOneDaily();
+//    void checkAndConcludePhaseTwoHourly();
 
 }
