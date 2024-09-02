@@ -2,7 +2,6 @@ package com.photo_contest.models;
 
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -10,10 +9,12 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.MapsId;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.validation.constraints.Size;
-import jakarta.persistence.MapsId;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -46,6 +47,8 @@ public class UserProfile {
     @OneToMany(mappedBy = "organizer", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JsonBackReference
     private List<Contest> contests;
+
+    private int points = 0;
 
     @Enumerated(EnumType.STRING)
     private Rank rank = Rank.JUNKIE;

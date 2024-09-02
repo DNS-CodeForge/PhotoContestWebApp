@@ -21,4 +21,6 @@ public interface UserService extends UserDetailsService{
     void deleteUser(int id);
 
     AppUser setUserRole(int userId, String addedRole, String removedRole);
+
+    void addPoints(int userId, int pointsToAdd); 
 }

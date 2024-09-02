@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.photo_contest.models.AppUser;
 import com.photo_contest.models.Role;
+import com.photo_contest.models.UserProfile;
 import com.photo_contest.repos.UserRepository;
 import com.photo_contest.services.contracts.UserService;
 
@@ -67,6 +68,34 @@ public class UserServiceImpl implements UserService {
         }
 
         return userRepository.save(user);
+    }
+
+
+    @Override
+    public void addPoints(int userId, int pointsToAdd) {
+        AppUser user = userRepository.findById((long) userId)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with ID: " + userId));
+
+        UserProfile userProfile = user.getUserProfile();
+        userProfile.setPoints(userProfile.getPoints() + pointsToAdd);
+
+        updateRank(userProfile);
+
+        userRepository.save(user);
+    }
+
+    private void updateRank(UserProfile userProfile) {
+        int points = userProfile.getPoints();
+
+        if (points >= 1001) {
+            userProfile.setRank(UserProfile.Rank.MASTER);
+        } else if (points >= 151) {
+            userProfile.setRank(UserProfile.Rank.ORGANISER);
+        } else if (points >= 51) {
+            userProfile.setRank(UserProfile.Rank.ENTHUSIAST);
+        } else {
+            userProfile.setRank(UserProfile.Rank.JUNKIE);
+        }
     }
 }
 
