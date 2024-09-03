@@ -19,6 +19,6 @@ public interface ContestService {
     public void joinContest(Long contestId, Long userId);
     public void inviteParticipant(Long contestId, Long userId);
     public void inviteJudge(Long contestId, Long userId);
-    public int getCurrentPhase(Long contestId); 
-    public void awardPointsForContest(Long contestId); 
+    public int getCurrentPhase(Long contestId);
+    public void awardPointsForContest(Long contestId);
 }

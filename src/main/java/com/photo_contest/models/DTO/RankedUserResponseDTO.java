@@ -1,21 +1,15 @@
 package com.photo_contest.models.DTO;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 public class RankedUserResponseDTO {
-
-    public RankedUserResponseDTO(Long userId, Long submissionId, Long points) {
-        this.userId = userId;
-        this.submissionId = submissionId;
-        this.points = points;
-    }
-
     private Long userId;
-
     private Long submissionId;
-
-    private Long points;
+    private int points;
 }
+

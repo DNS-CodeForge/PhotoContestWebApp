@@ -93,7 +93,9 @@ public class UserServiceImpl implements UserService {
         UserProfile userProfile = user.getUserProfile();
         userProfile.setPoints(userProfile.getPoints() + pointsToAdd);
 
-        if (user.getUserProfile().getRank() != UserProfile.Rank.DICTATOR) {
+        if (user.getUserProfile().getRank() != UserProfile.Rank.DICTATOR &&
+                user.getUserProfile().getRank() != UserProfile.Rank.ORGANIZER
+        ) {
             updateRank(userProfile);
         }
 

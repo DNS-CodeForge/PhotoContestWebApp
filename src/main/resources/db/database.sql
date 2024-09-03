@@ -46,7 +46,7 @@ CREATE TABLE public.user_profile
         CONSTRAINT user_profile_rank_check
             CHECK ((rank)::text = ANY
         (ARRAY ['JUNKIE'::text, 'ENTHUSIAST'::text, 'MASTER'::text, 'DICTATOR'::text, 'ORGANIZER'::text])),
-    points     INTEGER DEFAULT 0 -- New field for points
+    points     INTEGER DEFAULT 0
 );
 
 CREATE TABLE IF NOT EXISTS contest
