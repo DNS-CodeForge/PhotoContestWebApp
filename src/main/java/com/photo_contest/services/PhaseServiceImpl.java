@@ -44,7 +44,7 @@ public class PhaseServiceImpl implements PhaseService {
     }
 
     @Override
-    public Phase createPhase(Contest contest, int duration) {
+    public Phase createPhaseOne(Contest contest, int duration) {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime startDateTime = calculateStartDateTime(now);
         LocalDateTime endDateTime = startDateTime.plusDays(duration);
@@ -60,7 +60,7 @@ public class PhaseServiceImpl implements PhaseService {
     }
 
     @Override
-    public Phase createPhase(Contest contest, LocalDateTime startDateTime, int durationInHours) {
+    public Phase createPhaseTwo(Contest contest, LocalDateTime startDateTime, int durationInHours) {
         LocalDateTime endDateTime = startDateTime.plusHours(durationInHours);
 
         Phase newPhase = new Phase();

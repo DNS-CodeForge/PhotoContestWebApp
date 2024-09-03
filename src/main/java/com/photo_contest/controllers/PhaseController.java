@@ -22,7 +22,6 @@ public class PhaseController {
         Contest contest = new Contest();
         contest.setId(contestId);
 
-        phaseService.createPhase(contest, duration);
 
         return "Phase created successfully!";
     }

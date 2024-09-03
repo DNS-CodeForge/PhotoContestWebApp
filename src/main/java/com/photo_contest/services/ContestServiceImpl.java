@@ -80,8 +80,8 @@ public class ContestServiceImpl implements ContestService {
         Contest savedContest = contestRepository.save(contest);
 
 
-        Phase phaseOne = phaseService.createPhase(savedContest, createContestDTO.getPhaseDurationInDays());
-        Phase phaseTwo = phaseService.createPhase(savedContest, phaseTwoStartDateTime, createContestDTO.getPhaseTwoDurationInHours());
+        Phase phaseOne = phaseService.createPhaseOne(savedContest, createContestDTO.getPhaseDurationInDays());
+        Phase phaseTwo = phaseService.createPhaseTwo(savedContest, phaseTwoStartDateTime, createContestDTO.getPhaseTwoDurationInHours());
 
 
         savedContest.setPhases(List.of(phaseOne, phaseTwo));
@@ -144,7 +144,7 @@ public class ContestServiceImpl implements ContestService {
 
     @Override
     public List<RankedUserResponseDTO> getCurrentRanking(int contestId) {
-        return photoSubmissionRepository.getRankingsByContestId((long) contestId, true);
+        return photoSubmissionRepository.getRankingsByContestId((long) contestId);
     }
 
     @Override

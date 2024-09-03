@@ -8,8 +8,8 @@ import java.util.List;
 import java.util.Optional;
 
 public interface PhaseService {
-    Phase createPhase(Contest contest, int durationInDays);
-    Phase createPhase(Contest contest, LocalDateTime startDateTime, int durationInHours);
+    Phase createPhaseOne(Contest contest, int durationInDays);
+    Phase createPhaseTwo(Contest contest, LocalDateTime startDateTime, int durationInHours);
     void deletePhase(Long phaseId);
     void updatePhase(Long phaseId, Phase updatedPhase);
     List<Phase> getAllPhases();
