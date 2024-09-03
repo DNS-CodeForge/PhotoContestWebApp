@@ -144,7 +144,7 @@ public class ContestServiceImpl implements ContestService {
 
     @Override
     public List<RankedUserResponseDTO> getCurrentRanking(int contestId) {
-        return photoSubmissionRepository.getRankingsByContestId((long) contestId);
+        return photoSubmissionRepository.getRankingsByContestId((long) contestId, true);
     }
 
     @Override
@@ -225,4 +225,25 @@ public class ContestServiceImpl implements ContestService {
         contestRepository.save(contest);
         userProfileRepository.save(userProfile);
     }
+
+    public int getCurrentPhase(Long contestId) {
+        Contest contest = contestRepository.findById(contestId)
+                .orElseThrow(() -> new IllegalArgumentException("Contest not found"));
+
+        LocalDateTime now = LocalDateTime.now();
+
+        if (now.isBefore(contest.getStartDate())) {
+            return 0;
+        }
+
+        List<Phase> phases = contest.getPhases();
+
+        for (Phase phase : phases) {
+            if (now.isAfter(phase.getStartDateTime()) && now.isBefore(phase.getEndDateTime())) {
+                return phases.indexOf(phase) + 1;
+            }
+        }
+            return 3;
+    }
+
 }
