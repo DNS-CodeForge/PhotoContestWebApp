@@ -154,7 +154,8 @@ create table if not exists photo_review
 
 INSERT INTO public.roles (authority)
 VALUES ('ADMIN'),
-       ('USER');
+       ('USER'),
+       ('MASTERUSER');
 
 -- Insert a new user
 -- Step 1: Insert the user

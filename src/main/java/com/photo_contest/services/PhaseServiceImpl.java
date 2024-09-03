@@ -139,7 +139,7 @@ public class PhaseServiceImpl implements PhaseService {
     }
 
     private LocalDateTime calculateStartDateTime(LocalDateTime now) {
-        LocalTime phaseStartTime = LocalTime.of(18, 0);
+        LocalTime phaseStartTime = LocalTime.of(DAILY_CHECK_HOUR, 0);
         if (now.toLocalTime().isBefore(phaseStartTime)) {
             return now.with(phaseStartTime);
         } else {

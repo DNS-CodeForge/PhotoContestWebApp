@@ -5,6 +5,7 @@ import java.util.List;
 import com.photo_contest.models.AppUser;
 import com.photo_contest.models.Role;
 import com.photo_contest.models.UserProfile;
+import com.photo_contest.repos.RoleRepository;
 import com.photo_contest.repos.UserProfileRepository;
 import com.photo_contest.repos.UserRepository;
 import com.photo_contest.services.contracts.UserService;
@@ -19,11 +20,13 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final UserProfileRepository userProfileRepository;
+    private final RoleRepository roleRepository;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, UserProfileRepository userProfileRepository) {
+    public UserServiceImpl(UserRepository userRepository, UserProfileRepository userProfileRepository, RoleRepository roleRepository) {
         this.userRepository = userRepository;
         this.userProfileRepository = userProfileRepository;
+        this.roleRepository = roleRepository;
     }
 
     @Override
@@ -104,6 +107,8 @@ public class UserServiceImpl implements UserService {
             userProfile.setRank(UserProfile.Rank.DICTATOR);
         } else if (points >= 151) {
             userProfile.setRank(UserProfile.Rank.MASTER);
+            userProfile.getAppUser().getAuthoritySet().add(roleRepository.findByAuthority("MASTERUSER").get());
+            userProfileRepository.save(userProfile);
         } else if (points >= 51) {
             userProfile.setRank(UserProfile.Rank.ENTHUSIAST);
         } else {
