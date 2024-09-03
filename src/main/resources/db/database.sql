@@ -71,12 +71,12 @@ CREATE TABLE IF NOT EXISTS contest
     organizer_id BIGINT,
     FOREIGN KEY (organizer_id) REFERENCES user_profile(id),
 
-    phase_id     BIGINT,
     created_at   TIMESTAMP,
     updated_at   TIMESTAMP,
     start_date   TIMESTAMP,
     end_date     TIMESTAMP
     );
+
 
 create table if not exists contest_jury
 (

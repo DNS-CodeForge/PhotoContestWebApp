@@ -26,7 +26,7 @@ public class Phase {
     @Column(nullable = false)
     private LocalDateTime endDateTime;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "contest_id", nullable = false)
     @JsonBackReference
     private Contest contest;
@@ -36,7 +36,6 @@ public class Phase {
 
     public enum PhaseType {
         PHASE_ONE,
-        PHASE_TWO,
-        FINISHED
+        PHASE_TWO
     }
 }
