@@ -129,4 +129,14 @@ public class ContestServiceImpl implements ContestService {
     public List<RankedUserResponseDTO> getCurrentRanking(int contestId) {
         return photoSubmissionRepository.getRankingsByContestId((long) contestId);
     }
+
+    @Override
+    public void joinContest(Long contestId, Long userId) {
+
+    }
+
+    @Override
+    public void inviteToContest(Long contestId, Long userId) {
+
+    }
 }

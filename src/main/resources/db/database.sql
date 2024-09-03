@@ -46,7 +46,7 @@ CREATE TABLE public.user_profile
     last_name  VARCHAR(26),
     rank       VARCHAR(255) NOT NULL
         CONSTRAINT user_profile_rank_check
-            CHECK ((rank)::text = ANY (ARRAY ['JUNKIE'::text, 'ENTHUSIAST'::text, 'MASTER'::text, 'DICTATOR'::text])),
+            CHECK ((rank)::text = ANY (ARRAY ['JUNKIE'::text, 'ENTHUSIAST'::text, 'MASTER'::text, 'DICTATOR'::text, 'ORGANIZER'::text])),
     points     INTEGER DEFAULT 0 -- New field for points
 );
 

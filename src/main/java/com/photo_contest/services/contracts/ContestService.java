@@ -16,6 +16,7 @@ public interface ContestService {
     public Optional<Contest> getContestById(Long contestId);
     Contest saveContest(Contest contest);
     List<RankedUserResponseDTO> getCurrentRanking(int contestId);
-//    void checkAndProgressPhaseOneDaily();
-//    void checkAndConcludePhaseTwoHourly();
+    public void joinContest(Long contestId, Long userId);
+    public void inviteToContest(Long contestId, Long userId);
+
 }
