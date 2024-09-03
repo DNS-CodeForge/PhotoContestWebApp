@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.photo_contest.models.AppUser;
 
+import com.photo_contest.models.UserProfile;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -15,6 +16,7 @@ public interface UserService extends UserDetailsService{
     AppUser getUserById(int id);
 
     AppUser getUserByName(String name);
+    UserProfile updateUserProfile(UserProfile userProfile);
 
     List<AppUser> getAllUsers();
 

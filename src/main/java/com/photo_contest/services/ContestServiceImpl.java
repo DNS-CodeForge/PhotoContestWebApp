@@ -6,6 +6,8 @@ import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
 
+import com.photo_contest.models.UserProfile;
+import com.photo_contest.repos.UserProfileRepository;
 import jakarta.persistence.EntityExistsException;
 
 import com.photo_contest.config.AuthContextManager;
@@ -32,13 +34,18 @@ public class ContestServiceImpl implements ContestService {
     private final PhotoSubmissionRepository photoSubmissionRepository;
     private final AuthContextManager authContextManager;
     private final PhaseService phaseService;
+    private final UserProfileRepository userProfileRepository;
 
     @Autowired
-    public ContestServiceImpl(ContestRepository contestRepository, AuthContextManager authContextManager, PhaseService phaseService, PhotoSubmissionRepository photoSubmissionRepository) {
+    public ContestServiceImpl(ContestRepository contestRepository, AuthContextManager authContextManager,
+                              PhaseService phaseService, PhotoSubmissionRepository photoSubmissionRepository,
+                              UserProfileRepository userProfileRepository
+    ) {
         this.contestRepository = contestRepository;
         this.authContextManager = authContextManager;
         this.phaseService = phaseService;
         this.photoSubmissionRepository = photoSubmissionRepository;
+        this.userProfileRepository = userProfileRepository;
     }
 
     @Override
@@ -58,7 +65,9 @@ public class ContestServiceImpl implements ContestService {
         contest.setCategory(createContestDTO.getCategory());
         contest.setStartDate(startDateTime);
         contest.setEndDate(contestEndDate);
-        contest.setOrganizer(authContextManager.getLoggedInUser());
+        UserProfile organizer = authContextManager.getLoggedInUser();
+        contest.setOrganizer(organizer);
+        contest.getJury().add(organizer);
 
         Contest savedContest = contestRepository.save(contest);
 
@@ -133,10 +142,47 @@ public class ContestServiceImpl implements ContestService {
     @Override
     public void joinContest(Long contestId, Long userId) {
 
+
+            Contest contest = contestRepository.findById(contestId)
+                    .orElseThrow(() -> new IllegalArgumentException("Contest not found"));
+            UserProfile userProfile = authContextManager.getLoggedInUser();
+
+
+            if (!contest.isPrivate()) {
+                userProfile.getContests().add(contest);
+
+
+                contest.getParticipants().add(userProfile);
+                userProfile.setPoints(userProfile.getPoints() + 1);
+
+                userProfileRepository.save(userProfile);
+                contestRepository.save(contest);
+            } else {
+                throw new IllegalStateException("Cannot join a private contest");
+            }
+
     }
 
     @Override
-    public void inviteToContest(Long contestId, Long userId) {
+    public void inviteParticipant(Long contestId, Long userId) {
+        Contest contest = contestRepository.findById(contestId)
+                .orElseThrow(() -> new IllegalArgumentException("Contest not found"));
+        if (contest.getOrganizer().getId() != authContextManager.getLoggedInUser().getId()) {
+            throw new IllegalStateException("Only the organizer can invite participants");
+        }
+        UserProfile userProfile = userProfileRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        int points = 1;
+        if (contest.isPrivate()){
+            points = 3;
+        }
 
+
+        contest.getParticipants().add(userProfile);
+        userProfile.getContests().add(contest);
+        userProfile.setPoints(userProfile.getPoints() + points);
+
+        contestRepository.save(contest);
+        userProfileRepository.save(userProfile);
     }
 }

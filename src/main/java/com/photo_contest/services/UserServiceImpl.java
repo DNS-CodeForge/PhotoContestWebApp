@@ -5,6 +5,7 @@ import java.util.List;
 import com.photo_contest.models.AppUser;
 import com.photo_contest.models.Role;
 import com.photo_contest.models.UserProfile;
+import com.photo_contest.repos.UserProfileRepository;
 import com.photo_contest.repos.UserRepository;
 import com.photo_contest.services.contracts.UserService;
 
@@ -17,10 +18,12 @@ import org.springframework.stereotype.Service;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private final UserProfileRepository userProfileRepository;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository) {
+    public UserServiceImpl(UserRepository userRepository, UserProfileRepository userProfileRepository) {
         this.userRepository = userRepository;
+        this.userProfileRepository = userProfileRepository;
     }
 
     @Override
@@ -39,6 +42,11 @@ public class UserServiceImpl implements UserService {
     public AppUser getUserByName(String name) {
         return userRepository.findByUsername(name)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with name: " + name));
+    }
+
+    @Override
+    public UserProfile updateUserProfile(UserProfile userProfile) {
+       return userProfileRepository.save(userProfile);
     }
 
     @Override
