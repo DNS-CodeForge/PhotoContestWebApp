@@ -4,12 +4,15 @@ import java.util.List;
 import java.util.Optional;
 
 import com.photo_contest.config.AuthContextManager;
+import com.photo_contest.exeptions.AuthorizationException;
+import com.photo_contest.models.Contest;
 import com.photo_contest.models.PhotoReview;
 import com.photo_contest.models.PhotoSubmission;
 import com.photo_contest.models.UserProfile;
 import com.photo_contest.models.DTO.PhotoReviewDTO;
 import com.photo_contest.repos.PhotoReviewRepository;
 import com.photo_contest.repos.PhotoSubmissionRepository;
+import com.photo_contest.services.contracts.ContestService;
 import com.photo_contest.services.contracts.PhotoReviewService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,14 +24,17 @@ public class PhotoReviewServiceImpl implements PhotoReviewService{
      private final PhotoReviewRepository photoReviewRepository;
     private final PhotoSubmissionRepository photoSubmissionRepository;
     private final AuthContextManager authContextManager;
+    private final ContestService contestService;
 
     @Autowired
     public PhotoReviewServiceImpl(PhotoReviewRepository photoReviewRepository, 
                                   PhotoSubmissionRepository photoSubmissionRepository,
-                                  AuthContextManager authContextManager) {
+                                  AuthContextManager authContextManager,
+                                  ContestService contestService) {
         this.photoReviewRepository = photoReviewRepository;
         this.authContextManager = authContextManager;
         this.photoSubmissionRepository = photoSubmissionRepository;
+        this.contestService = contestService;
     }
 
     @Override
@@ -36,7 +42,16 @@ public class PhotoReviewServiceImpl implements PhotoReviewService{
         UserProfile jury = authContextManager.getLoggedInUser();
         PhotoSubmission photoSubmission = photoSubmissionRepository.findById(photoSubmissionId)
                 .orElseThrow(() -> new RuntimeException("PhotoSubmission not found with id: " + photoSubmissionId));
-        
+        Contest contest = photoSubmission.getContest();
+
+        if(!contest.getJury().contains(jury)) {
+            throw new AuthorizationException("User needs to be part of the contest jury to make reviews");
+        }
+
+        if (contestService.getCurrentPhase(contest.getId()) != 2) {
+            throw new IllegalStateException("Reviews can only be made during Phase Two.");
+        }
+            
         PhotoReview photoReview = new PhotoReview();
         photoReview.setScore(photoReviewDTO.getScore());
         photoReview.setComment(photoReviewDTO.getComment());

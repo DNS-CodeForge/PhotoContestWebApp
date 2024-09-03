@@ -1,5 +1,7 @@
 package com.photo_contest.services;
 
+import static com.photo_contest.services.PhaseServiceImpl.DAILY_CHECK_HOUR;
+
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
@@ -7,25 +9,25 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-import com.photo_contest.exeptions.AuthorizationException;
-import com.photo_contest.models.UserProfile;
-import com.photo_contest.repos.RoleRepository;
-import com.photo_contest.repos.UserProfileRepository;
 import jakarta.persistence.EntityExistsException;
 
 import com.photo_contest.config.AuthContextManager;
+import com.photo_contest.exeptions.AuthorizationException;
 import com.photo_contest.models.Contest;
 import com.photo_contest.models.Phase;
+import com.photo_contest.models.UserProfile;
 import com.photo_contest.models.DTO.CreateContestDTO;
 import com.photo_contest.models.DTO.RankedUserResponseDTO;
 import com.photo_contest.repos.ContestRepository;
 import com.photo_contest.repos.PhotoSubmissionRepository;
+import com.photo_contest.repos.RoleRepository;
+import com.photo_contest.repos.UserProfileRepository;
 import com.photo_contest.services.contracts.ContestService;
 import com.photo_contest.services.contracts.PhaseService;
+import com.photo_contest.services.contracts.UserService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import static com.photo_contest.services.PhaseServiceImpl.DAILY_CHECK_HOUR;
 
 
 @Service
@@ -39,18 +41,21 @@ public class ContestServiceImpl implements ContestService {
     private final PhaseService phaseService;
     private final UserProfileRepository userProfileRepository;
     private final RoleRepository roleRepository;
+    private final UserService userService;
 
     @Autowired
     public ContestServiceImpl(ContestRepository contestRepository, AuthContextManager authContextManager,
                               PhaseService phaseService, PhotoSubmissionRepository photoSubmissionRepository,
                               UserProfileRepository userProfileRepository,
-                              RoleRepository roleRepository) {
+                              RoleRepository roleRepository,
+                              UserService userService) {
         this.contestRepository = contestRepository;
         this.authContextManager = authContextManager;
         this.phaseService = phaseService;
         this.photoSubmissionRepository = photoSubmissionRepository;
         this.userProfileRepository = userProfileRepository;
         this.roleRepository = roleRepository;
+        this.userService = userService;
     }
 
     @Override
@@ -226,6 +231,7 @@ public class ContestServiceImpl implements ContestService {
         userProfileRepository.save(userProfile);
     }
 
+    @Override
     public int getCurrentPhase(Long contestId) {
         Contest contest = contestRepository.findById(contestId)
                 .orElseThrow(() -> new IllegalArgumentException("Contest not found"));
@@ -246,4 +252,54 @@ public class ContestServiceImpl implements ContestService {
             return 3;
     }
 
+    @Override
+    public void awardPointsForContest(Long contestId) {
+        List<RankedUserResponseDTO> rankedUsers = photoSubmissionRepository.getRankingsByContestId(contestId);
+
+        if (rankedUsers.isEmpty()) {
+            return; 
+        }
+
+        int rank = 1;
+
+        for (int i = 0; i < rankedUsers.size(); i++) {
+            RankedUserResponseDTO current = rankedUsers.get(i);
+            int awardedPoints = 0;
+
+            if (rank == 1) {
+                if (rankedUsers.size() > 1 && current.getPoints() >= 2 * rankedUsers.get(1).getPoints()) {
+                    awardedPoints = 75;
+                } else {
+                    awardedPoints = 50;
+                }
+            } else if (rank == 2) {
+                awardedPoints = 35;
+            } else if (rank == 3) {
+                awardedPoints = 20;
+            } else {
+                break;
+            }
+
+            for (int j = i + 1; j < rankedUsers.size(); j++) {
+                RankedUserResponseDTO next = rankedUsers.get(j);
+
+                if (current.getPoints().equals(next.getPoints())) {
+                    if (awardedPoints == 50) {
+                        awardedPoints = 40;
+                    } else if (awardedPoints == 35) {
+                        awardedPoints = 25;
+                    } else if (awardedPoints == 20) {
+                        awardedPoints = 10;
+                    }
+                    i = j;
+                } else {
+                    break; 
+                }
+            }
+
+            userService.addPoints(current.getUserId().intValue(), awardedPoints);
+
+            rank++;
+        }
+    }
 }
