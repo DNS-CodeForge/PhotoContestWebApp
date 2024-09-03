@@ -57,8 +57,9 @@ public class UserProfile {
     public enum Rank {
         JUNKIE,
         ENTHUSIAST,
-        ORGANISER,
-        MASTER
+        MASTER,
+        DICTATOR,
+        ORGANIZER
     }
 
     @Override

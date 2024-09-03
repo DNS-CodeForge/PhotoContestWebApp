@@ -23,7 +23,7 @@ public class PhaseServiceImpl implements PhaseService {
 
 
 
-    public static final int DAILY_CHECK_HOUR = 15;
+    public static final int DAILY_CHECK_HOUR = 18;
     private static final String DAILY_CHECK_CRON = "0 0 " + DAILY_CHECK_HOUR + " * * ?";
 
 

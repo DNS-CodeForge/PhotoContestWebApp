@@ -76,10 +76,15 @@ public class UserServiceImpl implements UserService {
         AppUser user = userRepository.findById((long) userId)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with ID: " + userId));
 
+        if (user.getUserProfile().getRank() != UserProfile.Rank.ORGANIZER){
+            return;
+        }
         UserProfile userProfile = user.getUserProfile();
         userProfile.setPoints(userProfile.getPoints() + pointsToAdd);
 
-        updateRank(userProfile);
+        if (user.getUserProfile().getRank() != UserProfile.Rank.DICTATOR) {
+            updateRank(userProfile);
+        }
 
         userRepository.save(user);
     }
@@ -88,9 +93,9 @@ public class UserServiceImpl implements UserService {
         int points = userProfile.getPoints();
 
         if (points >= 1001) {
-            userProfile.setRank(UserProfile.Rank.MASTER);
+            userProfile.setRank(UserProfile.Rank.DICTATOR);
         } else if (points >= 151) {
-            userProfile.setRank(UserProfile.Rank.ORGANISER);
+            userProfile.setRank(UserProfile.Rank.MASTER);
         } else if (points >= 51) {
             userProfile.setRank(UserProfile.Rank.ENTHUSIAST);
         } else {

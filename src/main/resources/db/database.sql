@@ -46,7 +46,7 @@ CREATE TABLE public.user_profile
     last_name  VARCHAR(26),
     rank       VARCHAR(255) NOT NULL
         CONSTRAINT user_profile_rank_check
-            CHECK ((rank)::text = ANY (ARRAY ['JUNKIE'::text, 'ENTHUSIAST'::text, 'ORGANISER'::text, 'MASTER'::text])),
+            CHECK ((rank)::text = ANY (ARRAY ['JUNKIE'::text, 'ENTHUSIAST'::text, 'MASTER'::text, 'DICTATOR'::text])),
     points     INTEGER DEFAULT 0 -- New field for points
 );
 
@@ -168,6 +168,6 @@ FROM "app_user" u, roles r
 WHERE u.username = 'admin' AND r.authority = 'ADMIN';
 
 INSERT INTO user_profile (id, first_name, last_name, rank)
-SELECT u.id, 'Admin', 'User', 'MASTER'
+SELECT u.id, 'Admin', 'User', 'ORGANIZER'
 FROM app_user u
 WHERE u.username = 'admin';
