@@ -18,6 +18,6 @@ public interface ContestService {
     List<RankedUserResponseDTO> getCurrentRanking(int contestId);
     public void joinContest(Long contestId, Long userId);
     public void inviteParticipant(Long contestId, Long userId);
-
+    public void inviteJudge(Long contestId, Long userId);
 
 }

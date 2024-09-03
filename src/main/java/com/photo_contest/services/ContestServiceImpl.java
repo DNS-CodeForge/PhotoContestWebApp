@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import com.photo_contest.models.UserProfile;
@@ -181,6 +182,32 @@ public class ContestServiceImpl implements ContestService {
         contest.getParticipants().add(userProfile);
         userProfile.getContests().add(contest);
         userProfile.setPoints(userProfile.getPoints() + points);
+
+        contestRepository.save(contest);
+        userProfileRepository.save(userProfile);
+    }
+
+    @Override
+    public void inviteJudge(Long contestId, Long userId) {
+        Contest contest = contestRepository.findById(contestId)
+                .orElseThrow(() -> new IllegalArgumentException("Contest not found"));
+        UserProfile userProfile = userProfileRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        if (!Objects.equals(contest.getOrganizer().getId(), authContextManager.getLoggedInUser().getId())) {
+            throw new IllegalStateException("Only the organizer can invite judges");
+        }
+        if (contest.getJury().stream().anyMatch(judge -> Objects.equals(judge.getId(), userId))) {
+            throw new IllegalStateException("User is already a judge");
+        }
+        if (contest.getParticipants().stream().anyMatch(participant -> Objects.equals(participant.getId(), userId))) {
+            throw new IllegalStateException("User is already a participant");
+        }
+        // TODO: MASTERUSER
+        if (userProfile.getRank() != UserProfile.Rank.MASTER && userProfile.getRank() != UserProfile.Rank.DICTATOR) {
+            throw new IllegalStateException("User is not eligible to be a judge");
+        }
+
+        contest.getJury().add(userProfile);
 
         contestRepository.save(contest);
         userProfileRepository.save(userProfile);
