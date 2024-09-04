@@ -28,15 +28,12 @@ public class ContestController {
     private final ContestService contestService;
 
     private final ContestUtils contestUtils;
-    private final UserService userService;
+
 
     @Autowired
     public ContestController(ContestService contestService, ContestUtils contestUtils, UserRepository userRepository, UserService userService) {
         this.contestService = contestService;
-
         this.contestUtils = contestUtils;
-        this.userService = userService;
-
     }
 
     @PostMapping
@@ -62,13 +59,11 @@ public class ContestController {
         A Test endpoint to trigger the awarding of points for a contest without the scheduled task.
         DD
     */
-
-        System.out.println(userService.getAllContestsByUserProfileId(2L));
         return contestUtils.awardPointsForContest(id);
 
     }
 
-    @PostMapping("/{contestId}/inviteParticipants")
+    @PostMapping("/{contestId}/participants/invite")
     public ResponseEntity<String> inviteParticipants(
             @PathVariable Long contestId,
             @RequestBody List<Long> userIds) {
@@ -81,7 +76,7 @@ public class ContestController {
         }
     }
 
-    @PostMapping("/{contestId}/inviteJudges")
+    @PostMapping("/{contestId}/jury/invite")
     public ResponseEntity<String> inviteJudges(
             @PathVariable Long contestId,
             @RequestBody List<Long> userIds) {

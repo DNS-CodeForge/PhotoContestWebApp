@@ -27,7 +27,7 @@ public class PhotoReviewController {
     public PhotoReviewController(PhotoReviewService photoReviewService) {
         this.photoReviewService = photoReviewService;
     }
-
+//TODO fix path
     @PostMapping
     public PhotoReview createPhotoReview(@RequestBody PhotoReviewDTO photoReviewDTO,
                                          @RequestParam Long photoSubmissionId) {

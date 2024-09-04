@@ -38,7 +38,8 @@ public class PhotoSubmissionServiceImpl implements PhotoSubmissionService {
 
         Contest contest = contestRepository.findById(photoSubmissionDTO.getContestId()).get();
 
-        if(authContextManager.getLoggedInUser().getContests().contains(contest)) {
+
+        if(!contestRepository.findAllContestsByUserProfileId(authContextManager.getId()).contains(contest)) {
             throw new AuthorizationException("User needs to be part of the contest participants to make submissions");
         }
 

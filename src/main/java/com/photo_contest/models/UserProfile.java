@@ -18,18 +18,21 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class UserProfile {
     public UserProfile(AppUser appUser) {
         this.appUser = appUser;
     }
 
     @Id
+    @EqualsAndHashCode.Include
     private Long id;
 
     @OneToOne

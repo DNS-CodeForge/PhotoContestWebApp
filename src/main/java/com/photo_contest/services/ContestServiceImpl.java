@@ -258,7 +258,12 @@ public class ContestServiceImpl implements ContestService {
 
         for (Phase phase : phases) {
             if (now.isAfter(phase.getStartDateTime()) && now.isBefore(phase.getEndDateTime())) {
-                return phases.indexOf(phase) + 1;
+                if (phase.getType().equals(Phase.PhaseType.PHASE_ONE)) {
+                    return 1;
+                } else {
+                    return 2;
+                }
+
             }
         }
             return 3;

@@ -28,6 +28,7 @@ public class PhotoSubmissionController {
     }
 
     @PostMapping
+    //#TODO PAthVar
     public PhotoSubmission createPhotoSubmission(@RequestBody PhotoSubmissionDTO photoSubmission) {
         return photoSubmissionService.createPhotoSubmission(photoSubmission);
     }
