@@ -17,7 +17,7 @@ public interface ContestService {
     Contest saveContest(Contest contest);
     List<RankedUserResponseDTO> getCurrentRanking(int contestId);
     public void joinContest(Long contestId, Long userId);
-    public void inviteParticipant(Long contestId, Long userId);
-    public void inviteJudge(Long contestId, Long userId);
+    public void inviteParticipants(Long contestId, List<Long> userIds);
+    public void inviteJudges(Long contestId, List<Long> userId);
     public int getCurrentPhase(Long contestId);
 }

@@ -9,11 +9,9 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-import com.photo_contest.utils.ContestUtils;
 import jakarta.persistence.EntityExistsException;
 
 import com.photo_contest.config.AuthContextManager;
-import com.photo_contest.exeptions.AuthorizationException;
 import com.photo_contest.models.Contest;
 import com.photo_contest.models.Phase;
 import com.photo_contest.models.UserProfile;
@@ -26,6 +24,7 @@ import com.photo_contest.repos.UserProfileRepository;
 import com.photo_contest.services.contracts.ContestService;
 import com.photo_contest.services.contracts.PhaseService;
 import com.photo_contest.services.contracts.UserService;
+import com.photo_contest.utils.ContestUtils;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -181,56 +180,68 @@ public class ContestServiceImpl implements ContestService {
     }
 
     @Override
-    public void inviteParticipant(Long contestId, Long userId) {
+    public void inviteParticipants(Long contestId, List<Long> userIds) {
         Contest contest = contestRepository.findById(contestId)
                 .orElseThrow(() -> new IllegalArgumentException("Contest not found"));
+        
         if (!Objects.equals(contest.getOrganizer().getId(), authContextManager.getLoggedInUser().getId())) {
             throw new IllegalStateException("Only the organizer can invite participants");
         }
-        UserProfile userProfile = userProfileRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
-        if (contest.getParticipants().stream().anyMatch(participant -> Objects.equals(participant.getId(), userId))) {
-            throw new IllegalStateException("User is already a participant");
+        
+        int points = contest.isPrivate() ? 3 : 1;
+
+        for (Long userId : userIds) {
+            try {
+                UserProfile userProfile = userProfileRepository.findById(userId)
+                        .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+                if (contest.getParticipants().stream().anyMatch(participant -> Objects.equals(participant.getId(), userId))) {
+                    continue; 
+                }
+
+                contest.getParticipants().add(userProfile);
+                userProfile.getContests().add(contest);
+                userProfile.setPoints(userProfile.getPoints() + points);
+
+            } catch (Exception e) {
+                continue; 
+            }
         }
-        int points = 1;
-
-        if (contest.isPrivate()) {
-            points = 3;
-        }
-
-
-        contest.getParticipants().add(userProfile);
-        userProfile.getContests().add(contest);
-        userProfile.setPoints(userProfile.getPoints() + points);
 
         contestRepository.save(contest);
-        userProfileRepository.save(userProfile);
-    }
+    }    
 
     @Override
-    public void inviteJudge(Long contestId, Long userId) {
+    public void inviteJudges(Long contestId, List<Long> userIds) {
         Contest contest = contestRepository.findById(contestId)
                 .orElseThrow(() -> new IllegalArgumentException("Contest not found"));
-        UserProfile userProfile = userProfileRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
         if (!Objects.equals(contest.getOrganizer().getId(), authContextManager.getLoggedInUser().getId())) {
             throw new IllegalStateException("Only the organizer can invite judges");
         }
-        if (contest.getJury().stream().anyMatch(judge -> Objects.equals(judge.getId(), userId))) {
-            throw new IllegalStateException("User is already a judge");
-        }
-        if (contest.getParticipants().stream().anyMatch(participant -> Objects.equals(participant.getId(), userId))) {
-            throw new IllegalStateException("User is already a participant");
-        }
-        if (!userProfile.getAppUser().getAuthorities().contains(roleRepository.findByAuthority("MASTERUSER").get())) {
-           throw new AuthorizationException("User is not eligible to be a judge");
-        }
 
-        contest.getJury().add(userProfile);
+        for (Long userId : userIds) {
+            try {
+                UserProfile userProfile = userProfileRepository.findById(userId)
+                        .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+                if (contest.getJury().stream().anyMatch(judge -> Objects.equals(judge.getId(), userId)) ||
+                    contest.getParticipants().stream().anyMatch(participant -> Objects.equals(participant.getId(), userId))) {
+                    continue; 
+                }
+
+                if (!userProfile.getAppUser().getAuthorities().contains(roleRepository.findByAuthority("MASTERUSER").get())) {
+                    continue;
+                }
+
+                contest.getJury().add(userProfile);
+            } catch (Exception e) {
+                continue;
+            }
+        }
 
         contestRepository.save(contest);
-        userProfileRepository.save(userProfile);
-    }
+    }    
 
     @Override
     public int getCurrentPhase(Long contestId) {
