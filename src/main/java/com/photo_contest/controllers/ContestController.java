@@ -6,8 +6,10 @@ import com.photo_contest.models.Contest;
 import com.photo_contest.models.DTO.CreateContestDTO;
 import com.photo_contest.models.DTO.RankedUserResponseDTO;
 import com.photo_contest.repos.PhotoSubmissionRepository;
+import com.photo_contest.repos.UserRepository;
 import com.photo_contest.services.contracts.ContestService;
 
+import com.photo_contest.services.contracts.UserService;
 import com.photo_contest.utils.ContestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -26,12 +28,15 @@ public class ContestController {
     private final ContestService contestService;
 
     private final ContestUtils contestUtils;
+    private final UserService userService;
 
     @Autowired
-    public ContestController(ContestService contestService, ContestUtils contestUtils) {
+    public ContestController(ContestService contestService, ContestUtils contestUtils, UserRepository userRepository, UserService userService) {
         this.contestService = contestService;
 
         this.contestUtils = contestUtils;
+        this.userService = userService;
+
     }
 
     @PostMapping
@@ -58,6 +63,7 @@ public class ContestController {
         DD
     */
 
+        System.out.println(userService.getAllContestsByUserProfileId(2L));
         return contestUtils.awardPointsForContest(id);
 
     }

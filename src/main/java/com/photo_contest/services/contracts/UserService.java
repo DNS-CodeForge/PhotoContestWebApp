@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.photo_contest.models.AppUser;
 
+import com.photo_contest.models.Contest;
 import com.photo_contest.models.UserProfile;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -24,5 +25,6 @@ public interface UserService extends UserDetailsService{
 
     AppUser setUserRole(int userId, String addedRole, String removedRole);
 
-    void addPoints(int userId, int pointsToAdd); 
+    void addPoints(int userId, int pointsToAdd);
+    public List<Contest> getAllContestsByUserProfileId(Long userProfileId);
 }

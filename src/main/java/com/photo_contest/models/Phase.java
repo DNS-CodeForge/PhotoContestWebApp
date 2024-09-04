@@ -38,4 +38,9 @@ public class Phase {
         PHASE_ONE,
         PHASE_TWO
     }
+    @Override
+    public String toString() {
+        return "Phase{id=" + id + ", type='" + type + "', startDate=" + startDateTime + "}";
+    }
+
 }

@@ -81,4 +81,8 @@ public class Contest {
     protected void onUpdate() {
         updatedAt = LocalDateTime.now();
     }
+    @Override
+    public String toString() {
+        return "Contest{id=" + id + ", title='" + title + "'}";
+    }
 }

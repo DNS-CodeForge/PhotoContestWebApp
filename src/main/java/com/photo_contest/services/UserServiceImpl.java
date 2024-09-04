@@ -3,8 +3,10 @@ package com.photo_contest.services;
 import java.util.List;
 
 import com.photo_contest.models.AppUser;
+import com.photo_contest.models.Contest;
 import com.photo_contest.models.Role;
 import com.photo_contest.models.UserProfile;
+import com.photo_contest.repos.ContestRepository;
 import com.photo_contest.repos.RoleRepository;
 import com.photo_contest.repos.UserProfileRepository;
 import com.photo_contest.repos.UserRepository;
@@ -21,12 +23,14 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final UserProfileRepository userProfileRepository;
     private final RoleRepository roleRepository;
+    private final ContestRepository contestRepository;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, UserProfileRepository userProfileRepository, RoleRepository roleRepository) {
+    public UserServiceImpl(UserRepository userRepository, UserProfileRepository userProfileRepository, RoleRepository roleRepository, ContestRepository contestRepository) {
         this.userRepository = userRepository;
         this.userProfileRepository = userProfileRepository;
         this.roleRepository = roleRepository;
+        this.contestRepository = contestRepository;
     }
 
     @Override
@@ -49,7 +53,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserProfile updateUserProfile(UserProfile userProfile) {
-       return userProfileRepository.save(userProfile);
+        return userProfileRepository.save(userProfile);
     }
 
     @Override
@@ -72,10 +76,10 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with ID: " + userId));
 
         if (addedRole != null) {
-            user.getRoles().add(new Role(addedRole));  
+            user.getRoles().add(new Role(addedRole));
         }
         if (removedRole != null) {
-            user.getRoles().remove(new Role(removedRole)); 
+            user.getRoles().remove(new Role(removedRole));
         }
 
         return userRepository.save(user);
@@ -87,7 +91,7 @@ public class UserServiceImpl implements UserService {
         AppUser user = userRepository.findById((long) userId)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with ID: " + userId));
 
-        if (user.getUserProfile().getRank().equals(UserProfile.Rank.ORGANIZER)){
+        if (user.getUserProfile().getRank().equals(UserProfile.Rank.ORGANIZER)) {
             return;
         }
         UserProfile userProfile = user.getUserProfile();
@@ -116,6 +120,10 @@ public class UserServiceImpl implements UserService {
         } else {
             userProfile.setRank(UserProfile.Rank.JUNKIE);
         }
+    }
+
+    public List<Contest> getAllContestsByUserProfileId(Long userProfileId) {
+        return contestRepository.findAllContestsByUserProfileId(userProfileId);
     }
 }
 
