@@ -1,14 +1,17 @@
 package com.photo_contest.services;
 
+import static com.photo_contest.constants.ModelValidationConstants.*;
 import static com.photo_contest.services.PhaseServiceImpl.DAILY_CHECK_HOUR;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+import com.photo_contest.exeptions.AuthorizationException;
 import jakarta.persistence.EntityExistsException;
 
 import com.photo_contest.config.AuthContextManager;
@@ -26,6 +29,7 @@ import com.photo_contest.services.contracts.PhaseService;
 import com.photo_contest.services.contracts.UserService;
 import com.photo_contest.utils.ContestUtils;
 
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -61,7 +65,7 @@ public class ContestServiceImpl implements ContestService {
     @Override
     public Contest createContest(CreateContestDTO createContestDTO) {
         if (contestRepository.findByTitle(createContestDTO.getTitle()).isPresent()) {
-            throw new EntityExistsException("Contest with this title already exists");
+            throw new EntityExistsException(CONTEST_EXISTS);
         }
 
         LocalDateTime startDateTime = calculateStartDate().truncatedTo(ChronoUnit.MINUTES);
@@ -78,7 +82,6 @@ public class ContestServiceImpl implements ContestService {
         UserProfile organizer = authContextManager.getLoggedInUser();
         contest.setOrganizer(organizer);
         contest.setJury(List.of(organizer));
-        // #TODO: Test Immutability
         contest.setParticipants(List.of());
         contest.setPhotoSubmissions(List.of());
 
@@ -109,7 +112,7 @@ public class ContestServiceImpl implements ContestService {
 
             return contestRepository.save(contest);
         } else {
-            throw new IllegalArgumentException("Contest with ID " + contestId + " not found");
+            throw new EntityNotFoundException(INVALID_ID.formatted("Contest", contestId));
         }
     }
 
@@ -157,11 +160,11 @@ public class ContestServiceImpl implements ContestService {
 
 
         Contest contest = contestRepository.findById(contestId)
-                .orElseThrow(() -> new IllegalArgumentException("Contest not found"));
+                .orElseThrow(() -> new EntityNotFoundException(INVALID_ID.formatted("Contest", contestId)));
         UserProfile userProfile = authContextManager.getLoggedInUser();
 
         if (contest.getParticipants().stream().anyMatch(participant -> Objects.equals(participant.getId(), userId))) {
-            throw new IllegalStateException("User is already a participant");
+            throw new AuthorizationException(USER_IS_ALREADY_A_PARTICIPANT);
         }
 
         if (!contest.isPrivate()) {
@@ -174,29 +177,31 @@ public class ContestServiceImpl implements ContestService {
             userProfileRepository.save(userProfile);
             contestRepository.save(contest);
         } else {
-            throw new IllegalStateException("Cannot join a private contest");
+            throw new AuthorizationException(PRIVATE_CONTEST);
         }
 
     }
 
     @Override
-    public void inviteParticipants(Long contestId, List<Long> userIds) {
+    public List<Long> inviteParticipants(Long contestId, List<Long> userIds) {
         Contest contest = contestRepository.findById(contestId)
-                .orElseThrow(() -> new IllegalArgumentException("Contest not found"));
-        
+                .orElseThrow(() -> new EntityNotFoundException(INVALID_ID.formatted("Contest", contestId)));
+
         if (!Objects.equals(contest.getOrganizer().getId(), authContextManager.getLoggedInUser().getId())) {
-            throw new IllegalStateException("Only the organizer can invite participants");
+            throw new AuthorizationException(NOT_ORGANIZER.formatted("participants"));
         }
-        
+
+
         int points = contest.isPrivate() ? 3 : 1;
+        List<Long> failedInvites = new ArrayList<>();
 
         for (Long userId : userIds) {
             try {
                 UserProfile userProfile = userProfileRepository.findById(userId)
-                        .orElseThrow(() -> new IllegalArgumentException("User not found"));
+                        .orElseThrow(() -> new EntityNotFoundException(INVALID_ID.formatted("User", contestId)));
 
                 if (contest.getParticipants().stream().anyMatch(participant -> Objects.equals(participant.getId(), userId))) {
-                    continue; 
+                    continue;
                 }
 
                 contest.getParticipants().add(userProfile);
@@ -204,49 +209,56 @@ public class ContestServiceImpl implements ContestService {
                 userProfile.setPoints(userProfile.getPoints() + points);
 
             } catch (Exception e) {
-                continue; 
+                failedInvites.add(userId);
             }
         }
-
         contestRepository.save(contest);
-    }    
+
+        return failedInvites;
+    }
 
     @Override
-    public void inviteJudges(Long contestId, List<Long> userIds) {
+    public List<Long> inviteJudges(Long contestId, List<Long> userIds) {
         Contest contest = contestRepository.findById(contestId)
-                .orElseThrow(() -> new IllegalArgumentException("Contest not found"));
+                .orElseThrow(() -> new EntityNotFoundException(INVALID_ID.formatted("Contest", contestId)));
 
         if (!Objects.equals(contest.getOrganizer().getId(), authContextManager.getLoggedInUser().getId())) {
-            throw new IllegalStateException("Only the organizer can invite judges");
+            throw  new AuthorizationException(NOT_ORGANIZER.formatted("judges"));
         }
+
+        List<Long> failedInvites = new ArrayList<>();
 
         for (Long userId : userIds) {
             try {
                 UserProfile userProfile = userProfileRepository.findById(userId)
-                        .orElseThrow(() -> new IllegalArgumentException("User not found"));
+                        .orElseThrow(() -> new EntityNotFoundException(INVALID_ID.formatted("User", contestId)));
 
                 if (contest.getJury().stream().anyMatch(judge -> Objects.equals(judge.getId(), userId)) ||
-                    contest.getParticipants().stream().anyMatch(participant -> Objects.equals(participant.getId(), userId))) {
-                    continue; 
+                        contest.getParticipants().stream().anyMatch(participant -> Objects.equals(participant.getId(), userId))) {
+                    continue;
                 }
 
                 if (!userProfile.getAppUser().getAuthorities().contains(roleRepository.findByAuthority("MASTERUSER").get())) {
+                    failedInvites.add(userId);
                     continue;
                 }
 
                 contest.getJury().add(userProfile);
+
             } catch (Exception e) {
-                continue;
+                failedInvites.add(userId);
             }
         }
-
         contestRepository.save(contest);
-    }    
+
+        return failedInvites;
+    }
+
 
     @Override
     public int getCurrentPhase(Long contestId) {
         Contest contest = contestRepository.findById(contestId)
-                .orElseThrow(() -> new IllegalArgumentException("Contest not found"));
+                .orElseThrow(() -> new EntityNotFoundException(INVALID_ID.formatted("Contest", contestId)));
 
         LocalDateTime now = LocalDateTime.now();
 

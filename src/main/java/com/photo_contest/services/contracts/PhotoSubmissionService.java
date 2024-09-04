@@ -6,7 +6,7 @@ import com.photo_contest.models.PhotoSubmission;
 import com.photo_contest.models.DTO.PhotoSubmissionDTO;
 
 public interface PhotoSubmissionService {
-    PhotoSubmission createPhotoSubmission(PhotoSubmissionDTO photoSubmission);
+    PhotoSubmission createPhotoSubmission(Long contestID, PhotoSubmissionDTO photoSubmission);
     PhotoSubmission getPhotoSubmissionById(Long id);
     List<PhotoSubmission> getAllPhotoSubmissions();
     PhotoSubmission updatePhotoSubmission(Long id, PhotoSubmissionDTO photoSubmission);

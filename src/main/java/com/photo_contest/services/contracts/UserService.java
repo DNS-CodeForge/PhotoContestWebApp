@@ -14,12 +14,12 @@ public interface UserService extends UserDetailsService{
     @Override
     UserDetails loadUserByUsername(String username) throws UsernameNotFoundException;
 
-    AppUser getUserById(int id);
+    UserProfile getUserById(int id);
 
-    AppUser getUserByName(String name);
+    UserProfile getUserByUsername(String name);
     UserProfile updateUserProfile(UserProfile userProfile);
 
-    List<AppUser> getAllUsers();
+    List<UserProfile> getAllUsers();
 
     void deleteUser(int id);
 

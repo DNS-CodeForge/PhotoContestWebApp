@@ -1,11 +1,11 @@
 package com.photo_contest.services;
 
-import com.photo_contest.controllers.ContestController;
 import com.photo_contest.models.Contest;
 import com.photo_contest.models.Phase;
 import com.photo_contest.repos.PhaseRepository;
 import com.photo_contest.services.contracts.PhaseService;
 import com.photo_contest.utils.ContestUtils;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.Async;
@@ -14,11 +14,12 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
+
+import static com.photo_contest.constants.ModelValidationConstants.PHASE_WITH_ID_NOT_FOUND;
 
 @Service
 public class PhaseServiceImpl implements PhaseService {
@@ -40,6 +41,7 @@ public class PhaseServiceImpl implements PhaseService {
     private static final int MAX_POOL_SIZE = AVAILABLE_PROCESSORS * 2;
     private static final int QUEUE_CAPACITY = 500;
     private static final String THREAD_NAME_PREFIX = "PhaseCheck-";
+
 
     private final PhaseRepository phaseRepository;
     private final ContestUtils contestUtils;
@@ -81,15 +83,6 @@ public class PhaseServiceImpl implements PhaseService {
         return phaseRepository.save(newPhase);
     }
 
-    @Override
-    public void deletePhase(Long phaseId) {
-        Optional<Phase> phase = phaseRepository.findById(phaseId);
-        if (phase.isPresent()) {
-            phaseRepository.delete(phase.get());
-        } else {
-            throw new IllegalArgumentException("Phase with ID " + phaseId + " not found");
-        }
-    }
 
     @Override
     public List<Phase> getAllPhases() {
@@ -106,20 +99,7 @@ public class PhaseServiceImpl implements PhaseService {
         return phaseRepository.findById(phaseId);
     }
 
-    @Override
-    public void updatePhase(Long phaseId, Phase updatedPhase) {
-        Optional<Phase> existingPhase = phaseRepository.findById(phaseId);
-        if (existingPhase.isPresent()) {
-            Phase phase = existingPhase.get();
-            phase.setStartDateTime(updatedPhase.getStartDateTime());
-            phase.setEndDateTime(updatedPhase.getEndDateTime());
-            phase.setType(updatedPhase.getType());
-            phase.setConcluded(updatedPhase.isConcluded());
-            phaseRepository.save(phase);
-        } else {
-            throw new IllegalArgumentException("Phase with ID " + phaseId + " not found");
-        }
-    }
+
 
     @Override
     @Scheduled(cron = DAILY_CHECK_CRON)

@@ -40,15 +40,15 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public AppUser getUserById(int id) {
-        return userRepository.findById((long) id)
+    public UserProfile getUserById(int id) {
+        return userProfileRepository.findById((long) id)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with ID: " + id));
     }
 
     @Override
-    public AppUser getUserByName(String name) {
-        return userRepository.findByUsername(name)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found with name: " + name));
+    public UserProfile getUserByUsername(String username) {
+        return userProfileRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with name: " + username));
     }
 
     @Override
@@ -57,8 +57,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<AppUser> getAllUsers() {
-        return userRepository.findAll();
+    public List<UserProfile> getAllUsers() {
+        return userProfileRepository.findAll();
     }
 
     @Override

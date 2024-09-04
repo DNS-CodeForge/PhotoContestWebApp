@@ -7,6 +7,8 @@ import com.photo_contest.models.DTO.PhotoReviewDTO;
 import com.photo_contest.services.contracts.PhotoReviewService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -14,11 +16,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/photo-review")
+@RequestMapping("/api")
 public class PhotoReviewController {
 
     private final PhotoReviewService photoReviewService;
@@ -27,31 +28,40 @@ public class PhotoReviewController {
     public PhotoReviewController(PhotoReviewService photoReviewService) {
         this.photoReviewService = photoReviewService;
     }
-//TODO fix path
-    @PostMapping
-    public PhotoReview createPhotoReview(@RequestBody PhotoReviewDTO photoReviewDTO,
-                                         @RequestParam Long photoSubmissionId) {
-        return photoReviewService.createPhotoReview(photoReviewDTO, photoSubmissionId);
+
+    @PostMapping("/submission/{submissionId}/review")
+    public ResponseEntity<PhotoReview> createPhotoReview(@RequestBody PhotoReviewDTO photoReviewDTO,
+                                                         @PathVariable Long submissionId) {
+        PhotoReview newPhotoReview = photoReviewService.createPhotoReview(photoReviewDTO, submissionId);
+        return new ResponseEntity<>(newPhotoReview, HttpStatus.CREATED);
     }
 
-    @GetMapping("/{id}")
-    public PhotoReview getPhotoReviewById(@PathVariable Long id) {
+    @GetMapping("/review/{id}")
+    public ResponseEntity<PhotoReview> getPhotoReviewById(@PathVariable Long id) {
         return photoReviewService.getPhotoReviewById(id)
-                .orElseThrow(() -> new RuntimeException("PhotoReview not found"));
+                .map(photoReview -> new ResponseEntity<>(photoReview, HttpStatus.OK))
+                .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
-    @GetMapping
-    public List<PhotoReview> getAllPhotoReviews() {
-        return photoReviewService.getAllPhotoReviews();
+    @GetMapping("/review")
+    public ResponseEntity<List<PhotoReview>> getAllPhotoReviews() {
+        List<PhotoReview> reviews = photoReviewService.getAllPhotoReviews();
+        return new ResponseEntity<>(reviews, HttpStatus.OK);
     }
 
-    @PutMapping("/{id}")
-    public PhotoReview updatePhotoReview(@PathVariable Long id, @RequestBody PhotoReviewDTO photoReviewDTO) {
-        return photoReviewService.updatePhotoReview(id, photoReviewDTO);
+    @PutMapping("/review/{id}")
+    public ResponseEntity<PhotoReview> updatePhotoReview(@PathVariable Long id, @RequestBody PhotoReviewDTO photoReviewDTO) {
+        PhotoReview updatedPhotoReview = photoReviewService.updatePhotoReview(id, photoReviewDTO);
+        return new ResponseEntity<>(updatedPhotoReview, HttpStatus.OK);
     }
 
-    @DeleteMapping("/{id}")
-    public void deletePhotoReview(@PathVariable Long id) {
-        photoReviewService.deletePhotoReview(id);
+    @DeleteMapping("/review/{id}")
+    public ResponseEntity<Void> deletePhotoReview(@PathVariable Long id) {
+        if (photoReviewService.getPhotoReviewById(id).isPresent()) {
+            photoReviewService.deletePhotoReview(id);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 }

@@ -24,23 +24,29 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
-public class AuthServiceImpl implements AuthService{
+public class AuthServiceImpl implements AuthService {
+
+
+    private static final String ROLE_NOT_FOUND_MESSAGE = "Role not found";
+    private static final String BASE_USER_ROLE = "USER";
 
     private final RoleRepository roleRepository;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final AuthenticationManager authManager; 
-    private final TokenService tokenService; 
+    private final AuthenticationManager authManager;
+    private final TokenService tokenService;
 
     @Autowired
-    public AuthServiceImpl(TokenService tokenService, AuthenticationManager authManager, RoleRepository roleRepository, UserRepository userRepository, PasswordEncoder passwordEncoder){
+    public AuthServiceImpl(
+            TokenService tokenService, AuthenticationManager authManager, RoleRepository roleRepository,
+            UserRepository userRepository, PasswordEncoder passwordEncoder
+    ) {
         this.authManager = authManager;
         this.tokenService = tokenService;
         this.roleRepository = roleRepository;
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
     }
-
 
     @Override
     public AppUser registerUser(RegistrationDTO registrationDTO) {
@@ -49,8 +55,9 @@ public class AuthServiceImpl implements AuthService{
         user.setUsername(registrationDTO.getUsername());
         user.setPassword(passwordEncoder.encode(registrationDTO.getPassword()));
 
-        Role userRole = roleRepository.findByAuthority("USER")
-                .orElseThrow(() -> new EntityNotFoundException("Role not found"));
+
+        Role userRole = roleRepository.findByAuthority(BASE_USER_ROLE)
+                .orElseThrow(() -> new EntityNotFoundException(ROLE_NOT_FOUND_MESSAGE));
         Set<Role> roles = new HashSet<>();
 
         roles.add(userRole);
@@ -63,10 +70,10 @@ public class AuthServiceImpl implements AuthService{
         user.setUserProfile(userProfile);
 
         return userRepository.save(user);
-     }
+    }
 
     @Override
-    public LoginResponseDTO logIn(String username, String password){
+    public LoginResponseDTO logIn(String username, String password) {
         try {
             Authentication auth = authManager.authenticate(
                     new UsernamePasswordAuthenticationToken(username, password)
@@ -74,11 +81,10 @@ public class AuthServiceImpl implements AuthService{
 
             String token = tokenService.generateJwt(auth);
 
-            return new LoginResponseDTO(userRepository.findByUsername(username).get(),token);
-            
-        } catch (AuthenticationException e) {
-            return new LoginResponseDTO(null,null);
-        }
+            return new LoginResponseDTO(userRepository.findByUsername(username).get(), token);
 
+        } catch (AuthenticationException e) {
+            return new LoginResponseDTO(null, null);
+        }
     }
 }

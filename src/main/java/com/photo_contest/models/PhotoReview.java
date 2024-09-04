@@ -18,24 +18,27 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import static com.photo_contest.constants.ModelValidationConstants.*;
+
 @Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class PhotoReview {
 
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Min(value = 1, message = "Score must be at least 1")
-    @Max(value = 10, message = "Score must be at most 10")
+    @Min(value = 1, message = PR_SCR_MIN_MSG)
+    @Max(value = 10, message = PR_SCR_MAX_MSG)
     @Column(nullable = false)
-    private int score = 3;
+    private int score = PR_DEFAULT_SCR;
 
-    @NotBlank(message = "Comment is mandatory")
-    @Size(max = 5000, message = "Comment must be less than 5000 characters")
-    @Column(nullable = false, length = 5000)
+    @NotBlank(message = PR_COMMENT_MANDATORY_MSG)
+    @Size(max = PR_COMMENT_MAX_SIZE, message = PR_COMMENT_SIZE_MSG)
+    @Column(nullable = false, length = PR_COMMENT_MAX_SIZE)
     private String comment;
 
     @Column(nullable = false)

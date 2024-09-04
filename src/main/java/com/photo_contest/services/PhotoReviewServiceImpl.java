@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import com.photo_contest.config.AuthContextManager;
 import com.photo_contest.exeptions.AuthorizationException;
+import com.photo_contest.exeptions.ContestPhaseViolationException;
 import com.photo_contest.models.Contest;
 import com.photo_contest.models.PhotoReview;
 import com.photo_contest.models.PhotoSubmission;
@@ -15,13 +16,18 @@ import com.photo_contest.repos.PhotoSubmissionRepository;
 import com.photo_contest.services.contracts.ContestService;
 import com.photo_contest.services.contracts.PhotoReviewService;
 
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import static com.photo_contest.constants.ModelValidationConstants.*;
 
 @Service
 public class PhotoReviewServiceImpl implements PhotoReviewService{
 
-     private final PhotoReviewRepository photoReviewRepository;
+
+
+    private final PhotoReviewRepository photoReviewRepository;
     private final PhotoSubmissionRepository photoSubmissionRepository;
     private final AuthContextManager authContextManager;
     private final ContestService contestService;
@@ -41,15 +47,16 @@ public class PhotoReviewServiceImpl implements PhotoReviewService{
     public PhotoReview createPhotoReview(PhotoReviewDTO photoReviewDTO, Long photoSubmissionId) {
         UserProfile jury = authContextManager.getLoggedInUser();
         PhotoSubmission photoSubmission = photoSubmissionRepository.findById(photoSubmissionId)
-                .orElseThrow(() -> new RuntimeException("PhotoSubmission not found with id: " + photoSubmissionId));
+                .orElseThrow(() -> new EntityNotFoundException(INVALID_ID.formatted("Photo Submission", photoSubmissionId)));
         Contest contest = photoSubmission.getContest();
 
         if(!contest.getJury().contains(jury)) {
-            throw new AuthorizationException("User needs to be part of the contest jury to make reviews");
+            throw new AuthorizationException(USER_NOT_JURY);
         }
 
+
         if (contestService.getCurrentPhase(contest.getId()) != 2) {
-            throw new IllegalStateException("Reviews can only be made during Phase Two.");
+            throw new ContestPhaseViolationException(PH_TWO_REVIEW);
         }
             
         PhotoReview photoReview = new PhotoReview();
@@ -76,7 +83,7 @@ public class PhotoReviewServiceImpl implements PhotoReviewService{
     @Override
     public PhotoReview updatePhotoReview(Long id, PhotoReviewDTO photoReviewDTO) {
         PhotoReview existingPhotoReview = photoReviewRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("PhotoReview not found with id: " + id));
+                .orElseThrow(() -> new EntityNotFoundException(INVALID_ID.formatted("Photo Review", id)));
 
         existingPhotoReview.setScore(photoReviewDTO.getScore());
         existingPhotoReview.setComment(photoReviewDTO.getComment());
@@ -90,7 +97,7 @@ public class PhotoReviewServiceImpl implements PhotoReviewService{
         if (photoReviewRepository.existsById(id)) {
             photoReviewRepository.deleteById(id);
         } else {
-            throw new RuntimeException("PhotoReview not found with id: " + id);
+            throw new EntityNotFoundException(INVALID_ID.formatted("Photo Review", id));
         }
     }
 

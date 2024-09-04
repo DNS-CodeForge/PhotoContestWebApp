@@ -21,11 +21,15 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import static com.photo_contest.constants.ModelValidationConstants.*;
+
 @Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class PhotoSubmission {
+
+
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,17 +39,17 @@ public class PhotoSubmission {
     @JoinColumn(name = "creator_id", nullable = false)
     private UserProfile creator;
 
-    @NotBlank(message = "Title is mandatory")
-    @Size(max = 255, message = "Title must be less than 255 characters")
+    @NotBlank(message = PS_TITLE_MANDATORY_MSG)
+    @Size(max = PS_TITLE_MAX_SIZE, message = PS_TITLE_SIZE_MSG)
     @Column(nullable = false)
     private String title;
 
-    @NotBlank(message = "Story is mandatory")
-    @Size(max = 5000, message = "Story must be less than 5000 characters")
-    @Column(nullable = false, length = 5000)
+    @NotBlank(message = PS_STORY_MANDATORY_MSG)
+    @Size(max = PS_STORY_MAX_SIZE, message = PS_STORY_SIZE_MSG)
+    @Column(nullable = false, length = PS_STORY_MAX_SIZE)
     private String story;
 
-    @NotBlank(message = "Photo URL is mandatory")
+    @NotBlank(message = PS_PHOTO_URL_MANDATORY_MSG)
     @Column(nullable = false)
     private String photoUrl;
 

@@ -5,19 +5,20 @@ import jakarta.validation.constraints.Size;
 
 import lombok.Data;
 
+import static com.photo_contest.constants.ModelValidationConstants.*;
+
+
 @Data
 public class PhotoSubmissionDTO {
 
-    @NotBlank(message = "Title is mandatory")
-    @Size(max = 255, message = "Title must be less than 255 characters")
+    @NotBlank(message = PS_TITLE_MANDATORY_MSG)
+    @Size(max = PS_TITLE_MAX_SIZE, message = PS_TITLE_SIZE_MSG)
     private String title;
 
-    @NotBlank(message = "Story is mandatory")
-    @Size(max = 5000, message = "Story must be less than 5000 characters")
+    @NotBlank(message = PS_STORY_MANDATORY_MSG)
+    @Size(max = PS_STORY_MAX_SIZE, message = PS_STORY_SIZE_MSG)
     private String story;
 
-    @NotBlank(message = "Photo URL is mandatory")
+    @NotBlank(message = PS_PHOTO_URL_MANDATORY_MSG)
     private String photoUrl;
-
-    private Long contestId;
 }

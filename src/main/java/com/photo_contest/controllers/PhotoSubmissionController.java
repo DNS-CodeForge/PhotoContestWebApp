@@ -7,6 +7,8 @@ import com.photo_contest.models.DTO.PhotoSubmissionDTO;
 import com.photo_contest.services.contracts.PhotoSubmissionService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,7 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/photo-submission")
+@RequestMapping("/api")
 public class PhotoSubmissionController {
 
     private final PhotoSubmissionService photoSubmissionService;
@@ -27,29 +29,33 @@ public class PhotoSubmissionController {
         this.photoSubmissionService = photoSubmissionService;
     }
 
-    @PostMapping
-    //#TODO PAthVar
-    public PhotoSubmission createPhotoSubmission(@RequestBody PhotoSubmissionDTO photoSubmission) {
-        return photoSubmissionService.createPhotoSubmission(photoSubmission);
+    @PostMapping("/contest/{contestId}/submission")
+    public ResponseEntity<PhotoSubmission> createPhotoSubmission(@PathVariable Long contestId, @RequestBody PhotoSubmissionDTO photoSubmission) {
+        PhotoSubmission createdSubmission = photoSubmissionService.createPhotoSubmission(contestId, photoSubmission);
+        return new ResponseEntity<>(createdSubmission, HttpStatus.CREATED);
     }
 
-    @GetMapping("/{id}")
-    public PhotoSubmission getPhotoSubmissionById(@PathVariable Long id) {
-        return photoSubmissionService.getPhotoSubmissionById(id);
+    @GetMapping("/submission/{id}")
+    public ResponseEntity<PhotoSubmission> getPhotoSubmissionById(@PathVariable Long id) {
+        PhotoSubmission submission = photoSubmissionService.getPhotoSubmissionById(id);
+        return new ResponseEntity<>(submission, HttpStatus.OK);
     }
 
-    @GetMapping
-    public List<PhotoSubmission> getAllPhotoSubmissions() {
-        return photoSubmissionService.getAllPhotoSubmissions();
+    @GetMapping("/submission")
+    public ResponseEntity<List<PhotoSubmission>> getAllPhotoSubmissions() {
+        List<PhotoSubmission> submissions = photoSubmissionService.getAllPhotoSubmissions();
+        return new ResponseEntity<>(submissions, HttpStatus.OK);
     }
 
-    @PutMapping("/{id}")
-    public PhotoSubmission updatePhotoSubmission(@PathVariable Long id, @RequestBody PhotoSubmissionDTO photoSubmission) {
-        return photoSubmissionService.updatePhotoSubmission(id, photoSubmission);
+    @PutMapping("/submission/{id}")
+    public ResponseEntity<PhotoSubmission> updatePhotoSubmission(@PathVariable Long id, @RequestBody PhotoSubmissionDTO photoSubmission) {
+        PhotoSubmission updatedSubmission = photoSubmissionService.updatePhotoSubmission(id, photoSubmission);
+        return new ResponseEntity<>(updatedSubmission, HttpStatus.OK);
     }
 
-    @DeleteMapping("/{id}")
-    public void deletePhotoSubmission(@PathVariable Long id) {
+    @DeleteMapping("/submission/{id}")
+    public ResponseEntity<Void> deletePhotoSubmission(@PathVariable Long id) {
         photoSubmissionService.deletePhotoSubmission(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

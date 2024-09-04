@@ -2,10 +2,15 @@ package com.photo_contest.models;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
+
+import static com.photo_contest.constants.ModelValidationConstants.*;
 
 @Entity
 @Data
@@ -19,8 +24,12 @@ public class Contest {
     @EqualsAndHashCode.Include
     private Long id;
 
+    @NotBlank(message = TITLE_REQUIRED)
+    @Size(min = 6, max = 26, message = TITLE_SIZE)
     private String title;
 
+
+    @NotNull(message = CATEGORY_REQUIRED)
     @Enumerated(EnumType.STRING)
     private Category category;
 
@@ -64,7 +73,6 @@ public class Contest {
     private LocalDateTime startDate;
     private LocalDateTime endDate;
 
-
     public enum Category {
         LANDSCAPE,
         PORTRAIT,
@@ -83,6 +91,7 @@ public class Contest {
     protected void onUpdate() {
         updatedAt = LocalDateTime.now();
     }
+
     @Override
     public String toString() {
         return "Contest{id=" + id + ", title='" + title + "'}";

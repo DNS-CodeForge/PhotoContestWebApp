@@ -10,8 +10,8 @@ import java.util.Optional;
 public interface PhaseService {
     Phase createPhaseOne(Contest contest, int durationInDays);
     Phase createPhaseTwo(Contest contest, LocalDateTime startDateTime, int durationInHours);
-    void deletePhase(Long phaseId);
-    void updatePhase(Long phaseId, Phase updatedPhase);
+
+
     List<Phase> getAllPhases();
     List<Phase> getAllPhases(String phaseType);
     Optional<Phase> getPhaseById(Long phaseId);

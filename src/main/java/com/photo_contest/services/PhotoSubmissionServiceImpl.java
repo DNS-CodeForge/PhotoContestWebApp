@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.photo_contest.config.AuthContextManager;
 import com.photo_contest.exeptions.AuthorizationException;
+import com.photo_contest.exeptions.ContestPhaseViolationException;
 import com.photo_contest.models.Contest;
 import com.photo_contest.models.PhotoSubmission;
 import com.photo_contest.models.DTO.PhotoSubmissionDTO;
@@ -13,11 +14,15 @@ import com.photo_contest.repos.PhotoSubmissionRepository;
 import com.photo_contest.services.contracts.ContestService;
 import com.photo_contest.services.contracts.PhotoSubmissionService;
 
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import static com.photo_contest.constants.ModelValidationConstants.*;
+
 @Service
 public class PhotoSubmissionServiceImpl implements PhotoSubmissionService {
+
 
     private final PhotoSubmissionRepository photoSubmissionRepository;
     private final AuthContextManager authContextManager;
@@ -34,17 +39,17 @@ public class PhotoSubmissionServiceImpl implements PhotoSubmissionService {
     }
 
     @Override
-    public PhotoSubmission createPhotoSubmission(PhotoSubmissionDTO photoSubmissionDTO) {
+    public PhotoSubmission createPhotoSubmission(Long contestId, PhotoSubmissionDTO photoSubmissionDTO) {
 
-        Contest contest = contestRepository.findById(photoSubmissionDTO.getContestId()).get();
+        Contest contest = contestRepository.findById(contestId).get();
 
 
         if(!contestRepository.findAllContestsByUserProfileId(authContextManager.getId()).contains(contest)) {
-            throw new AuthorizationException("User needs to be part of the contest participants to make submissions");
+            throw new AuthorizationException(INVALID_SUBMISSION);
         }
 
-        if (contestService.getCurrentPhase(photoSubmissionDTO.getContestId()) != 1) {
-            throw new IllegalStateException("Submissions can only be made during Phase One.");
+        if (contestService.getCurrentPhase(contestId) != 1) {
+            throw new ContestPhaseViolationException(PH_ONE_SUBMISSION);
         }
 
         PhotoSubmission photoSubmission = new PhotoSubmission();
@@ -61,7 +66,7 @@ public class PhotoSubmissionServiceImpl implements PhotoSubmissionService {
     @Override
     public PhotoSubmission getPhotoSubmissionById(Long id) {
         return photoSubmissionRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("PhotoSubmission not found"));
+                .orElseThrow(() -> new EntityNotFoundException(INVALID_ID.formatted("Photo Submission", id)));
     }
 
     @Override
@@ -82,7 +87,7 @@ public class PhotoSubmissionServiceImpl implements PhotoSubmissionService {
     @Override
     public void deletePhotoSubmission(Long id) {
         if (!photoSubmissionRepository.existsById(id)) {
-            throw new RuntimeException("PhotoSubmission not found");
+            throw new EntityNotFoundException(INVALID_ID.formatted("Photo Submission", id));
         }
         photoSubmissionRepository.deleteById(id);
     }

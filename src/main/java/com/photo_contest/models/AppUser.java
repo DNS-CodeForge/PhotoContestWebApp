@@ -3,7 +3,6 @@ package com.photo_contest.models;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
-
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -11,9 +10,10 @@ import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-
 import java.util.Collection;
 import java.util.Set;
+
+import static com.photo_contest.constants.ModelValidationConstants.*;
 
 
 @Entity
@@ -28,28 +28,24 @@ public class AppUser implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank(message = "Username is mandatory")
-    @Size(min = 4, message = "Username must be at least 4 characters long")
+    @NotBlank(message = USERNAME_MANDATORY)
+    @Size(min = 4, message = USERNAME_SIZE_MESSAGE)
     @Column(unique = true, nullable = false)
     private String username;
 
-    @NotBlank(message = "Password is mandatory")
-    @Size(min = 6, message = "Password must be at least 6 characters long")
+    @NotBlank(message = PASSWORD_MANDATORY)
+    @Size(min = 6, message = PASSWORD_SIZE_MESSAGE)
     private String password;
 
-    @NotBlank(message = "Email is mandatory")
-    @Email(message = "Email should be valid")
+    @NotBlank(message = EMAIL_MANDATORY)
+    @Email(message = EMAIL_VALIDATION_MESSAGE)
     @Column(unique = true, nullable = false)
     private String email;
-
-
 
     @OneToOne(mappedBy = "appUser", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonManagedReference
     @JsonIgnore
     private UserProfile userProfile;
-
-
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
@@ -76,5 +72,4 @@ public class AppUser implements UserDetails {
                 ", email='" + email + '\'' +
                 '}';
     }
-
 }
