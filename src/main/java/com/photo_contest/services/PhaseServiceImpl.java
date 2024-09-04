@@ -1,9 +1,11 @@
 package com.photo_contest.services;
 
+import com.photo_contest.controllers.ContestController;
 import com.photo_contest.models.Contest;
 import com.photo_contest.models.Phase;
 import com.photo_contest.repos.PhaseRepository;
 import com.photo_contest.services.contracts.PhaseService;
+import com.photo_contest.utils.ContestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.Async;
@@ -27,8 +29,11 @@ public class PhaseServiceImpl implements PhaseService {
     private static final String DAILY_CHECK_CRON = "0 0 " + DAILY_CHECK_HOUR + " * * ?";
 
 
+
     public static final int HOURLY_CHECK_INTERVAL = 1;
     private static final String HOURLY_CHECK_CRON = "0 0 0/" + HOURLY_CHECK_INTERVAL + " * * ?";
+           // "0 0/2 * * * ?";
+
 
     private static final int AVAILABLE_PROCESSORS = Runtime.getRuntime().availableProcessors();
     private static final int CORE_POOL_SIZE = AVAILABLE_PROCESSORS;
@@ -37,10 +42,13 @@ public class PhaseServiceImpl implements PhaseService {
     private static final String THREAD_NAME_PREFIX = "PhaseCheck-";
 
     private final PhaseRepository phaseRepository;
+    private final ContestUtils contestUtils;
 
     @Autowired
-    public PhaseServiceImpl(PhaseRepository phaseRepository) {
+    public PhaseServiceImpl(PhaseRepository phaseRepository, ContestUtils contestUtils) {
         this.phaseRepository = phaseRepository;
+        this.contestUtils = contestUtils;
+
     }
 
     @Override
@@ -125,6 +133,7 @@ public class PhaseServiceImpl implements PhaseService {
     @Async("taskExecutor")
     public void checkAndConcludePhaseTwoHourly() {
         CompletableFuture.runAsync(this::progressPhaseTwo).join();
+
     }
 
     @Bean
@@ -138,14 +147,7 @@ public class PhaseServiceImpl implements PhaseService {
         return executor;
     }
 
-    private LocalDateTime calculateStartDateTime(LocalDateTime now) {
-        LocalTime phaseStartTime = LocalTime.of(DAILY_CHECK_HOUR, 0);
-        if (now.toLocalTime().isBefore(phaseStartTime)) {
-            return now.with(phaseStartTime);
-        } else {
-            return now.plusDays(1).with(phaseStartTime);
-        }
-    }
+
 
     public void progressPhaseOne() {
         List<Phase> activePhases = phaseRepository.findByType(Phase.PhaseType.PHASE_ONE);
@@ -167,6 +169,8 @@ public class PhaseServiceImpl implements PhaseService {
             if (now.isAfter(phase.getEndDateTime()) && !phase.isConcluded()) {
                 phase.setConcluded(true);
                 phaseRepository.save(phase);
+                contestUtils.awardPointsForContest(phase.getContest().getId());
+
             }
         }
     }

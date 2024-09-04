@@ -42,21 +42,21 @@ public class ContestServiceImpl implements ContestService {
     private final PhaseService phaseService;
     private final UserProfileRepository userProfileRepository;
     private final RoleRepository roleRepository;
-    private final UserService userService;
+
 
     @Autowired
     public ContestServiceImpl(ContestRepository contestRepository, AuthContextManager authContextManager,
                               PhaseService phaseService, PhotoSubmissionRepository photoSubmissionRepository,
                               UserProfileRepository userProfileRepository,
-                              RoleRepository roleRepository,
-                              UserService userService) {
+                              RoleRepository roleRepository
+                              ) {
         this.contestRepository = contestRepository;
         this.authContextManager = authContextManager;
         this.phaseService = phaseService;
         this.photoSubmissionRepository = photoSubmissionRepository;
         this.userProfileRepository = userProfileRepository;
         this.roleRepository = roleRepository;
-        this.userService = userService;
+       ;
     }
 
     @Override
@@ -253,10 +253,6 @@ public class ContestServiceImpl implements ContestService {
             return 3;
     }
 
-    @Override
-    public void awardPointsForContest(Long contestId) {
-        List<RankedUserResponseDTO> finalScores = photoSubmissionRepository.getFinalScoresByContestId(contestId);
-        ContestUtils.awardPoints(finalScores, userService);
-    }
+
 
 }

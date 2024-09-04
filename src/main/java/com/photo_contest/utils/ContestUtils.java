@@ -1,13 +1,30 @@
 package com.photo_contest.utils;
 
 import com.photo_contest.models.DTO.RankedUserResponseDTO;
+import com.photo_contest.repos.PhotoSubmissionRepository;
 import com.photo_contest.services.contracts.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
-
+@Component
 public class ContestUtils {
+    private final PhotoSubmissionRepository photoSubmissionRepository;
+    private final UserService userService;
+    @Autowired
+    public ContestUtils(PhotoSubmissionRepository photoSubmissionRepository, UserService userService) {
+        this.photoSubmissionRepository = photoSubmissionRepository;
+        this.userService = userService;
+    }
+    public List<RankedUserResponseDTO> awardPointsForContest(Long contestId) {
 
-    public static void awardPoints(List<RankedUserResponseDTO> rankedUsers, UserService userService) {
+        List<RankedUserResponseDTO> finalScores = photoSubmissionRepository.getFinalScoresByContestId(contestId);
+        awardPoints(finalScores, userService);
+        return finalScores;
+    }
+
+    private void awardPoints(List<RankedUserResponseDTO> rankedUsers, UserService userService) {
+
         if (rankedUsers.isEmpty()) {
             return;
         }
@@ -38,7 +55,7 @@ public class ContestUtils {
         }
     }
 
-    private static int calculatePointsForRank(RankedUserResponseDTO current, List<RankedUserResponseDTO> rankedUsers, int rank) {
+    private int calculatePointsForRank(RankedUserResponseDTO current, List<RankedUserResponseDTO> rankedUsers, int rank) {
         if (rank == 1) {
             return calculateFirstPlacePoints(current, rankedUsers);
         } else if (rank == 2) {
@@ -50,7 +67,7 @@ public class ContestUtils {
         }
     }
 
-    private static int calculateFirstPlacePoints(RankedUserResponseDTO current, List<RankedUserResponseDTO> rankedUsers) {
+    private int calculateFirstPlacePoints(RankedUserResponseDTO current, List<RankedUserResponseDTO> rankedUsers) {
         if (rankedUsers.size() > 1 && current.getPoints() >= 2 * rankedUsers.get(1).getPoints()) {
             return 75;
         } else {

@@ -8,6 +8,7 @@ import com.photo_contest.models.DTO.RankedUserResponseDTO;
 import com.photo_contest.repos.PhotoSubmissionRepository;
 import com.photo_contest.services.contracts.ContestService;
 
+import com.photo_contest.utils.ContestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,12 +22,14 @@ import org.springframework.web.bind.annotation.RestController;
 public class ContestController {
 
     private final ContestService contestService;
-    private final PhotoSubmissionRepository photoSubmissionRepository;
+
+    private final ContestUtils contestUtils;
 
     @Autowired
-    public ContestController(ContestService contestService, PhotoSubmissionRepository photoSubmissionRepository) {
+    public ContestController(ContestService contestService, ContestUtils contestUtils) {
         this.contestService = contestService;
-        this.photoSubmissionRepository = photoSubmissionRepository;
+
+        this.contestUtils = contestUtils;
     }
 
     @PostMapping
@@ -52,8 +55,8 @@ public class ContestController {
         A Test endpoint to trigger the awarding of points for a contest without the scheduled task.
         DD
     */
-        contestService.awardPointsForContest(id);
-        return photoSubmissionRepository.getFinalScoresByContestId(id);
+
+        return contestUtils.awardPointsForContest(id);
 
     }
 
