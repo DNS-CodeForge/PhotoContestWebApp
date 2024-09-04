@@ -87,7 +87,7 @@ public class UserServiceImpl implements UserService {
         AppUser user = userRepository.findById((long) userId)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with ID: " + userId));
 
-        if (user.getUserProfile().getRank() != UserProfile.Rank.ORGANIZER){
+        if (user.getUserProfile().getRank().equals(UserProfile.Rank.ORGANIZER)){
             return;
         }
         UserProfile userProfile = user.getUserProfile();
