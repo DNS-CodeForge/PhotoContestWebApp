@@ -1,5 +1,7 @@
 package com.photo_contest.controllers;
 
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import com.photo_contest.models.Contest;
@@ -10,15 +12,17 @@ import com.photo_contest.services.contracts.ContestService;
 import com.photo_contest.services.contracts.UserService;
 import com.photo_contest.utils.ContestUtils;
 
+import com.photo_contest.utils.CustomResponse;
+import com.photo_contest.utils.ResponseUtil;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import static com.photo_contest.constants.ModelValidationConstants.*;
 
@@ -47,9 +51,27 @@ public class ContestController {
 
 
     @GetMapping
-    public ResponseEntity<List<Contest>> getAllContests() {
-        List<Contest> contests = contestService.getAllContest();
-        return new ResponseEntity<>(contests, HttpStatus.OK);
+    public ResponseEntity<CustomResponse> getAllContests(
+            @RequestParam(required = false) String title,
+            @RequestParam(required = false) String category,
+            @RequestParam(required = false) Boolean isPrivate,
+            @RequestParam(required = false) Boolean active,
+            @RequestParam(required = false) Boolean activeSubmission,
+            @RequestParam(required = false) String sort,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            HttpServletRequest request
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+
+        Page<Contest> contestPage = contestService.getContests(title, category, isPrivate, active, activeSubmission, sort, pageable);
+
+        UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(request.getRequestURL().toString())
+                .query(request.getQueryString());
+
+        CustomResponse response = ResponseUtil.buildPaginatedContestResponse(contestPage, uriBuilder);
+
+        return ResponseEntity.ok(response);
     }
 
 

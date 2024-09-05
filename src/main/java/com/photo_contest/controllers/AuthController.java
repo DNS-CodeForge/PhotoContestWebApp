@@ -22,7 +22,7 @@ public class AuthController {
         this.authService = authService;
     }
 
-    // Registration - return 201 Created
+
     @PostMapping("/register")
     public ResponseEntity<AppUser> registerUser(@RequestBody RegistrationDTO registrationDTO) {
         AppUser registeredUser = authService.registerUser(registrationDTO);

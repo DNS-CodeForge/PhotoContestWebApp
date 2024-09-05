@@ -12,6 +12,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 import com.photo_contest.exeptions.AuthorizationException;
+import com.photo_contest.filterSpec.ContestFilterSpecification;
 import jakarta.persistence.EntityExistsException;
 
 import com.photo_contest.config.AuthContextManager;
@@ -31,6 +32,9 @@ import com.photo_contest.utils.ContestUtils;
 
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 
@@ -117,8 +121,13 @@ public class ContestServiceImpl implements ContestService {
     }
 
     @Override
-    public List<Contest> getAllContest() {
-        return contestRepository.findAll();
+    public Page<Contest> getContests(String title, String category, Boolean isPrivate,Boolean active, Boolean activeSubmission, String sort, Pageable pageable) {
+
+        Specification<Contest> spec = ContestFilterSpecification.withFiltersAndSort(title, category, isPrivate,
+                active, activeSubmission, sort);
+
+
+        return contestRepository.findAll(spec, pageable);
     }
 
     @Override

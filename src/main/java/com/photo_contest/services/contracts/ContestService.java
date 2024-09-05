@@ -6,18 +6,21 @@ import java.util.Optional;
 import com.photo_contest.models.Contest;
 import com.photo_contest.models.DTO.CreateContestDTO;
 import com.photo_contest.models.DTO.RankedUserResponseDTO;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface ContestService {
-    public Contest createContest(CreateContestDTO createContestDTO);
-    public void deleteContest(Long contestId);
-    public Optional<Contest> getContestByTitle(String title);
-    public Contest updateContest(Long contestId, CreateContestDTO updateContestDTO);
-    public List<Contest> getAllContest();
-    public Optional<Contest> getContestById(Long contestId);
+     Contest createContest(CreateContestDTO createContestDTO);
+     void deleteContest(Long contestId);
+     Optional<Contest> getContestByTitle(String title);
+     Contest updateContest(Long contestId, CreateContestDTO updateContestDTO);
+    Page<Contest> getContests(String title, String category, Boolean isPrivate,Boolean active,
+                              Boolean activeSubmission, String sort, Pageable pageable);
+     Optional<Contest> getContestById(Long contestId);
     Contest saveContest(Contest contest);
     List<RankedUserResponseDTO> getCurrentRanking(int contestId);
-    public void joinContest(Long contestId, Long userId);
-    public List<Long> inviteParticipants(Long contestId, List<Long> userIds);
-    public List<Long> inviteJudges(Long contestId, List<Long> userId);
-    public int getCurrentPhase(Long contestId);
+     void joinContest(Long contestId, Long userId);
+     List<Long> inviteParticipants(Long contestId, List<Long> userIds);
+     List<Long> inviteJudges(Long contestId, List<Long> userId);
+     int getCurrentPhase(Long contestId);
 }
