@@ -25,7 +25,7 @@ public class Contest {
     private Long id;
 
     @NotBlank(message = TITLE_REQUIRED)
-    @Size(min = 6, max = 26, message = TITLE_SIZE)
+    @Size(min = 6, max = 50, message = TITLE_SIZE)
     private String title;
 
 

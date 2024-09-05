@@ -15,7 +15,7 @@ import static com.photo_contest.constants.ModelValidationConstants.*;
 public class CreateContestDTO {
 
     @NotBlank(message = TITLE_REQUIRED)
-    @Size(min = 6, max = 26, message = TITLE_SIZE)
+    @Size(min = 6, max = 50, message = TITLE_SIZE)
     private String title;
 
     @NotNull(message = CATEGORY_REQUIRED)
