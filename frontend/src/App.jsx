@@ -1,27 +1,26 @@
 import { useState, useEffect } from 'react';
 
-const BACKEND_BASE_URL = import.meta.env.VITE_BACKEND_URL; // Ensure this is correctly set in .env
+const BACKEND_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
 function App() {
-  const [contests, setContests] = useState([]); // Store contest data
-  const [loading, setLoading] = useState(true); // Loading state to indicate data is being fetched
-  const [error, setError] = useState(null); // Error state for any issues
+  const [contests, setContests] = useState([]);
+  const [loading, setLoading] = useState(true); 
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchContests = async () => {
       try {
-        const response = await fetch(`${BACKEND_BASE_URL}api/contest`); // Ensure correct URL
+        const response = await fetch(`${BACKEND_BASE_URL}api/contest`); 
         if (!response.ok) {
           throw new Error('Failed to fetch contests');
         }
-        const data = await response.json();
+        const responseJson = await response.json();
         
-        // Assuming the API response structure is { data: [...] }
-        setContests(Array.isArray(data.data.contests) ? data.data.contests : []); // Ensure contests is an array
+        setContests(Array.isArray(responseJson.data.contests) ? responseJson.data.contests : []);
       } catch (error) {
-        setError(error.message); // Handle any errors
+        setError(error.message);
       } finally {
-        setLoading(false); // Stop loading once data is fetched or an error occurs
+        setLoading(false);
       }
     };
 
