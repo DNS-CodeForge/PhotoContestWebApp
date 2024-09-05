@@ -1,0 +1,4 @@
+<!-- Make this a .env to ensure your app functions as intended  -->
+<!-- DD -->
+
+VITE_BACKEND_URL= <!-- Backend URL -->

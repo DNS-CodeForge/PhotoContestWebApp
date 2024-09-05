@@ -1,4 +1,6 @@
 import { useState, useEffect } from 'react';
+import Modal from './components/Modal';
+import './App.css';
 
 const BACKEND_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
@@ -6,6 +8,7 @@ function App() {
   const [contests, setContests] = useState([]);
   const [loading, setLoading] = useState(true); 
   const [error, setError] = useState(null);
+  const [isModalOpen, setModalOpen] = useState(false);
 
   useEffect(() => {
     const fetchContests = async () => {
@@ -36,24 +39,35 @@ function App() {
   }
 
   if (contests.length === 0) {
-    console.log(contests)
     return <div>No contests available at the moment.</div>;
-
   }
-  
-  
 
+  const openModal = () => {
+    setModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setModalOpen(false);
+  };
+  
   return (
     <div>
-      <h2>Contests</h2>
-      <ul>
-        {contests.map((contest) => (
-          <li key={contest.id}>
-            <strong>Title:</strong> {contest.title} <br />
-            <strong>Category:</strong> {contest.category}
-          </li>
-        ))}
-      </ul>
+      <button className="open-modal-btn" onClick={openModal}>Show Posts</button>
+
+      {isModalOpen && (
+        <Modal onClose={closeModal}>
+          <h2>Contests</h2>
+          <ul style={{ listStyle: 'none' }}>
+            {contests.map((contest) => (
+              <li key={contest.id}>
+                <strong>Title:</strong> {contest.title} <br />
+                <strong>Category:</strong> {contest.category}
+              </li>
+            ))}
+          </ul>
+          <button className="close-modal-btn" onClick={closeModal}>Close</button>
+        </Modal>
+      )}
     </div>
   );
 }
