@@ -71,34 +71,22 @@ public class ContestServiceImpl implements ContestService {
         if (contestRepository.findByTitle(createContestDTO.getTitle()).isPresent()) {
             throw new EntityExistsException(CONTEST_EXISTS);
         }
-
         LocalDateTime startDateTime = calculateStartDate().truncatedTo(ChronoUnit.MINUTES);
         LocalDateTime phaseOneEndDate = calculatePhaseOneEndDate(startDateTime, createContestDTO.getPhaseDurationInDays()).truncatedTo(ChronoUnit.MINUTES);
         LocalDateTime phaseTwoStartDateTime = phaseOneEndDate.plusDays(1).truncatedTo(ChronoUnit.MINUTES);
         LocalDateTime contestEndDate = calculateEndDate(phaseTwoStartDateTime, createContestDTO.getPhaseTwoDurationInHours()).truncatedTo(ChronoUnit.MINUTES);
-
-
-        Contest contest = new Contest();
-        contest.setTitle(createContestDTO.getTitle());
-        contest.setCategory(createContestDTO.getCategory());
-        contest.setStartDate(startDateTime);
-        contest.setEndDate(contestEndDate);
-        UserProfile organizer = authContextManager.getLoggedInUser();
-        contest.setOrganizer(organizer);
-        contest.setJury(List.of(organizer));
-        contest.setParticipants(List.of());
-        contest.setPhotoSubmissions(List.of());
-
+// TODO: Refactor
+        Contest contest = createNewContest(createContestDTO, startDateTime, contestEndDate);
         Contest savedContest = contestRepository.save(contest);
-
 
         Phase phaseOne = phaseService.createPhaseOne(savedContest, createContestDTO.getPhaseDurationInDays());
         Phase phaseTwo = phaseService.createPhaseTwo(savedContest, phaseTwoStartDateTime, createContestDTO.getPhaseTwoDurationInHours());
-
-
         savedContest.setPhases(List.of(phaseOne, phaseTwo));
+
         return contestRepository.save(savedContest);
     }
+
+
 
 
     @Override
@@ -196,6 +184,7 @@ public class ContestServiceImpl implements ContestService {
         Contest contest = contestRepository.findById(contestId)
                 .orElseThrow(() -> new EntityNotFoundException(INVALID_ID.formatted("Contest", contestId)));
 
+
         if (!Objects.equals(contest.getOrganizer().getId(), authContextManager.getLoggedInUser().getId())) {
             throw new AuthorizationException(NOT_ORGANIZER.formatted("participants"));
         }
@@ -290,6 +279,18 @@ public class ContestServiceImpl implements ContestService {
             return 3;
     }
 
-
+    private Contest createNewContest(CreateContestDTO createContestDTO, LocalDateTime startDateTime, LocalDateTime contestEndDate) {
+        Contest contest = new Contest();
+        contest.setTitle(createContestDTO.getTitle());
+        contest.setCategory(createContestDTO.getCategory());
+        contest.setStartDate(startDateTime);
+        contest.setEndDate(contestEndDate);
+        UserProfile organizer = authContextManager.getLoggedInUser();
+        contest.setOrganizer(organizer);
+        contest.setJury(List.of(organizer));
+        contest.setParticipants(List.of());
+        contest.setPhotoSubmissions(List.of());
+        return contest;
+    }
 
 }
