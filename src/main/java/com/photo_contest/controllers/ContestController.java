@@ -1,7 +1,4 @@
 package com.photo_contest.controllers;
-
-import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 
 import com.photo_contest.models.Contest;
@@ -37,7 +34,7 @@ public class ContestController {
     private final ContestUtils contestUtils;
 
     @Autowired
-    public ContestController(ContestService contestService, ContestUtils contestUtils, UserRepository userRepository, UserService userService) {
+    public ContestController(ContestService contestService, ContestUtils contestUtils) {
         this.contestService = contestService;
         this.contestUtils = contestUtils;
     }
