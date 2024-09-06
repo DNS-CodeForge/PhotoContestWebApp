@@ -1,0 +1,45 @@
+@import "../styles/base.css";
+.body {
+    background-color: #e7e7e7;
+}
+
+#main-navigation {
+    background-color: #390281;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+}
+
+.allContests {
+    margin: 1rem auto;
+    max-width: 100vw;
+}
+
+.contestGrid {
+    list-style: none;
+    margin: 0 auto;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(17rem, 3fr));
+    gap: 1.5rem;
+    width: 95%;
+}
+
+.allContests h2 {
+    text-align: center;
+    font-size: 2rem;
+    color: var(--white-color);
+    margin: 1rem 0;
+}
+
+
+
+
+
+
+.allContests a {
+    height: 25rem;
+    aspect-ratio: auto;
+    transform-origin: center;
+    box-shadow: 0 2px 8px rgba(0, 173, 181, 0.1);
+    border-radius: 12px;
+    background-color: var(--gray-color);
+}

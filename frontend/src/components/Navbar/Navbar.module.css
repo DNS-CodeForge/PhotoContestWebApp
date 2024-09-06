@@ -1,1 +1,18 @@
 @import "../../styles/base.css";
+.navbar {
+
+    background-color: #393E46FF;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 15px;
+    backdrop-filter: blur(10px);
+    width: 95vw !important;
+    left: 5vh !important;
+    right: 5vh !important;
+
+}
+
+.navbarSpacer {
+    height: 64px;
+    width: 100%;
+    visibility: hidden;
+}

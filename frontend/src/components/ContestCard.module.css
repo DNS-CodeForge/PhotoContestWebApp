@@ -1,0 +1,85 @@
+@import "../styles/base.css";
+
+.contest {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    width: 100%;
+    max-width: 18rem;
+}
+
+.link {
+    text-decoration: none;
+    color: var(--white-color);
+    transition: all 0.2s ease;
+    padding: 1rem;
+    display: block;
+    width: 100%;
+    text-align: center;
+}
+
+.contest a:hover,
+.contest a:active {
+    transform: scale(1.1);
+    background-color: rgba(0, 173, 181, 0.1);
+    color: white;
+}
+
+.contest img {
+    width: 7rem;
+    height: 7rem;
+    object-fit: cover;
+    border-radius: 50%;
+    margin-bottom: 0.5rem;
+}
+
+.title {
+    margin: 0.25rem 0;
+}
+
+.container {
+    width: 100%;
+    max-width: 15rem;
+    text-align: center;
+}
+
+.submissionPeriod {
+    margin-bottom: 1rem;
+}
+
+.label {
+    font-weight: bold;
+    color: var(--white-color);
+    margin-bottom: 0;
+
+    .dates {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .dateRange {
+        margin-bottom: 0.5rem;
+    }
+
+
+    .time {
+        color: var(--white-color);
+        font-style: italic;
+        font-size: 0.85rem;
+    }
+
+    .time span {
+        font-family: 'SpecialFont', sans-serif;
+        font-weight: normal;
+    }
+
+
+    .contest:hover .time,
+    .contest:active .time {
+        color: white;
+    }
+
+}
+
