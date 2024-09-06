@@ -71,6 +71,7 @@ public class Contest {
     private LocalDateTime updatedAt;
 
     private LocalDateTime startDate;
+    private LocalDateTime SubmissionEndDate;
     private LocalDateTime endDate;
 
     public enum Category {

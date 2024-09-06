@@ -73,6 +73,7 @@ CREATE TABLE IF NOT EXISTS contest
     created_at   TIMESTAMP,
     updated_at   TIMESTAMP,
     start_date   TIMESTAMP,
+    submission_end_date   TIMESTAMP,
     end_date     TIMESTAMP
     );
 

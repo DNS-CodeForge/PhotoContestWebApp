@@ -76,7 +76,7 @@ public class ContestServiceImpl implements ContestService {
         LocalDateTime phaseTwoStartDateTime = phaseOneEndDate.plusDays(1).truncatedTo(ChronoUnit.MINUTES);
         LocalDateTime contestEndDate = calculateEndDate(phaseTwoStartDateTime, createContestDTO.getPhaseTwoDurationInHours()).truncatedTo(ChronoUnit.MINUTES);
 // TODO: Refactor
-        Contest contest = createNewContest(createContestDTO, startDateTime, contestEndDate);
+        Contest contest = createNewContest(createContestDTO, startDateTime, contestEndDate, phaseOneEndDate);
         Contest savedContest = contestRepository.save(contest);
 
         Phase phaseOne = phaseService.createPhaseOne(savedContest, createContestDTO.getPhaseDurationInDays());
@@ -279,12 +279,13 @@ public class ContestServiceImpl implements ContestService {
             return 3;
     }
 
-    private Contest createNewContest(CreateContestDTO createContestDTO, LocalDateTime startDateTime, LocalDateTime contestEndDate) {
+    private Contest createNewContest(CreateContestDTO createContestDTO, LocalDateTime startDateTime, LocalDateTime contestEndDate, LocalDateTime submissionEndDate) {
         Contest contest = new Contest();
         contest.setTitle(createContestDTO.getTitle());
         contest.setCategory(createContestDTO.getCategory());
         contest.setStartDate(startDateTime);
         contest.setEndDate(contestEndDate);
+        contest.setSubmissionEndDate(submissionEndDate);
         UserProfile organizer = authContextManager.getLoggedInUser();
         contest.setOrganizer(organizer);
         contest.setJury(List.of(organizer));
