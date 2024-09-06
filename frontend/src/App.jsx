@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import Modal from './components/Modal';
+import Modal from './components/Modal/Modal';
 import './App.css';
 
 const BACKEND_BASE_URL = import.meta.env.VITE_BACKEND_URL;
