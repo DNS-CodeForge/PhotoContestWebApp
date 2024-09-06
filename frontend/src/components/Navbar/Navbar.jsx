@@ -14,7 +14,7 @@ export default function Navbar() {
 
             <AppBar
                 className={classes.navbar}
-                position="sticky"
+                position="static"
                 sx={{
                     backgroundColor: '#393E46FF',
                     boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)',
