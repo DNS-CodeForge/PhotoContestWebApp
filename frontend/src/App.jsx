@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import ContestList from './components/ContestList'; // Import the ContestList component
 import './App.css';
 
 const BACKEND_BASE_URL = import.meta.env.VITE_BACKEND_URL;
