@@ -10,7 +10,7 @@ import classes from './Navbar.module.css';
 
 export default function Navbar() {
     return (
-        <Box sx={{ flexGrow: 1, position: 'sticky', top: 0, zIndex:1000 }}>
+        <Box sx={{ position: 'sticky', top: 0, zIndex:1000}}>
 
             <AppBar
                 className={classes.navbar}
@@ -20,6 +20,9 @@ export default function Navbar() {
                     boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)',
                     borderRadius: '15px',
                     backdropFilter: "blur(10px)",
+                    width: '98%',
+                    margin: 'auto',
+                    marginTop: '1rem',
 
                     '&:hover': {
                         boxShadow: '0px 4px 6px rgba(211, 84, 36, 0.3)'

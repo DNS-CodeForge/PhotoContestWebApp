@@ -4,15 +4,13 @@ import './index.css';
 
 import App from './App';
 
-import Navbar from "./components/Navbar/Navbar.jsx";  // Import your custom theme
+import Navbar from "./components/Navbar/Navbar.jsx";  
+import Footer from './components/Footer.jsx';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
-    <React.StrictMode>
-
-
+    <>
             <Navbar/>
-
             <App />
-
-    </React.StrictMode>
+            <Footer/>
+    </>
 );
