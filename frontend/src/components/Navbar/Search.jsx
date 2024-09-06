@@ -49,7 +49,7 @@ export default function SearchBar() {
     return (
         <Search>
             <SearchIconWrapper>
-                <SearchIcon sx={{ color: focused ? '#00ADB5' : '#FFFFFF' }} />
+                <SearchIcon sx={{ color: focused ? 'rgb(211, 84, 36)' : '#FFFFFF' }} />
             </SearchIconWrapper>
             <StyledInputBase
                 placeholder={!focused ? 'Search…' : ''}

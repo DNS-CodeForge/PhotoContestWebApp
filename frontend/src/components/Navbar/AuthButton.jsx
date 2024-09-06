@@ -26,7 +26,7 @@ export default function AuthButtons() {
                         fontSize: '0.75rem',
                         transition: 'color 0.3s ease',
                         '&:hover': {
-                            color: '#00ADB5',
+                            color: 'rgb(211, 84, 36);',
                             backgroundColor: 'transparent'
                         },
                     }}
@@ -43,7 +43,7 @@ export default function AuthButtons() {
                         fontSize: '0.75rem',
                         transition: 'color 0.3s ease',
                         '&:hover': {
-                            color: '#00ADB5',
+                            color: 'rgb(211, 84, 36)',
                             backgroundColor: 'transparent'
                         },
                     }}
