@@ -40,7 +40,7 @@ function App() {
   };
 
   if (loading) {
-    return <div>Loading contests...</div>;
+    return <Box display={"flex"} justifyContent={"center"} alignItems={"center"} height={"100%"}> <CircularProgress color='gray'/> </Box>;
   }
 
   if (error) {

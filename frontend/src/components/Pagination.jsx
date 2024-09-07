@@ -4,7 +4,7 @@ import styles from './Pagination.module.css'
 
 export default function name({ count, page, onPageChange }) {
     return (
-      <Box  justifyContent={"center"} alignItems={"center"} display={"flex"} sx={{marginBottom: "1rem"}}>
+      <Box  justifyContent={"center"} alignItems={"center"} display={"flex"} sx={{marginBottom: "1rem", marginTop: '1.3rem'}}>
           <Pagination 
         count={count}
         page={page}

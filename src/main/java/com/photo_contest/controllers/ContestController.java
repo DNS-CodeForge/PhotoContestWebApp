@@ -1,34 +1,42 @@
 package com.photo_contest.controllers;
+import static com.photo_contest.constants.ModelValidationConstants.JUDGES_FAILED_INVITES;
+import static com.photo_contest.constants.ModelValidationConstants.JUDGES_INVITED_SUCCESSFULLY;
+import static com.photo_contest.constants.ModelValidationConstants.JUDGES_INVITE_FAILED;
+import static com.photo_contest.constants.ModelValidationConstants.PARTICIPANTS_FAILED_INVITES;
+import static com.photo_contest.constants.ModelValidationConstants.PARTICIPANTS_INVITED_SUCCESSFULLY;
+import static com.photo_contest.constants.ModelValidationConstants.PARTICIPANTS_INVITE_FAILED;
+
 import java.util.List;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 import com.photo_contest.models.Contest;
 import com.photo_contest.models.DTO.CreateContestDTO;
 import com.photo_contest.models.DTO.RankedUserResponseDTO;
-
 import com.photo_contest.services.contracts.ContestService;
-
 import com.photo_contest.utils.ContestUtils;
-
 import com.photo_contest.utils.CustomResponse;
 import com.photo_contest.utils.ResponseUtil;
-import jakarta.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
-
-import static com.photo_contest.constants.ModelValidationConstants.*;
 
 
 @RestController
 @RequestMapping("/api/contest")
 public class ContestController {
-
-
 
     private final ContestService contestService;
     private final ContestUtils contestUtils;
@@ -44,6 +52,16 @@ public class ContestController {
     public ResponseEntity<Contest> createContest(@RequestBody CreateContestDTO createContestDTO) {
         Contest createdContest = contestService.createContest(createContestDTO);
         return new ResponseEntity<>(createdContest, HttpStatus.CREATED);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Contest> getSingleContest(@PathVariable Long id) {
+        Contest contest = contestService.getContestById(id).get();
+        if (contest != null) {
+            return new ResponseEntity<>(contest, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 
 
@@ -73,11 +91,18 @@ public class ContestController {
 
 
     @GetMapping("/{id}/ranking")
-    public ResponseEntity<List<RankedUserResponseDTO>> getCurrentRanking(@PathVariable int id){
+    public ResponseEntity<List<RankedUserResponseDTO>> getCurrentRanking(
+    @PathVariable int id, 
+    @RequestParam(value = "limit", required = false) Integer limit) {
+
         List<RankedUserResponseDTO> ranking = contestService.getCurrentRanking(id);
+
+        if (limit != null && limit > 0 && limit < ranking.size()) {
+            ranking = ranking.subList(0, limit);
+        }
+
         return new ResponseEntity<>(ranking, HttpStatus.OK);
     }
-
 
     @PostMapping("/{id}/award-points")
     public ResponseEntity<List<RankedUserResponseDTO>> awardPoints(@PathVariable Long id) {
