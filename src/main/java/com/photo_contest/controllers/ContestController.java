@@ -56,7 +56,7 @@ public class ContestController {
             @RequestParam(required = false) Boolean activeSubmission,
             @RequestParam(required = false) String sort,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "12") int size,
             HttpServletRequest request
     ) {
         Pageable pageable = PageRequest.of(page, size);

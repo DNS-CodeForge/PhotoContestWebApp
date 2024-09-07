@@ -17,6 +17,7 @@ function App() {
           throw new Error('Failed to fetch contests');
         }
         const responseJson = await response.json();
+        console.log(responseJson.data.pagination);
         setContests(Array.isArray(responseJson.data.contests) ? responseJson.data.contests : []);
       } catch (error) {
         setError(error.message);

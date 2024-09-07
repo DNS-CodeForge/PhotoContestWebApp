@@ -12,10 +12,20 @@ html, body {
   padding: 0;
 }
 
+/*body > :first-child {*/
+/*  min-height: 100vh; !* Minimum height to cover the viewport *!*/
+/*  min-width: 100vw;  !* Minimum width to cover the viewport *!*/
+
+/*  overflow-y: auto;   !* Allow vertical scrolling inside the first child *!*/
+/*  padding-top: 1rem;*/
+
+/*}*/
+
 #root {
   margin: 0 !important;
   box-sizing: border-box;
   height: 100%;
+  padding-top: 1rem;
 }
 
 

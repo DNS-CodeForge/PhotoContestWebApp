@@ -22,7 +22,7 @@ export default function Navbar() {
                     backdropFilter: "blur(10px)",
                     width: '98%',
                     margin: 'auto',
-                    marginTop: '1rem',
+                    marginTop: '0',
 
                     '&:hover': {
                         boxShadow: '0px 4px 6px rgba(211, 84, 36, 0.3)'

@@ -1,48 +1,45 @@
+@import "../styles/base.css";
+
 .footer {
   background-color: var(--gray-color);
   color: #fff;
-  padding: 20px 0;
+  padding: 0.5rem 0;
   text-align: center;
   align-items: center;
   margin-top: auto;
+  box-shadow: 0 -2px 5px rgba(211, 84, 36, 0.1);
 }
 
 .container {
   display: flex;
   flex-direction: column;
+  justify-content: center;
   align-items: center;
+  height: 100%;
 }
 
 .copyright {
-  margin-bottom: 15px;
-  font-size: 14px;
-}
-
-.navLinks {
-  margin-bottom: 15px;
+  font-size: 1rem;
 }
 
 .navLinks .link {
-  color: #fff;
-  margin: 0 10px;
-  text-decoration: none;
-  font-size: 14px;
+  margin: 0 0.65rem;
+  line-height: 1;
 }
 
-.navLinks .link:hover {
+.link:hover {
   color: #f4b400;
 }
 
-.contact {
-  margin-top: 10px;
-}
-
-.contact .link {
-  color: #fff;
-  font-size: 14px;
+.link {
+  font-size: 0.85rem;
   text-decoration: none;
+  color: #fff;
 }
 
-.contact .link:hover {
-  color: #f4b400;
+.navLinks, .copyright, .container {
+  margin-bottom: 0.4rem;
+}
+.footerSpacer{
+  margin-top: 5rem;
 }
