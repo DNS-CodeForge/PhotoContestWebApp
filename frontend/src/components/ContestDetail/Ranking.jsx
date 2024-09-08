@@ -2,38 +2,31 @@ import * as React from 'react';
 import Box from "@mui/material/Box";
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
-import ListItemText from '@mui/material/ListItemText';
-import ListItemAvatar from '@mui/material/ListItemAvatar';
+import ListSubheader from '@mui/material/ListSubheader';
 import Typography from '@mui/material/Typography';
 
 
 export default function Ranking({rankedUsers}) {
     return (
-      <Box display={"flex"} flexDirection={"column"} alignItems={"center"} marginLeft={"1rem"}>
-      <Typography variant="h5">Current Ranking</Typography>
-      <List sx={{ width: "25vw", bgcolor: 'gray' }}>
+      <Box display={"flex"} flexDirection={"column"} alignItems={"center"} marginLeft={"1rem"} justifyContent={"flex-start"} padding={"8px"} borderRadius={"12px"} border={"solid rgba(245, 245, 245, 0.1) 0.5px"} sx={{backgroundColor:'#393E46'}}>
+      <Typography variant="h5">Current Top 5</Typography>
+        <List
+          sx={{width:"20vw"}}
+          subheader={
+            <ListSubheader component="div" id="nested-list-subheader" sx={{flexDirection: "row", display:"flex", justifyContent:'space-evenly', boxShadow:'0px 1px 0px rgba(245 ,245, 245, 0.1)' ,backgroundColor: '#393E46', color:"white"}}>
+              <Typography paddingLeft={"0.3em"}>rank</Typography>
+              <Typography marginRight={"auto"} paddingLeft={"1.7em"}>username</Typography>
+              <Typography marginLeft={"auto"}>points</Typography>
+            </ListSubheader>
+          }
+        >
         {rankedUsers.map((user, index) => (
-          <ListItem alignItems="flex-start" sx={{ padding: '0px' }} key={user.userId}>
-            <ListItemAvatar sx={{ height: '50px', alignItems: 'center', justifyContent: 'center', display: 'flex' }}>
-              <Typography variant='h4'>{index + 1}</Typography>
-            </ListItemAvatar>
-            <ListItemText
-              primary={`User ID: ${user.userId}`}
-              secondary={
-                <React.Fragment>
-                  <Typography
-                    component="span"
-                    variant="body2"
-                    sx={{ color: 'text.primary', display: 'inline' }}
-                  >
-                    Points: 
-                  </Typography>
-                  {" "}{user.points}
-                </React.Fragment>
-              }
-            />
-          </ListItem>
+        <ListItem sx={{justifyContent: 'space-between' ,boxShadow:'0px 1px 0px rgba(245, 245, 245, 0.1)'}}>
+              <Typography paddingLeft={"1em"}>{index + 1}. </Typography>
+              <Typography paddingLeft={"3em"} marginRight={"auto"}>{user.username} </Typography>
+              <Typography marginLeft={"auto"} paddingRight={"1em"}>{user.points}</Typography>
+      </ListItem>
         ))}
-      </List>
-    </Box>    );
+        </List>
+        </Box>);
 }

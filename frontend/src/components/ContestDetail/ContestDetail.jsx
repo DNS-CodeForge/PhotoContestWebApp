@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import CircularProgress from '@mui/material/CircularProgress';
-import { Box } from '@mui/material';
+import { Box, Button} from '@mui/material';
 import ContestInfo from './ContestInfo';
 import Ranking from './Ranking';
+import SubmissionsList from './SubmissionsList';
 import { useParams } from 'react-router-dom';
 
 const BACKEND_BASE_URL = import.meta.env.VITE_BACKEND_URL;
@@ -32,7 +33,6 @@ export default function ContestDetail() {
         const responseJsonUsers = await usersResponse.json();
 
         setContest(responseJsonContest);
-        console.log(responseJsonUsers)
         setRankedUsers(responseJsonUsers);
 
       } catch (error) {
@@ -54,9 +54,12 @@ export default function ContestDetail() {
     }
 
     return (
-        <Box marginTop={"1rem"} display={"flex"} justifyContent={"center"} alignItems={"center"}>
-        <ContestInfo contest={contest}/>
-        <Ranking rankedUsers={rankedUsers}/>
+        <Box display={"flex"} alignItems={"center"} flexDirection={"column"}>
+            <Box marginTop={"1rem"} display={"flex"} justifyContent={"center"} alignItems={"center"}>
+                <ContestInfo contest={contest}/>
+                <Ranking rankedUsers={rankedUsers}/>
+            </Box>
+            <SubmissionsList />
         </Box>
     );
 }
