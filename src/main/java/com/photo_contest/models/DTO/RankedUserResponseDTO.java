@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class RankedUserResponseDTO {
     private Long userId;
+    private String username;
     private Long submissionId;
     private int points;
 }
