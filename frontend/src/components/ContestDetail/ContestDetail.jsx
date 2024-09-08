@@ -3,6 +3,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import { Box } from '@mui/material';
 import ContestInfo from './ContestInfo';
 import Ranking from './Ranking';
+import { useParams } from 'react-router-dom';
 
 const BACKEND_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
@@ -12,13 +13,15 @@ export default function ContestDetail() {
    const [rankedUsers, setRankedUsers] = useState([]);
    const [loading, setLoading] = useState(true);
    const [error, setError] = useState(null);
+   const { id } = useParams(); 
 
    useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(`${BACKEND_BASE_URL}api/contest/1`);
 
-        const usersResponse = await fetch(`${BACKEND_BASE_URL}api/contest/1/ranking?limit=1`);
+        const response = await fetch(`${BACKEND_BASE_URL}api/contest/${id}`);
+
+        const usersResponse = await fetch(`${BACKEND_BASE_URL}api/contest/${id}/ranking?limit=5`);
 
         if (!response.ok) {
           throw new Error('Failed to fetch contests');
