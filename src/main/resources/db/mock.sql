@@ -666,3 +666,41 @@ INSERT INTO phase (contest_id, start_date_time, end_date_time, type, is_conclude
 SELECT c.id, now() + interval '1 hour', now() + interval '2 hour', 'PHASE_TWO', FALSE
 FROM contest c
 WHERE c.title LIKE 'Street Contest%';
+
+
+-- Insert dummy photo submissions for Landscape Contest 1
+INSERT INTO photo_submission (contest_id, creator_id, story, photo_url, title)
+SELECT c.id, u.id, 'A beautiful landscape.', CONCAT('http://example.com/landscape_photo', ROW_NUMBER() OVER (ORDER BY u.id)), CONCAT('Landscape Photo ', ROW_NUMBER() OVER (ORDER BY u.id))
+FROM contest c,
+     user_profile u
+WHERE c.title = 'Landscape Contest 1'
+  AND u.id IN (SELECT id FROM app_user WHERE username IN ('user1', 'user2', 'user3', 'user4', 'user5'))
+LIMIT 5;
+
+-- Insert 5 more dummy submissions
+INSERT INTO photo_submission (contest_id, creator_id, story, photo_url, title)
+SELECT c.id, u.id, 'Another stunning landscape.', CONCAT('http://example.com/landscape_photo_extra', ROW_NUMBER() OVER (ORDER BY u.id)), CONCAT('Landscape Extra Photo ', ROW_NUMBER() OVER (ORDER BY u.id))
+FROM contest c,
+     user_profile u
+WHERE c.title = 'Landscape Contest 1'
+  AND u.id NOT IN (SELECT id FROM app_user WHERE username IN ('user1', 'user2', 'user3', 'user4', 'user5'))
+LIMIT 5;
+
+
+-- Insert dummy photo submissions for Portrait Contest 1
+INSERT INTO photo_submission (contest_id, creator_id, story, photo_url, title)
+SELECT c.id, u.id, 'A beautiful portrait.', CONCAT('http://example.com/portrait_photo', ROW_NUMBER() OVER (ORDER BY u.id)), CONCAT('Portrait Photo ', ROW_NUMBER() OVER (ORDER BY u.id))
+FROM contest c,
+     user_profile u
+WHERE c.title = 'Portrait Contest 1'
+  AND u.id IN (SELECT id FROM app_user WHERE username IN ('user1', 'user2', 'user3', 'user4', 'user5'))
+LIMIT 5;
+
+-- Insert 5 more dummy submissions
+INSERT INTO photo_submission (contest_id, creator_id, story, photo_url, title)
+SELECT c.id, u.id, 'Another stunning portrait.', CONCAT('http://example.com/portrait_photo_extra', ROW_NUMBER() OVER (ORDER BY u.id)), CONCAT('Portrait Extra Photo ', ROW_NUMBER() OVER (ORDER BY u.id))
+FROM contest c,
+     user_profile u
+WHERE c.title = 'Portrait Contest 1'
+  AND u.id NOT IN (SELECT id FROM app_user WHERE username IN ('user1', 'user2', 'user3', 'user4', 'user5'))
+LIMIT 5;
