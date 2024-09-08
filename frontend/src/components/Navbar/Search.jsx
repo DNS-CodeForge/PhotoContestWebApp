@@ -120,11 +120,11 @@ export default function SearchBar() {
         <Search focused={focused}>
             {focused ? (
                 <SettingsIconWrapper>
-                    <ManageSearchIcon sx={{ color: 'rgb(211, 84, 36)' }} />
+                    <ManageSearchIcon sx={{ color: '#EEEEEE' }} />
                 </SettingsIconWrapper>
             ) : (
                 <SearchIconWrapper>
-                    <SearchIcon sx={{ color: 'rgb(211, 84, 36)' }} />
+                    <SearchIcon sx={{ color: '#EEEEEE' }} />
                 </SearchIconWrapper>
             )}
             <StyledInputBase
@@ -132,7 +132,7 @@ export default function SearchBar() {
                 inputProps={{ 'aria-label': 'search' }}
                 onFocus={() => setFocused(true)}
                 onBlur={() => setFocused(false)}
-                sx={{ color: '#FFFFFF' }}
+                sx={{ color: '#EEEEEE' }}
             />
         </Search>
     );

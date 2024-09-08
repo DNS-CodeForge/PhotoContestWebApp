@@ -1,6 +1,5 @@
-import React from 'react';
-import ContestCard from './ContestCard'; // Import the ContestCard component
-import classes from './ContestList.module.css'; // Import the CSS module
+import ContestCard from '../ContestCard/ContestCard.jsx';
+import classes from './ContestList.module.css';
 
 const ContestList = ({ contests }) => {
     return (
