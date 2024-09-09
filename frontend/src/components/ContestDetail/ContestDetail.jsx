@@ -16,34 +16,47 @@ export default function ContestDetail() {
    const [error, setError] = useState(null);
    const { id } = useParams();
 
-   useEffect(() => {
-    const fetchData = async () => {
-      try {
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const accessToken = localStorage.getItem('accessToken');
 
-        const response = await fetch(`${BACKEND_BASE_URL}api/contest/${id}`);
+                const response = await fetch(`${BACKEND_BASE_URL}api/contest/${id}`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${accessToken}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
 
-        const usersResponse = await fetch(`${BACKEND_BASE_URL}api/contest/${id}/ranking?limit=5`);
+                const usersResponse = await fetch(`${BACKEND_BASE_URL}api/contest/${id}/ranking?limit=5`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${accessToken}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
 
-        if (!response.ok) {
-          throw new Error('Failed to fetch contests');
-        }
-        
-        const responseJsonContest = await response.json();
+                if (!response.ok) {
+                    throw new Error('Failed to fetch contests');
+                }
 
-        const responseJsonUsers = await usersResponse.json();
+                const responseJsonContest = await response.json();
+                const responseJsonUsers = await usersResponse.json();
 
-        setContest(responseJsonContest);
-        setRankedUsers(responseJsonUsers);
+                setContest(responseJsonContest);
+                setRankedUsers(responseJsonUsers);
 
-      } catch (error) {
-        setError(error.message);
-      } finally {
-        setLoading(false);
-      }
-    };
+            } catch (error) {
+                setError(error.message);
+            } finally {
+                setLoading(false);
+            }
+        };
 
-    fetchData();
-    },[]);
+        fetchData();
+    }, [id]);
+
 
     if (loading) {
        return <Box display={"flex"} justifyContent={"center"} alignItems={"center"} height={"100%"}> <CircularProgress color='gray'/> </Box>;

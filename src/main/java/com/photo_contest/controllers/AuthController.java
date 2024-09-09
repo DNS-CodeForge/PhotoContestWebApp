@@ -12,8 +12,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.util.HashMap;
@@ -39,19 +37,17 @@ public class AuthController {
     public ResponseEntity<Map<String, String>> logInUser(@RequestBody LoginDTO loginDTO, HttpServletResponse response) {
         LoginResponseDTO loginResponse = authService.login(loginDTO.getUsername(), loginDTO.getPassword());
 
-        Cookie refreshTokenCookie = new Cookie("refreshToken", loginResponse.getRefreshToken());
-        refreshTokenCookie.setHttpOnly(true);
-        // TODO
-        refreshTokenCookie.setSecure(false);
-        refreshTokenCookie.setPath("/api/auth/refresh");
-        refreshTokenCookie.setMaxAge(7 * 24 * 60 * 60);
-        response.addCookie(refreshTokenCookie);
+        response.setHeader("Set-Cookie", bakeCookie(loginResponse));
+
+
 
         Map<String, String> responseMap = new HashMap<>();
         responseMap.put("accessToken", loginResponse.getAccessToken());
 
         return ResponseEntity.status(HttpStatus.OK).body(responseMap);
     }
+
+
 
     @PostMapping("/refresh")
     public ResponseEntity<Map<String, String>> refreshAccessToken(@CookieValue("refreshToken") String refreshToken) {
@@ -61,5 +57,13 @@ public class AuthController {
         responseMap.put("accessToken", loginResponse.getAccessToken());
 
         return ResponseEntity.status(HttpStatus.OK).body(responseMap);
+    }
+    //TODO: Implement a method to allow control over all cookie attributes
+    private static String bakeCookie(LoginResponseDTO loginResponse) {
+        return String.format(
+                "refreshToken=%s; HttpOnly; Path=/; Max-Age=%d; SameSite=None",
+                loginResponse.getRefreshToken(),
+                7 * 24 * 60 * 60
+        );
     }
 }

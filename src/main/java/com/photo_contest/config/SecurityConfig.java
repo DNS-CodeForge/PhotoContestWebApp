@@ -18,6 +18,9 @@ import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.stream.Collectors;
 
@@ -34,14 +37,28 @@ public class SecurityConfig {
         this.jwtUtil = jwtUtil;
     }
 
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration source = new CorsConfiguration();
+        source.addAllowedOrigin("http://localhost:5173");
+        source.addAllowedHeader("*");
+        source.addAllowedMethod("*");
+        source.setAllowCredentials(true);
+        UrlBasedCorsConfigurationSource configurationSource = new UrlBasedCorsConfigurationSource();
+        configurationSource.registerCorsConfiguration("/**", source);
+        return configurationSource;
+    }
+
     @Bean
     public SecurityFilterChain apiSecurityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> {
                     auth.requestMatchers("/api/auth/**").permitAll();
-                    auth.requestMatchers("/api/contest/**").permitAll();
-                    auth.requestMatchers("/api/**").permitAll();
+                    auth.requestMatchers("/api/contest").permitAll();
+                    auth.requestMatchers("/api/**").authenticated();
                     // TODO
 //                    auth.requestMatchers("/api/**").authenticated();
                 })
