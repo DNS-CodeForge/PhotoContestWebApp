@@ -8,12 +8,14 @@ import MenuIcon from '@mui/icons-material/Menu';
 import SearchBar from './Search';
 import AuthButtons from './AuthButton.jsx';
 import LoginForm from '../Forms/LoginForm';
+import RegisterForm from '../Forms/RegisterForm.jsx';
 import classes from './Navbar.module.css';
 import { useState } from 'react';
 
 export default function Navbar() {
     const navigate = useNavigate();
     const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+    const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
 
 
     const handleHomeRedirect = () => {
@@ -21,15 +23,17 @@ export default function Navbar() {
     };
 
 
-
-
     const handleLoginClick = () => {
 
         setIsLoginModalOpen(true);
     };
+    
+    const handleRegisterClick = () => {
+        setIsRegisterModalOpen(true);
+    };
 
     const handleCloseModal = () => {
-
+        setIsRegisterModalOpen(false); 
         setIsLoginModalOpen(false);
     };
 
@@ -75,13 +79,16 @@ export default function Navbar() {
                         <SearchBar />
                     </Box>
 
-                    <AuthButtons onLoginClick={handleLoginClick} />
+                    <AuthButtons onLoginClick={handleLoginClick} onRegisterClick={handleRegisterClick}/>
                 </Toolbar>
             </AppBar>
 
 
-            {isLoginModalOpen && (
+           {isLoginModalOpen && (
                 <LoginForm onClose={handleCloseModal} />
+            )}
+            {isRegisterModalOpen && (
+                <RegisterForm onClose={handleCloseModal} />
             )}
         </Box>
     );

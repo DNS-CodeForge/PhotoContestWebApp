@@ -4,7 +4,7 @@ import ButtonGroup from '@mui/material/ButtonGroup';
 import Box from '@mui/material/Box';
 import Divider from '@mui/material/Divider';
 
-export default function AuthButtons({ onLoginClick }) {
+export default function AuthButtons({ onLoginClick, onRegisterClick }) {
     return (
         <Box
             sx={{
@@ -48,6 +48,7 @@ export default function AuthButtons({ onLoginClick }) {
                             backgroundColor: 'transparent',
                         },
                     }}
+                    onClick={onRegisterClick} 
                 >
                     REGISTER
                 </Button>

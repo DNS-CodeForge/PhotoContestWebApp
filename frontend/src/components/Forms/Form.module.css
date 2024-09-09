@@ -1,4 +1,5 @@
 @import url(../../styles/base.css);
+
 p {
     color: white;
 }
@@ -6,7 +7,8 @@ p {
 a {
     color: orange;
 }
-.login-box {
+
+.form-box {
   position: absolute;
   top: 50%;
   left: 50%;
@@ -21,7 +23,7 @@ a {
   border-radius: 10px;
 }
 
-.login-box p:first-child {
+.form-box p:first-child {
   margin: 0 0 30px;
   padding: 0;
   color: #fff;
@@ -31,11 +33,11 @@ a {
   letter-spacing: 1px;
 }
 
-.login-box .user-box {
+.form-box .user-box {
   position: relative;
 }
 
-.login-box .user-box input {
+.form-box .user-box input {
   width: 100%;
   padding: 10px 0;
   font-size: 16px;
@@ -47,7 +49,7 @@ a {
   background: transparent;
 }
 
-.login-box .user-box label {
+.form-box .user-box label {
   position: absolute;
   top: 0;
   left: 0;
@@ -58,17 +60,16 @@ a {
   transition: .5s;
 }
 
-.login-box .user-box input:focus ~ label,
-.login-box .user-box input:valid ~ label {
+.form-box .user-box input:focus ~ label,
+.form-box .user-box input:valid ~ label {
   top: -20px;
   left: 0;
   color: #fff;
   font-size: 12px;
 }
 
-
 /* Button animation */
-.login-box form button {
+.form-box form button {
   position: relative;
   display: inline-block;
   padding: 10px 20px;
@@ -86,18 +87,18 @@ a {
   cursor: pointer;
 }
 
-.login-box form button:hover {
+.form-box form button:hover {
   background: #FFA500; /* Orange background on hover */
   color: #272727;
   border-radius: 5px;
 }
 
-.login-box button span {
+.form-box button span {
   position: absolute;
   display: block;
 }
 
-.login-box button span:nth-child(1) {
+.form-box button span:nth-child(1) {
   top: 0;
   left: -100%;
   width: 100%;
@@ -116,7 +117,7 @@ a {
   }
 }
 
-.login-box button span:nth-child(2) {
+.form-box button span:nth-child(2) {
   top: -100%;
   right: 0;
   width: 2px;
@@ -136,7 +137,7 @@ a {
   }
 }
 
-.login-box button span:nth-child(3) {
+.form-box button span:nth-child(3) {
   bottom: 0;
   right: -100%;
   width: 100%;
@@ -156,7 +157,7 @@ a {
   }
 }
 
-.login-box button span:nth-child(4) {
+.form-box button span:nth-child(4) {
   bottom: -100%;
   left: 0;
   width: 2px;
@@ -176,7 +177,6 @@ a {
   }
 }
 
-
 /* Autofill for Chrome, Safari, and other WebKit-based browsers */
 input:-webkit-autofill {
   background-color: transparent !important;
@@ -184,6 +184,7 @@ input:-webkit-autofill {
   border-bottom: 1px solid #fff !important;
   transition: background-color 5000s ease-in-out 0s;
 }
+
 /* Autofill for Firefox */
 input:-moz-autofill {
   background-color: transparent !important;
@@ -197,3 +198,4 @@ input:-ms-autofill {
   color: #fff !important;
   border-bottom: 1px solid #fff !important;
 }
+

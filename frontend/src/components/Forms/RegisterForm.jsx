@@ -1,52 +1,56 @@
-import { useState } from 'react';
+import { useState} from 'react';
 import { Form } from 'react-router-dom';
 import Modal from '../Modal/Modal';
 import classes from './Form.module.css';
 const BACKEND_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
-function LoginForm({ onClose }) {
+function RegisterForm({ onClose }) {
     const [errorMessage, setErrorMessage] = useState(null);
 
     const handleSubmit = async (event) => {
         event.preventDefault();
 
         const formData = new FormData(event.target);
-        const loginDTO = {
+        const registerDTO = {
             username: formData.get('username'),
             password: formData.get('password'),
+            email: formData.get('email'),
         };
 
         try {
-            const response = await fetch(`${BACKEND_BASE_URL}api/auth/login`, {
+            const response = await fetch(`${BACKEND_BASE_URL}api/auth/register`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(loginDTO),
+                body: JSON.stringify(registerDTO),
                 credentials: 'include',
             });
 
             if (response.ok) {
-                const data = await response.json();
-                if (data.accessToken) {
-                    localStorage.setItem('accessToken', data.accessToken);
-                    onClose();
-                } else {
-                    setErrorMessage('Login failed: Token not received.');
-                }
+                setIsSuccess(true);
+                onClose(); 
             } else {
-                setErrorMessage('Invalid username or password.');
+                const errorData = await response.json();
+                setErrorMessage(errorData.message || 'Registration failed');
+                setIsSuccess(false); 
             }
         } catch (error) {
             setErrorMessage(error.message);
         }
     };
 
-    return (
+ return (
  <Modal onClose={onClose}>
       <div className={classes['form-box']}>
-        <p>Login</p>
+        <p>Register</p>
         <Form method="post" onSubmit={handleSubmit}>
+
+         <div className={classes['user-box']}>
+            <input name="email" type="text" required />
+            <label>Email</label>
+          </div>
+
           <div className={classes['user-box']}>
             <input name="username" type="text" required />
             <label>Username</label>
@@ -55,6 +59,7 @@ function LoginForm({ onClose }) {
             <input name="password" type="password" required />
             <label>Password</label>
           </div>
+
           <button type="submit" className={classes['animated-button']}>
             <span></span>
             <span></span>
@@ -65,13 +70,14 @@ function LoginForm({ onClose }) {
         </Form>
         {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
         <p>
-          Don't have an account?{' '}
+          Have an account?{' '}
           <a href="#" className={classes['a2']}>
-            Sign up!
+            Sign in!
           </a>
         </p>
       </div>
-    </Modal>       );
+    </Modal>       
+    );
 }
 
-export default LoginForm;
+export default RegisterForm;
