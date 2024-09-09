@@ -7,13 +7,30 @@ import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
 import SearchBar from './Search';
 import AuthButtons from './AuthButton.jsx';
+import LoginForm from '../Forms/LoginForm';
 import classes from './Navbar.module.css';
+import { useState } from 'react';
 
 export default function Navbar() {
     const navigate = useNavigate();
+    const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+
 
     const handleHomeRedirect = () => {
         navigate('/');
+    };
+
+
+
+
+    const handleLoginClick = () => {
+
+        setIsLoginModalOpen(true);
+    };
+
+    const handleCloseModal = () => {
+
+        setIsLoginModalOpen(false);
     };
 
     return (
@@ -30,7 +47,7 @@ export default function Navbar() {
                     margin: 'auto',
                     marginTop: '0',
                     '&:hover': {
-                        boxShadow: '0px 4px 6px rgba(211, 84, 36, 0.3)'
+                        boxShadow: '0px 4px 6px rgba(211, 84, 36, 0.3)',
                     },
                 }}
             >
@@ -57,9 +74,15 @@ export default function Navbar() {
                     <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'center' }}>
                         <SearchBar />
                     </Box>
-                    <AuthButtons />
+
+                    <AuthButtons onLoginClick={handleLoginClick} />
                 </Toolbar>
             </AppBar>
+
+
+            {isLoginModalOpen && (
+                <LoginForm onClose={handleCloseModal} />
+            )}
         </Box>
     );
 }

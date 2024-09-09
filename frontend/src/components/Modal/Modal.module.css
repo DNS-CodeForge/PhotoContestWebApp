@@ -1,6 +1,6 @@
 @import url(../../styles/base.css);
 
-.background {
+.backdrop {
     position: fixed;
     top: 0;
     left: 0;
@@ -8,22 +8,18 @@
     height: 100vh;
     background-color: rgba(0, 0, 0, 0.6);
     z-index: 1;
-    display: flex;
-    justify-content: center;
-    align-items: center;
 }
 
 .modal {
-    position: relative;
     border: none;
     border-radius: 6px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-    padding: 20px;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: var(--box-shadow);
+    padding: 1rem 2rem;
+    overflow: hidden;
+    z-index: 1;
     background-color: var(--base-gray);
-    max-width: 500px;
-    width: 90%; 
-    z-index: 10;
-    color: var(--white-color);
 }
-
-

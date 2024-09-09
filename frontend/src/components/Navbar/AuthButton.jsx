@@ -4,7 +4,7 @@ import ButtonGroup from '@mui/material/ButtonGroup';
 import Box from '@mui/material/Box';
 import Divider from '@mui/material/Divider';
 
-export default function AuthButtons() {
+export default function AuthButtons({ onLoginClick }) {
     return (
         <Box
             sx={{
@@ -26,10 +26,11 @@ export default function AuthButtons() {
                         fontSize: '0.75rem',
                         transition: 'color 0.3s ease',
                         '&:hover': {
-                            color: 'rgb(211, 84, 36);',
-                            backgroundColor: 'transparent'
+                            color: 'rgb(211, 84, 36)',
+                            backgroundColor: 'transparent',
                         },
                     }}
+                    onClick={onLoginClick}
                 >
                     LOGIN
                 </Button>
@@ -44,7 +45,7 @@ export default function AuthButtons() {
                         transition: 'color 0.3s ease',
                         '&:hover': {
                             color: 'rgb(211, 84, 36)',
-                            backgroundColor: 'transparent'
+                            backgroundColor: 'transparent',
                         },
                     }}
                 >
