@@ -11,15 +11,10 @@
 }
 
 .modal {
-    border: none;
-    border-radius: 6px;
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    box-shadow: var(--box-shadow);
-    padding: 1rem 2rem;
-    overflow: hidden;
-    z-index: 1;
-    background-color: var(--base-gray);
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 2; /* Make sure modal content is above the backdrop */
+  border: none; 
 }

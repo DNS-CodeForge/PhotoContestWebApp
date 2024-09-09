@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Form } from 'react-router-dom';
 import Modal from '../Modal/Modal';
+import classes from './LoginForm.module.css';
 const BACKEND_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
 function LoginForm({ onClose }) {
@@ -42,23 +43,35 @@ function LoginForm({ onClose }) {
     };
 
     return (
-        <Modal onClose={onClose}>
-            <h2>Login</h2>
-            <Form method="post" onSubmit={handleSubmit}>
-                <label>
-                    Username:
-                    <input type="text" name="username" required />
-                </label>
-                <br />
-                <label>
-                    Password:
-                    <input type="password" name="password" required />
-                </label>
-                <br />
-                <button type="submit">Login</button>
-            </Form>
-            {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
-        </Modal>
+      <Modal onClose={onClose}>
+      <div className={classes['login-box']}>
+        <p>Login</p>
+        <Form method="post" onSubmit={handleSubmit}>
+          <div className={classes['user-box']}>
+            <input name="username" type="text" required />
+            <label>Email</label>
+          </div>
+          <div className={classes['user-box']}>
+            <input name="password" type="password" required />
+            <label>Password</label>
+          </div>
+         <button type="submit" className={classes['animated-button']}>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        Submit
+      </button>        
+        </Form>
+        {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
+        <p>
+          Don't have an account?{' '}
+          <a href="#" className={classes['a2']}>
+            Sign up!
+          </a>
+        </p>
+      </div>
+    </Modal>   
     );
 }
 
