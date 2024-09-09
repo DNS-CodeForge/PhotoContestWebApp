@@ -580,19 +580,31 @@ FROM photo_submission p
 WHERE p.contest_id = (SELECT id FROM contest WHERE title = 'Portrait Contest')
   AND p.creator_id = (SELECT id FROM app_user WHERE username = 'user4');
 
--- Insert 10 Landscape Dummy Contests
+-- Insert 10 Mixed Landscape, Portrait, Street, Wildlife, and Abstract Dummy Contests
 INSERT INTO contest (title, category, organizer_id, created_at, updated_at, start_date, submission_end_date, end_date)
 VALUES
-    ('Landscape Contest 4', 'LANDSCAPE', (SELECT id FROM user_profile WHERE id = (SELECT id FROM app_user WHERE username = 'admin')), now(), now(), now(), now() + interval '1 hour', now() + interval '2 hour'),
-    ('Landscape Contest 5', 'LANDSCAPE', (SELECT id FROM user_profile WHERE id = (SELECT id FROM app_user WHERE username = 'admin')), now(), now(), now(), now() + interval '1 hour', now() + interval '2 hour'),
-    ('Landscape Contest 6', 'LANDSCAPE', (SELECT id FROM user_profile WHERE id = (SELECT id FROM app_user WHERE username = 'admin')), now(), now(), now(), now() + interval '1 hour', now() + interval '2 hour'),
-    ('Landscape Contest 7', 'LANDSCAPE', (SELECT id FROM user_profile WHERE id = (SELECT id FROM app_user WHERE username = 'admin')), now(), now(), now(), now() + interval '1 hour', now() + interval '2 hour'),
-    ('Landscape Contest 8', 'LANDSCAPE', (SELECT id FROM user_profile WHERE id = (SELECT id FROM app_user WHERE username = 'admin')), now(), now(), now(), now() + interval '1 hour', now() + interval '2 hour'),
-    ('Landscape Contest 9', 'LANDSCAPE', (SELECT id FROM user_profile WHERE id = (SELECT id FROM app_user WHERE username = 'admin')), now(), now(), now(), now() + interval '1 hour', now() + interval '2 hour'),
-    ('Landscape Contest 10', 'LANDSCAPE', (SELECT id FROM user_profile WHERE id = (SELECT id FROM app_user WHERE username = 'admin')), now(), now(), now(), now() + interval '1 hour', now() + interval '2 hour'),
-    ('Landscape Contest 11', 'LANDSCAPE', (SELECT id FROM user_profile WHERE id = (SELECT id FROM app_user WHERE username = 'admin')), now(), now(), now(), now() + interval '1 hour', now() + interval '2 hour'),
-    ('Landscape Contest 12', 'LANDSCAPE', (SELECT id FROM user_profile WHERE id = (SELECT id FROM app_user WHERE username = 'admin')), now(), now(), now(), now() + interval '1 hour', now() + interval '2 hour'),
-    ('Landscape Contest 13', 'LANDSCAPE', (SELECT id FROM user_profile WHERE id = (SELECT id FROM app_user WHERE username = 'admin')), now(), now(), now(), now() + interval '1 hour', now() + interval '2 hour');
+    ('Landscape Contest 4', 'LANDSCAPE'::TEXT, (SELECT id FROM user_profile WHERE id = (SELECT id FROM app_user WHERE username = 'admin')), now(), now(), now(), now() + interval '1 hour', now() + interval '2 hour'),
+    ('Portrait Contest 4', 'PORTRAIT'::TEXT, (SELECT id FROM user_profile WHERE id = (SELECT id FROM app_user WHERE username = 'admin')), now(), now(), now(), now() + interval '1 hour', now() + interval '2 hour'),
+    ('Street Contest 1', 'STREET'::TEXT, (SELECT id FROM user_profile WHERE id = (SELECT id FROM app_user WHERE username = 'admin')), now(), now(), now(), now() + interval '1 hour', now() + interval '2 hour'),
+    ('Abstract Contest 1', 'ABSTRACT'::TEXT, (SELECT id FROM user_profile WHERE id = (SELECT id FROM app_user WHERE username = 'admin')), now(), now(), now(), now() + interval '1 hour', now() + interval '2 hour'),
+    ('Wildlife Contest 1', 'WILDLIFE'::TEXT, (SELECT id FROM user_profile WHERE id = (SELECT id FROM app_user WHERE username = 'admin')), now(), now(), now(), now() + interval '1 hour', now() + interval '2 hour'),
+    ('Portrait Contest 5', 'PORTRAIT'::TEXT, (SELECT id FROM user_profile WHERE id = (SELECT id FROM app_user WHERE username = 'admin')), now(), now(), now(), now() + interval '1 hour', now() + interval '2 hour'),
+    ('Street Contest 2', 'STREET'::TEXT, (SELECT id FROM user_profile WHERE id = (SELECT id FROM app_user WHERE username = 'admin')), now(), now(), now(), now() + interval '1 hour', now() + interval '2 hour'),
+    ('Landscape Contest 5', 'LANDSCAPE'::TEXT, (SELECT id FROM user_profile WHERE id = (SELECT id FROM app_user WHERE username = 'admin')), now(), now(), now(), now() + interval '1 hour', now() + interval '2 hour'),
+    ('Wildlife Contest 2', 'WILDLIFE'::TEXT, (SELECT id FROM user_profile WHERE id = (SELECT id FROM app_user WHERE username = 'admin')), now(), now(), now(), now() + interval '1 hour', now() + interval '2 hour'),
+    ('Abstract Contest 2', 'ABSTRACT'::TEXT, (SELECT id FROM user_profile WHERE id = (SELECT id FROM app_user WHERE username = 'admin')), now(), now(), now(), now() + interval '1 hour', now() + interval '2 hour');
+
+-- Insert phases for all contests with varied categories
+INSERT INTO phase (contest_id, start_date_time, end_date_time, type, is_concluded)
+SELECT c.id, now(), now() + interval '1 hour', 'PHASE_ONE', FALSE
+FROM contest c
+WHERE c.category IN ('LANDSCAPE', 'PORTRAIT', 'STREET', 'WILDLIFE', 'ABSTRACT');
+
+INSERT INTO phase (contest_id, start_date_time, end_date_time, type, is_concluded)
+SELECT c.id, now() + interval '1 hour', now() + interval '2 hour', 'PHASE_TWO', FALSE
+FROM contest c
+WHERE c.category IN ('LANDSCAPE', 'PORTRAIT', 'STREET', 'WILDLIFE', 'ABSTRACT');
+
 
 -- Insert 10 Portrait Dummy Contests
 INSERT INTO contest (title, category, organizer_id, created_at, updated_at, start_date, submission_end_date, end_date)
@@ -654,3 +666,41 @@ INSERT INTO phase (contest_id, start_date_time, end_date_time, type, is_conclude
 SELECT c.id, now() + interval '1 hour', now() + interval '2 hour', 'PHASE_TWO', FALSE
 FROM contest c
 WHERE c.title LIKE 'Street Contest%';
+
+
+-- Insert dummy photo submissions for Landscape Contest 1
+INSERT INTO photo_submission (contest_id, creator_id, story, photo_url, title)
+SELECT c.id, u.id, 'A beautiful landscape.', CONCAT('http://example.com/landscape_photo', ROW_NUMBER() OVER (ORDER BY u.id)), CONCAT('Landscape Photo ', ROW_NUMBER() OVER (ORDER BY u.id))
+FROM contest c,
+     user_profile u
+WHERE c.title = 'Landscape Contest 1'
+  AND u.id IN (SELECT id FROM app_user WHERE username IN ('user1', 'user2', 'user3', 'user4', 'user5'))
+LIMIT 5;
+
+-- Insert 5 more dummy submissions
+INSERT INTO photo_submission (contest_id, creator_id, story, photo_url, title)
+SELECT c.id, u.id, 'Another stunning landscape.', CONCAT('http://example.com/landscape_photo_extra', ROW_NUMBER() OVER (ORDER BY u.id)), CONCAT('Landscape Extra Photo ', ROW_NUMBER() OVER (ORDER BY u.id))
+FROM contest c,
+     user_profile u
+WHERE c.title = 'Landscape Contest 1'
+  AND u.id NOT IN (SELECT id FROM app_user WHERE username IN ('user1', 'user2', 'user3', 'user4', 'user5'))
+LIMIT 5;
+
+
+-- Insert dummy photo submissions for Portrait Contest 1
+INSERT INTO photo_submission (contest_id, creator_id, story, photo_url, title)
+SELECT c.id, u.id, 'A beautiful portrait.', CONCAT('http://example.com/portrait_photo', ROW_NUMBER() OVER (ORDER BY u.id)), CONCAT('Portrait Photo ', ROW_NUMBER() OVER (ORDER BY u.id))
+FROM contest c,
+     user_profile u
+WHERE c.title = 'Portrait Contest 1'
+  AND u.id IN (SELECT id FROM app_user WHERE username IN ('user1', 'user2', 'user3', 'user4', 'user5'))
+LIMIT 5;
+
+-- Insert 5 more dummy submissions
+INSERT INTO photo_submission (contest_id, creator_id, story, photo_url, title)
+SELECT c.id, u.id, 'Another stunning portrait.', CONCAT('http://example.com/portrait_photo_extra', ROW_NUMBER() OVER (ORDER BY u.id)), CONCAT('Portrait Extra Photo ', ROW_NUMBER() OVER (ORDER BY u.id))
+FROM contest c,
+     user_profile u
+WHERE c.title = 'Portrait Contest 1'
+  AND u.id NOT IN (SELECT id FROM app_user WHERE username IN ('user1', 'user2', 'user3', 'user4', 'user5'))
+LIMIT 5;

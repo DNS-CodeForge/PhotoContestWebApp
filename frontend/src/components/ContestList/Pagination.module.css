@@ -1,0 +1,10 @@
+@import "../../styles/base.css";
+
+.pagination * {
+    color: white !important;
+}
+
+.pagination button{
+    background-color: var(--box-shadow);
+}
+
