@@ -10,13 +10,14 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
-public interface UserService extends UserDetailsService{
+public interface UserService extends UserDetailsService {
     @Override
     UserDetails loadUserByUsername(String username) throws UsernameNotFoundException;
 
     UserProfile getUserById(int id);
 
     UserProfile getUserByUsername(String name);
+
     UserProfile updateUserProfile(UserProfile userProfile);
 
     List<UserProfile> getAllUsers();
@@ -26,5 +27,6 @@ public interface UserService extends UserDetailsService{
     AppUser setUserRole(int userId, String addedRole, String removedRole);
 
     void addPoints(int userId, int pointsToAdd);
+
     public List<Contest> getAllContestsByUserProfileId(Long userProfileId);
 }

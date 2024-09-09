@@ -42,14 +42,14 @@ public class ContestUtils {
                 if (current.getPoints() == next.getPoints()) {
                     awardedPoints = calculateTiedPoints(awardedPoints);
                     userService.addPoints(next.getUserId().intValue(), awardedPoints);
-                    lastIndex = j;  // Move i to the last tied contestant
+                    lastIndex = j;
                 } else {
                     break;
                 }
             }
 
             userService.addPoints(current.getUserId().intValue(), awardedPoints);
-            i = lastIndex;  // Update i to skip the tied contestants
+            i = lastIndex;
 
             rank++;
         }

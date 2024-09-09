@@ -1,90 +1,123 @@
 package com.photo_contest.services;
 
-import java.util.HashSet;
-import java.util.Set;
-
-import jakarta.persistence.EntityNotFoundException;
-
 import com.photo_contest.models.AppUser;
-import com.photo_contest.models.Role;
-import com.photo_contest.models.UserProfile;
 import com.photo_contest.models.DTO.LoginResponseDTO;
 import com.photo_contest.models.DTO.RegistrationDTO;
+import com.photo_contest.models.Role;
+import com.photo_contest.models.UserProfile;
 import com.photo_contest.repos.RoleRepository;
 import com.photo_contest.repos.UserRepository;
 import com.photo_contest.services.contracts.AuthService;
-import com.photo_contest.services.contracts.TokenService;
 
+import com.photo_contest.utils.JwtUtil;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import static com.photo_contest.constants.ModelValidationConstants.INVALID_LOGIN_CREDENTIALS;
 
 @Service
 public class AuthServiceImpl implements AuthService {
-
-
     private static final String ROLE_NOT_FOUND_MESSAGE = "Role not found";
     private static final String BASE_USER_ROLE = "USER";
+    public static final String INVALID_REFRESH_TOKEN = "Invalid refresh token";
 
-    private final RoleRepository roleRepository;
-    private final UserRepository userRepository;
+
+    private final AuthenticationManager authenticationManager;
+    private final JwtUtil jwtUtil;
     private final PasswordEncoder passwordEncoder;
-    private final AuthenticationManager authManager;
-    private final TokenService tokenService;
+    private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
 
     @Autowired
-    public AuthServiceImpl(
-            TokenService tokenService, AuthenticationManager authManager, RoleRepository roleRepository,
-            UserRepository userRepository, PasswordEncoder passwordEncoder
-    ) {
-        this.authManager = authManager;
-        this.tokenService = tokenService;
-        this.roleRepository = roleRepository;
-        this.userRepository = userRepository;
+    public AuthServiceImpl(AuthenticationManager authenticationManager, JwtUtil jwtUtil,
+                           PasswordEncoder passwordEncoder, UserRepository userRepository, RoleRepository roleRepository) {
+        this.authenticationManager = authenticationManager;
+        this.jwtUtil = jwtUtil;
         this.passwordEncoder = passwordEncoder;
+        this.userRepository = userRepository;
+
+        this.roleRepository = roleRepository;
     }
+
 
     @Override
     public AppUser registerUser(RegistrationDTO registrationDTO) {
-        AppUser user = new AppUser();
-        user.setEmail(registrationDTO.getEmail());
-        user.setUsername(registrationDTO.getUsername());
-        user.setPassword(passwordEncoder.encode(registrationDTO.getPassword()));
-
+        AppUser newUser = new AppUser();
+        newUser.setUsername(registrationDTO.getUsername());
+        newUser.setEmail(registrationDTO.getEmail());
+        newUser.setPassword(passwordEncoder.encode(registrationDTO.getPassword()));
 
         Role userRole = roleRepository.findByAuthority(BASE_USER_ROLE)
                 .orElseThrow(() -> new EntityNotFoundException(ROLE_NOT_FOUND_MESSAGE));
         Set<Role> roles = new HashSet<>();
 
         roles.add(userRole);
-        user.setRoles(roles);
+        newUser.setRoles(roles);
 
-        user = userRepository.save(user);
+        newUser = userRepository.save(newUser);
 
-        UserProfile userProfile = new UserProfile(user);
+        UserProfile userProfile = new UserProfile(newUser);
 
-        user.setUserProfile(userProfile);
+        newUser.setUserProfile(userProfile);
 
-        return userRepository.save(user);
+        return userRepository.save(newUser);
     }
 
+
     @Override
-    public LoginResponseDTO logIn(String username, String password) {
+    public LoginResponseDTO login(String username, String password) {
         try {
-            Authentication auth = authManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(username, password)
-            );
 
-            String token = tokenService.generateJwt(auth);
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(username, password));
 
-            return new LoginResponseDTO(userRepository.findByUsername(username).get(), token);
+
+            AppUser authenticatedUser = (AppUser) authentication.getPrincipal();
+            Long userId = authenticatedUser.getId();
+
+
+            List<String> roles = authentication.getAuthorities().stream()
+                    .map(GrantedAuthority::getAuthority)
+                    .collect(Collectors.toList());
+
+
+            String accessToken = jwtUtil.generateAccessToken(username, userId, roles);
+            String refreshToken = jwtUtil.generateRefreshToken(username, userId);
+
+            return new LoginResponseDTO(accessToken, refreshToken);
 
         } catch (AuthenticationException e) {
-            return new LoginResponseDTO(null, null);
+            throw new RuntimeException(INVALID_LOGIN_CREDENTIALS, e);
+        }
+    }
+
+
+    @Override
+    public LoginResponseDTO refreshAccessToken(String refreshToken) {
+        if (jwtUtil.validateToken(refreshToken)) {
+            String username = jwtUtil.getUsernameFromToken(refreshToken);
+            Long userId = jwtUtil.getUserIdFromToken(refreshToken);
+            List<String> roles = jwtUtil.getRolesFromToken(refreshToken);
+
+            String newAccessToken = jwtUtil.generateAccessToken(username, userId, roles);
+            return new LoginResponseDTO(newAccessToken, null);
+        } else {
+
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, INVALID_REFRESH_TOKEN);
         }
     }
 }

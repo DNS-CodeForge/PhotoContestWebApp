@@ -13,6 +13,7 @@ public class ModelValidationConstants {
     public static final String PASSWORD_SIZE_MESSAGE = "Password must be at least 6 characters long";
     public static final String EMAIL_MANDATORY = "Email is mandatory";
     public static final String EMAIL_VALIDATION_MESSAGE = "Email should be valid";
+    public static final String INVALID_LOGIN_CREDENTIALS = "Invalid login credentials";
 
 
     // constants for user profile DD

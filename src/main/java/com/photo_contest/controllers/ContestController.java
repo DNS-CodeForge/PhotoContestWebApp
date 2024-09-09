@@ -16,19 +16,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import static com.photo_contest.constants.ModelValidationConstants.*;
 
-
 @RestController
 @RequestMapping("/api/contest")
 public class ContestController {
-
-
 
     private final ContestService contestService;
     private final ContestUtils contestUtils;
@@ -39,13 +35,11 @@ public class ContestController {
         this.contestUtils = contestUtils;
     }
 
-
     @PostMapping
     public ResponseEntity<Contest> createContest(@RequestBody CreateContestDTO createContestDTO) {
         Contest createdContest = contestService.createContest(createContestDTO);
-        return new ResponseEntity<>(createdContest, HttpStatus.CREATED);
+        return ResponseEntity.status(201).body(createdContest);
     }
-
 
     @GetMapping
     public ResponseEntity<CustomResponse> getAllContests(
@@ -71,55 +65,39 @@ public class ContestController {
         return ResponseEntity.ok(response);
     }
 
-
     @GetMapping("/{id}/ranking")
-    public ResponseEntity<List<RankedUserResponseDTO>> getCurrentRanking(@PathVariable int id){
+    public ResponseEntity<List<RankedUserResponseDTO>> getCurrentRanking(@PathVariable int id) {
         List<RankedUserResponseDTO> ranking = contestService.getCurrentRanking(id);
-        return new ResponseEntity<>(ranking, HttpStatus.OK);
+        return ResponseEntity.ok(ranking);
     }
-
 
     @PostMapping("/{id}/award-points")
     public ResponseEntity<List<RankedUserResponseDTO>> awardPoints(@PathVariable Long id) {
         List<RankedUserResponseDTO> awardedPoints = contestUtils.awardPointsForContest(id);
-        return new ResponseEntity<>(awardedPoints, HttpStatus.OK);
+        return ResponseEntity.ok(awardedPoints);
     }
-
 
     @PostMapping("/{contestId}/participants/invite")
     public ResponseEntity<String> inviteParticipants(
             @PathVariable Long contestId,
             @RequestBody List<Long> userIds) {
-        try {
-            List<Long> failedInvites = contestService.inviteParticipants(contestId, userIds);
-            if (failedInvites.isEmpty()) {
-                return ResponseEntity.ok(PARTICIPANTS_INVITED_SUCCESSFULLY);
-            } else {
-                return ResponseEntity.status(HttpStatus.OK)
-                        .body(PARTICIPANTS_FAILED_INVITES + failedInvites);
-            }
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(PARTICIPANTS_INVITE_FAILED + e.getMessage());
+        List<Long> failedInvites = contestService.inviteParticipants(contestId, userIds);
+        if (failedInvites.isEmpty()) {
+            return ResponseEntity.ok(PARTICIPANTS_INVITED_SUCCESSFULLY);
+        } else {
+            return ResponseEntity.ok(PARTICIPANTS_FAILED_INVITES + failedInvites);
         }
     }
-
 
     @PostMapping("/{contestId}/judges/invite")
     public ResponseEntity<String> inviteJudges(
             @PathVariable Long contestId,
             @RequestBody List<Long> userIds) {
-        try {
-            List<Long> failedInvites = contestService.inviteJudges(contestId, userIds);
-            if (failedInvites.isEmpty()) {
-                return ResponseEntity.ok(JUDGES_INVITED_SUCCESSFULLY);
-            } else {
-                return ResponseEntity.status(HttpStatus.OK)
-                        .body(JUDGES_FAILED_INVITES + failedInvites);
-            }
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(JUDGES_INVITE_FAILED + e.getMessage());
+        List<Long> failedInvites = contestService.inviteJudges(contestId, userIds);
+        if (failedInvites.isEmpty()) {
+            return ResponseEntity.ok(JUDGES_INVITED_SUCCESSFULLY);
+        } else {
+            return ResponseEntity.ok(JUDGES_FAILED_INVITES + failedInvites);
         }
     }
 }
