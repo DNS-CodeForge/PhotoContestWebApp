@@ -54,20 +54,17 @@ const itemData = [
   },
 ];
     return (
-        <>
-        <Typography variant='h4' paddingTop={"3rem"}> Subbmissions </Typography>
-        <ImageList cols={5} rowHeight={164}>
+        <ImageList cols={6} sx={{margin:"1rem"}}>
           {itemData.map((item) => (
             <ImageListItem key={item.img}>
               <img
-                srcSet={`${item.img}?w=164&h=164&fit=crop&auto=format&dpr=2 2x`}
-                src={`${item.img}?w=164&h=164&fit=crop&auto=format`}
+                srcSet={`${item.img}?w=225&h=225fit=crop&auto=format&dpr=2 2x`}
+                src={`${item.img}?w=225&h=225&fit=crop&auto=format`}
                 alt={item.title}
                 loading="lazy"
               />
             </ImageListItem>
           ))}
         </ImageList>
-        </>
     );
 }
