@@ -7,7 +7,7 @@ import RegisterForm from '../components/Forms/RegisterForm';
 
 const routes = [
     {
-        path: '/',  // Root path
+        path: '/',
         element: <Layout />,
         children: [
             {
