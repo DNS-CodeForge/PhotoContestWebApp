@@ -162,7 +162,7 @@ a {
   left: 0;
   width: 2px;
   height: 100%;
-  background: linear-gradient(360deg, transparent, #FFA500); /* Orange animation */
+  background: linear-gradient(360deg, transparent, #FFA500);
   animation: btn-anim4 1.5s linear infinite;
   animation-delay: 1.125s;
 }
