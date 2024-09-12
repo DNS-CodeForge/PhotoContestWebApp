@@ -10,5 +10,7 @@ public interface AuthService {
 
     LoginResponseDTO login(String username, String password);
 
+    String getPublicKey();
+
     LoginResponseDTO refreshAccessToken(String refreshToken);
 }

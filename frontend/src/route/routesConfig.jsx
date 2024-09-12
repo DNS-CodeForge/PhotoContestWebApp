@@ -4,6 +4,7 @@ import { Navigate } from 'react-router-dom';
 import ContestDetail from '../components/ContestDetail/ContestDetail';
 import UserProfile from '../components/UserProfile/UserProfile';
 import CreateContest from '../components/Forms/CreateContest';
+import ProtectedRoute from './ProtectedRoute';
 
 const routes = [
     {
@@ -30,15 +31,27 @@ const routes = [
             },
             {
                 path: 'contest/:id',
-                element: <ContestDetail />,
+                element: (
+                    <ProtectedRoute>
+                        <ContestDetail />
+                    </ProtectedRoute>
+                ),
             },
             {
                 path: 'create-contest',
-                element: <CreateContest />,
+                element: (
+                    <ProtectedRoute>
+                        <CreateContest />
+                    </ProtectedRoute>
+                ),
             },
             {
                 path: 'profile',
-                element: <UserProfile />,
+                element: (
+                    <ProtectedRoute>
+                        <UserProfile />
+                    </ProtectedRoute>
+                ),
             },
             {
                 path: '*',

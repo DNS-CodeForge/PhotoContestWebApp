@@ -37,25 +37,25 @@ public class AuthServiceImpl implements AuthService {
     private static final String ROLE_NOT_FOUND_MESSAGE = "Role not found";
     private static final String BASE_USER_ROLE = "USER";
     public static final String INVALID_REFRESH_TOKEN = "Invalid refresh token";
-
+    private final RSAKeyProps rsaKeyProps;
 
     private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
-    private final RSAKeyProps rsaKeyProps;
+
 
     @Autowired
-    public AuthServiceImpl(AuthenticationManager authenticationManager, JwtUtil jwtUtil,
-                           PasswordEncoder passwordEncoder, UserRepository userRepository, RoleRepository roleRepository, RSAKeyProps rsaKeyProps) {
+    public AuthServiceImpl(RSAKeyProps rsaKeyProps, AuthenticationManager authenticationManager, JwtUtil jwtUtil, PasswordEncoder passwordEncoder, UserRepository userRepository, RoleRepository roleRepository) {
+        this.rsaKeyProps = rsaKeyProps;
         this.authenticationManager = authenticationManager;
         this.jwtUtil = jwtUtil;
         this.passwordEncoder = passwordEncoder;
         this.userRepository = userRepository;
 
         this.roleRepository = roleRepository;
-        this.rsaKeyProps = rsaKeyProps;
+
     }
 
 
@@ -66,8 +66,7 @@ public class AuthServiceImpl implements AuthService {
         newUser.setEmail(registrationDTO.getEmail());
         newUser.setPassword(passwordEncoder.encode(registrationDTO.getPassword()));
 
-        Role userRole = roleRepository.findByAuthority(BASE_USER_ROLE)
-                .orElseThrow(() -> new EntityNotFoundException(ROLE_NOT_FOUND_MESSAGE));
+        Role userRole = roleRepository.findByAuthority(BASE_USER_ROLE).orElseThrow(() -> new EntityNotFoundException(ROLE_NOT_FOUND_MESSAGE));
         Set<Role> roles = new HashSet<>();
 
         roles.add(userRole);
@@ -87,17 +86,14 @@ public class AuthServiceImpl implements AuthService {
     public LoginResponseDTO login(String username, String password) {
         try {
 
-            Authentication authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(username, password));
+            Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
 
 
             AppUser authenticatedUser = (AppUser) authentication.getPrincipal();
             Long userId = authenticatedUser.getId();
 
 
-            List<String> roles = authentication.getAuthorities().stream()
-                    .map(GrantedAuthority::getAuthority)
-                    .collect(Collectors.toList());
+            List<String> roles = authentication.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList());
 
 
             String accessToken = jwtUtil.generateAccessToken(username, userId, roles);
@@ -109,7 +105,7 @@ public class AuthServiceImpl implements AuthService {
             throw new RuntimeException(INVALID_LOGIN_CREDENTIALS, e);
         }
     }
-    @GetMapping("/public-key")
+
     public String getPublicKey() {
         return Base64.getEncoder().encodeToString(rsaKeyProps.getPublicKey().getEncoded());
     }
@@ -117,18 +113,23 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public LoginResponseDTO refreshAccessToken(String refreshToken) {
-        //TODO: Implement role change logic to refresh with token refresh
         if (jwtUtil.validateToken(refreshToken)) {
+
             String username = jwtUtil.getUsernameFromToken(refreshToken);
             Long userId = jwtUtil.getUserIdFromToken(refreshToken);
-            List<String> roles = jwtUtil.getRolesFromToken(refreshToken);
+
+
+            AppUser user = userRepository.findById(userId).orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not found"));
+
+            List<String> roles = user.getRoles().stream().map(Role::getAuthority).collect(Collectors.toList());
 
             String newAccessToken = jwtUtil.generateAccessToken(username, userId, roles);
+
             return new LoginResponseDTO(newAccessToken, null);
         } else {
-
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, INVALID_REFRESH_TOKEN);
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid refresh token");
         }
     }
+
 
 }

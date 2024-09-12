@@ -5,13 +5,16 @@ import com.photo_contest.models.DTO.LoginDTO;
 import com.photo_contest.models.DTO.LoginResponseDTO;
 import com.photo_contest.models.DTO.RegistrationDTO;
 import com.photo_contest.services.contracts.AuthService;
+import com.photo_contest.utils.RSAKeyProps;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import jakarta.servlet.http.HttpServletResponse;
 
+
 import java.util.HashMap;
 import java.util.Map;
+
 
 @RestController
 @RequestMapping("/api/auth")
@@ -20,6 +23,7 @@ public class AuthController {
     private final AuthService authService;
 
     public AuthController(AuthService authService) {
+
         this.authService = authService;
     }
 
@@ -42,6 +46,10 @@ public class AuthController {
         responseMap.put("accessToken", loginResponse.getAccessToken());
 
         return ResponseEntity.status(HttpStatus.OK).body(responseMap);
+    }
+    @GetMapping("/public-key")
+    public String getPublicKey() {
+        return authService.getPublicKey();
     }
 
 
