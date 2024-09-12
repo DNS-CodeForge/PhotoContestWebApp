@@ -117,6 +117,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public LoginResponseDTO refreshAccessToken(String refreshToken) {
+        //TODO: Implement role change logic to refresh with token refresh
         if (jwtUtil.validateToken(refreshToken)) {
             String username = jwtUtil.getUsernameFromToken(refreshToken);
             Long userId = jwtUtil.getUserIdFromToken(refreshToken);

@@ -23,16 +23,16 @@ function LoginForm({ onClose }) {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify(loginDTO),
-                credentials: 'include',
             });
 
             if (response.ok) {
                 const data = await response.json();
-                if (data.accessToken) {
-                    localStorage.setItem('accessToken', data.accessToken);
+                if (data.accessToken && data.refreshToken) {
+                    localStorage.setItem('accessToken', data.accessToken);   // Used instead of cookie when no SSL/TLS is present
+                    localStorage.setItem('refreshToken', data.refreshToken); // Used instead of cookie when no SSL/TLS is present
                     onClose();
                 } else {
-                    setErrorMessage('Login failed: Token not received.');
+                    setErrorMessage('Login failed: Tokens not received.');
                 }
             } else {
                 setErrorMessage('Invalid username or password.');

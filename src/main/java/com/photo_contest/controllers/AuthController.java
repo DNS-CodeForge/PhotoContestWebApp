@@ -7,11 +7,7 @@ import com.photo_contest.models.DTO.RegistrationDTO;
 import com.photo_contest.services.contracts.AuthService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CookieValue;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.util.HashMap;
@@ -37,20 +33,21 @@ public class AuthController {
     public ResponseEntity<Map<String, String>> logInUser(@RequestBody LoginDTO loginDTO, HttpServletResponse response) {
         LoginResponseDTO loginResponse = authService.login(loginDTO.getUsername(), loginDTO.getPassword());
 
-        response.setHeader("Set-Cookie", bakeCookie(loginResponse));
-
-
-
         Map<String, String> responseMap = new HashMap<>();
+
+        //  response.setHeader("Set-Cookie", bakeCookie(loginResponse)); // HTTP-Only cookie should be used if SSL/TLS is not present -DD
+
+        responseMap.put("refreshToken", loginResponse.getRefreshToken()); // Used if no SSL/TLS is present
+
         responseMap.put("accessToken", loginResponse.getAccessToken());
 
         return ResponseEntity.status(HttpStatus.OK).body(responseMap);
     }
 
 
-
     @PostMapping("/refresh")
-    public ResponseEntity<Map<String, String>> refreshAccessToken(@CookieValue("refreshToken") String refreshToken) {
+    //public ResponseEntity<Map<String, String>> refreshAccessToken(@CookieValue("refreshToken") String refreshToken) { // Cookie value should be used if SSL/TLS is present -DD
+    public ResponseEntity<Map<String, String>> refreshAccessToken(@RequestParam("refreshToken") String refreshToken) { // Used if no SSL/TLS is present
         LoginResponseDTO loginResponse = authService.refreshAccessToken(refreshToken);
 
         Map<String, String> responseMap = new HashMap<>();
@@ -58,12 +55,8 @@ public class AuthController {
 
         return ResponseEntity.status(HttpStatus.OK).body(responseMap);
     }
-    //TODO: Implement a method to allow control over all cookie attributes
+
     private static String bakeCookie(LoginResponseDTO loginResponse) {
-        return String.format(
-                "refreshToken=%s; HttpOnly; Path=/; Max-Age=%d; SameSite=None",
-                loginResponse.getRefreshToken(),
-                7 * 24 * 60 * 60
-        );
+        return String.format("refreshToken=%s; HttpOnly; Path=/; Max-Age=%d; SameSite=None", loginResponse.getRefreshToken(), 7 * 24 * 60 * 60);
     }
 }
