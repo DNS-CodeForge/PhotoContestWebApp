@@ -19,6 +19,4 @@ public class PhotoSubmissionDTO {
     @Size(max = PS_STORY_MAX_SIZE, message = PS_STORY_SIZE_MSG)
     private String story;
 
-    @NotBlank(message = PS_PHOTO_URL_MANDATORY_MSG)
-    private String photoUrl;
 }

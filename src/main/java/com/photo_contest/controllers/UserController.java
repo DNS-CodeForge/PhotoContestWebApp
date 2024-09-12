@@ -2,13 +2,14 @@ package com.photo_contest.controllers;
 
 import java.util.List;
 
-import com.photo_contest.models.AppUser;
+
 import com.photo_contest.models.Contest;
 import com.photo_contest.models.UserProfile;
 import com.photo_contest.services.contracts.UserService;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 
 @RestController
 @RequestMapping("/api/user")
@@ -55,4 +56,12 @@ public class UserController {
         userService.deleteUser(id);
         return ResponseEntity.noContent().build();
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<UserProfile> updateUser(@PathVariable int id, @RequestBody UserProfile updatedUser) {
+        updatedUser.setId((long) id);
+        UserProfile user = userService.updateUserProfile(updatedUser);
+        return ResponseEntity.ok(user);
+    }
+
 }

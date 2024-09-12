@@ -2,6 +2,7 @@ package com.photo_contest.config;
 
 import com.photo_contest.exeptions.AuthorizationException;
 import com.photo_contest.exeptions.ContestPhaseViolationException;
+import com.photo_contest.exeptions.ImageUploadException;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 
@@ -57,8 +58,16 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ResponseBody
     public ResponseEntity<LinkedHashMap<String, Object>> handleGenericException(Exception ex) {
-        return createErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, UNEXPECTED_ERROR);
+        return createErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
+//        UNEXPECTED_ERROR
     }
+    @ExceptionHandler(ImageUploadException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ResponseBody
+    public ResponseEntity<LinkedHashMap<String, Object>> handleImageUploadException(ImageUploadException ex) {
+        return createErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
+    }
+
 
 
     private ResponseEntity<LinkedHashMap<String, Object>> createErrorResponse(HttpStatus status, String message) {
@@ -67,6 +76,7 @@ public class GlobalExceptionHandler {
         errorResponse.put("error", status.getReasonPhrase());
         errorResponse.put("message", message);
         errorResponse.put("timestamp", LocalDateTime.now());
+        errorResponse.put("exception", status.getReasonPhrase());
 
         return ResponseEntity.status(status).body(errorResponse);
     }

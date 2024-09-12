@@ -1,22 +1,26 @@
 package com.photo_contest.services;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
 import com.photo_contest.config.AuthContextManager;
 import com.photo_contest.exeptions.AuthorizationException;
 import com.photo_contest.exeptions.ContestPhaseViolationException;
+import com.photo_contest.exeptions.ImageUploadException;
 import com.photo_contest.models.Contest;
 import com.photo_contest.models.PhotoSubmission;
 import com.photo_contest.models.DTO.PhotoSubmissionDTO;
 import com.photo_contest.repos.ContestRepository;
 import com.photo_contest.repos.PhotoSubmissionRepository;
+import com.photo_contest.services.contracts.CloudinaryImageService;
 import com.photo_contest.services.contracts.ContestService;
 import com.photo_contest.services.contracts.PhotoSubmissionService;
 
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import static com.photo_contest.constants.ModelValidationConstants.*;
 
@@ -28,40 +32,53 @@ public class PhotoSubmissionServiceImpl implements PhotoSubmissionService {
     private final AuthContextManager authContextManager;
     private final ContestRepository contestRepository;
     private final ContestService contestService;
+    private final CloudinaryImageService cloudinaryImageService;
 
     @Autowired
     public PhotoSubmissionServiceImpl(PhotoSubmissionRepository photoSubmissionRepository, AuthContextManager authContextManager, ContestRepository contestRepository,
-                                      ContestService contestService) {
+                                      ContestService contestService, CloudinaryImageService cloudinaryImageService) {
         this.photoSubmissionRepository = photoSubmissionRepository;
         this.authContextManager = authContextManager;
         this.contestRepository = contestRepository;
         this.contestService = contestService;
+        this.cloudinaryImageService = cloudinaryImageService;
     }
 
     @Override
-    public PhotoSubmission createPhotoSubmission(Long contestId, PhotoSubmissionDTO photoSubmissionDTO) {
+    public PhotoSubmission createPhotoSubmission(Long contestId, PhotoSubmissionDTO photoSubmissionDTO, MultipartFile file) {
+        Contest contest = contestRepository.findById(contestId).orElseThrow(() -> new IllegalArgumentException("Contest not found"));
 
-        Contest contest = contestRepository.findById(contestId).get();
 
-
-        if(!contestRepository.findAllContestsByUserProfileId(authContextManager.getId()).contains(contest)) {
+        if (!contestRepository.findAllContestsByUserProfileId(authContextManager.getId()).contains(contest)) {
             throw new AuthorizationException(INVALID_SUBMISSION);
         }
+
 
         if (contestService.getCurrentPhase(contestId) != 1) {
             throw new ContestPhaseViolationException(PH_ONE_SUBMISSION);
         }
 
+        String uploadedPhotoUrl;
+        try {
+
+            uploadedPhotoUrl = cloudinaryImageService.uploadImage(file);
+        } catch (IOException e) {
+
+            throw new ImageUploadException(IMG_UPLOAD_FAIL + ".", e);
+        }
+
+
         PhotoSubmission photoSubmission = new PhotoSubmission();
         photoSubmission.setTitle(photoSubmissionDTO.getTitle());
         photoSubmission.setStory(photoSubmissionDTO.getStory());
-        photoSubmission.setPhotoUrl(photoSubmissionDTO.getPhotoUrl());
-        photoSubmission.setCreator(authContextManager.getLoggedInUser()); 
+        photoSubmission.setPhotoUrl(uploadedPhotoUrl);
+        photoSubmission.setCreator(authContextManager.getLoggedInUser());
         photoSubmission.setContest(contest);
-        photoSubmission.setPhotoReviews(Collections.emptyList());  
-        
+        photoSubmission.setPhotoReviews(Collections.emptyList());
+
         return photoSubmissionRepository.save(photoSubmission);
     }
+
 
     @Override
     public PhotoSubmission getPhotoSubmissionById(Long id) {
@@ -75,12 +92,20 @@ public class PhotoSubmissionServiceImpl implements PhotoSubmissionService {
     }
 
     @Override
-    public PhotoSubmission updatePhotoSubmission(Long id, PhotoSubmissionDTO photoSubmissionDTO) {
+    public PhotoSubmission updatePhotoSubmission(Long id, PhotoSubmissionDTO photoSubmissionDTO, MultipartFile file) {
         PhotoSubmission photoSubmission = getPhotoSubmissionById(id);
         photoSubmission.setTitle(photoSubmissionDTO.getTitle());
         photoSubmission.setStory(photoSubmissionDTO.getStory());
-        photoSubmission.setPhotoUrl(photoSubmissionDTO.getPhotoUrl());
-        
+        String uploadedPhotoUrl;
+        try {
+
+            uploadedPhotoUrl = cloudinaryImageService.uploadImage(file);
+            photoSubmission.setPhotoUrl(uploadedPhotoUrl);
+        } catch (IOException e) {
+
+            throw new ImageUploadException(IMG_UPLOAD_FAIL + ".", e);
+        }
+
         return photoSubmissionRepository.save(photoSubmission);
     }
 

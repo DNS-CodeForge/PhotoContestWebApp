@@ -38,6 +38,7 @@ public class ModelValidationConstants {
     public static final String PS_PHOTO_URL_MANDATORY_MSG = "Photo URL is mandatory";
     public static final int PS_TITLE_MAX_SIZE = 255;
     public static final int PS_STORY_MAX_SIZE = 5000;
+    public static final String IMG_UPLOAD_FAIL = "Failed to upload image. Please try again later";
 
 
     // Contest-related constants
