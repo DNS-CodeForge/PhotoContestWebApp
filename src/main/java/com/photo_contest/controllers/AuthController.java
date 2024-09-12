@@ -47,7 +47,8 @@ public class AuthController {
 
     @PostMapping("/refresh")
     //public ResponseEntity<Map<String, String>> refreshAccessToken(@CookieValue("refreshToken") String refreshToken) { // Cookie value should be used if SSL/TLS is present -DD
-    public ResponseEntity<Map<String, String>> refreshAccessToken(@RequestParam("refreshToken") String refreshToken) { // Used if no SSL/TLS is present
+    public ResponseEntity<Map<String, String>> refreshAccessToken(@RequestBody Map<String, String> requestBody) { // Used if no SSL/TLS is present -DD
+        String refreshToken = requestBody.get("refreshToken");
         LoginResponseDTO loginResponse = authService.refreshAccessToken(refreshToken);
 
         Map<String, String> responseMap = new HashMap<>();
