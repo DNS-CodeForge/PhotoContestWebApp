@@ -12,38 +12,21 @@ import FileUploadIcon from '@mui/icons-material/FileUpload';
 import RateReviewIcon from '@mui/icons-material/RateReview';
 import DoneIcon from '@mui/icons-material/Done';
 
+
+import { arrayToDate, formatDate } from '../../utils/dateUtils';
+
 export default function ContestInfo({ contest }) {
+
+
     const currentDate = new Date();
-    const startDate = new Date(contest.startDate);
-    const submissionEndDate = new Date(contest.submissionEndDate);
-    const endDate = new Date(contest.endDate);
+    const startDate = arrayToDate(contest.startDate);
+    const submissionEndDate = arrayToDate(contest.submissionEndDate);
+    const endDate = arrayToDate(contest.endDate);
 
-    const formattedStartDate = startDate.toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'numeric',
-        day: 'numeric',
-        hour: 'numeric',
-        minute: 'numeric',
-        hour12: false
-    });
+    const formattedStartDate = formatDate(startDate);
+    const formattedSubmissionEndDate = formatDate(submissionEndDate);
+    const formattedEndDate = formatDate(endDate);
 
-    const formattedSubmissionEndDate = submissionEndDate.toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'numeric',
-        day: 'numeric',
-        hour: 'numeric',
-        minute: 'numeric',
-        hour12: false
-    });
-
-    const formattedEndDate = endDate.toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'numeric',
-        day: 'numeric',
-        hour: 'numeric',
-        minute: 'numeric',
-        hour12: false
-    });
 
     let phase = "";
     let phaseIcon = null;
@@ -51,28 +34,28 @@ export default function ContestInfo({ contest }) {
 
     if (currentDate < startDate) {
         phase = "Start";
-        phaseIcon = <PlayArrowIcon sx={{ height: "2rem", width: "2rem", marginRight: '0.8rem', marginLeft:'0.8rem' }} />;
+        phaseIcon = <PlayArrowIcon sx={{ height: "2rem", width: "2rem", marginRight: '0.8rem', marginLeft: '0.8rem' }} />;
         phaseDate = formattedStartDate;
     } else if (currentDate >= startDate && currentDate < submissionEndDate) {
         phase = "Submission";
-        phaseIcon = <FileUploadIcon sx={{ height: "2rem", width: "2rem", marginRight: '0.8rem', marginLeft:'0.8rem' }} />;
+        phaseIcon = <FileUploadIcon sx={{ height: "2rem", width: "2rem", marginRight: '0.8rem', marginLeft: '0.8rem' }} />;
         phaseDate = formattedSubmissionEndDate;
     } else if (currentDate >= submissionEndDate && currentDate < endDate) {
         phase = "Reviewing";
-        phaseIcon = <RateReviewIcon sx={{ height: "2rem", width: "2rem", marginRight: '0.8rem', marginLeft:'0.8rem' }} />;
+        phaseIcon = <RateReviewIcon sx={{ height: "2rem", width: "2rem", marginRight: '0.8rem', marginLeft: '0.8rem' }} />;
         phaseDate = formattedEndDate;
     } else if (currentDate >= endDate) {
         phase = "Finished";
-        phaseIcon = <DoneIcon sx={{ height: "2rem", width: "2rem", marginRight: '0.8rem', marginLeft:'0.8rem' }} />;
+        phaseIcon = <DoneIcon sx={{ height: "2rem", width: "2rem", marginRight: '0.8rem', marginLeft: '0.8rem' }} />;
         phaseDate = formattedEndDate;
     }
 
     const categoryIcons = {
-        LANDSCAPE: <LandscapeIcon sx={{ height: "2rem", width: "2rem", marginRight: '0.8rem', marginLeft:'0.8rem' }} />,
-        PORTRAIT: <PersonIcon sx={{ height: "2rem", width: "2rem", marginRight: '0.8rem', marginLeft:'0.8rem' }} />,
-        STREET: <LocationCityIcon sx={{ height: "2rem", width: "2rem", marginRight: '0.8rem', marginLeft:'0.8rem' }} />,
-        WILDLIFE: <PetsIcon sx={{ height: "2rem", width: "2rem", marginRight: '0.8rem', marginLeft:'0.8rem' }} />,
-        ABSTRACT: <BrushIcon sx={{ height: "2rem", width: "2rem", marginRight: '0.8rem', marginLeft:'0.8rem' }} />
+        LANDSCAPE: <LandscapeIcon sx={{ height: "2rem", width: "2rem", marginRight: '0.8rem', marginLeft: '0.8rem' }} />,
+        PORTRAIT: <PersonIcon sx={{ height: "2rem", width: "2rem", marginRight: '0.8rem', marginLeft: '0.8rem' }} />,
+        STREET: <LocationCityIcon sx={{ height: "2rem", width: "2rem", marginRight: '0.8rem', marginLeft: '0.8rem' }} />,
+        WILDLIFE: <PetsIcon sx={{ height: "2rem", width: "2rem", marginRight: '0.8rem', marginLeft: '0.8rem' }} />,
+        ABSTRACT: <BrushIcon sx={{ height: "2rem", width: "2rem", marginRight: '0.8rem', marginLeft: '0.8rem' }} />
     };
 
     return (
@@ -82,15 +65,15 @@ export default function ContestInfo({ contest }) {
             </Typography>
             <Box display="flex" flexDirection="column" gap={2} sx={{ marginBottom: '2rem' }}>
                 <Box display="flex" alignItems="center" justifyContent="left">
-                    {categoryIcons[contest.category] || <InsertPhotoIcon sx={{ height: "2rem", width: "2rem", marginRight: '0.8rem', marginLeft:'0.8rem' }} />}
+                    {categoryIcons[contest.category] || <InsertPhotoIcon sx={{ height: "2rem", width: "2rem", marginRight: '0.8rem', marginLeft: '0.8rem' }} />}
                     <Typography variant="body2" sx={{ fontSize: '1.2rem', fontFamily: 'sans-serif' }}>{contest.category}</Typography>
                 </Box>
                 <Box display="flex" alignItems="center" justifyContent="left">
-                    <GavelIcon sx={{ height: "2rem", width: "2rem", marginRight: '0.8rem', marginLeft:'0.8rem' }} />
+                    <GavelIcon sx={{ height: "2rem", width: "2rem", marginRight: '0.8rem', marginLeft: '0.8rem' }} />
                     <Typography variant="body2" sx={{ fontSize: '1.2rem', fontFamily: 'sans-serif' }}>Jury: {contest.jury.length}</Typography>
                 </Box>
                 <Box display="flex" alignItems="center" justifyContent="left">
-                    <InsertPhotoIcon sx={{ height: "2rem", width: "2rem", marginRight: '0.8rem', marginLeft:'0.8rem' }} />
+                    <InsertPhotoIcon sx={{ height: "2rem", width: "2rem", marginRight: '0.8rem', marginLeft: '0.8rem' }} />
                     <Typography variant="body2" sx={{ fontSize: '1.2rem', fontFamily: 'sans-serif' }}>Entries: {contest.photoSubmissions.length}</Typography>
                 </Box>
                 <Box display="flex" alignItems="center" justifyContent="left">
@@ -98,7 +81,7 @@ export default function ContestInfo({ contest }) {
                     <Typography variant="body2" sx={{ fontSize: '1.2rem', fontFamily: 'sans-serif' }}>{phase}</Typography>
                 </Box>
                 <Box display="flex" alignItems="center" justifyContent="left">
-                    <WatchLaterIcon sx={{ height: "2rem", width: "2rem", marginRight: '0.8rem', marginLeft:'0.8rem'}} />
+                    <WatchLaterIcon sx={{ height: "2rem", width: "2rem", marginRight: '0.8rem', marginLeft: '0.8rem' }} />
                     <Typography variant="body2" sx={{ fontSize: '1.2rem', fontFamily: 'sans-serif' }}>{phaseDate}</Typography>
                 </Box>
             </Box>
