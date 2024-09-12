@@ -10,6 +10,7 @@ import com.photo_contest.repos.UserRepository;
 import com.photo_contest.services.contracts.AuthService;
 
 import com.photo_contest.utils.JwtUtil;
+import com.photo_contest.utils.RSAKeyProps;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,8 +21,10 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.Base64;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -41,16 +44,18 @@ public class AuthServiceImpl implements AuthService {
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
+    private final RSAKeyProps rsaKeyProps;
 
     @Autowired
     public AuthServiceImpl(AuthenticationManager authenticationManager, JwtUtil jwtUtil,
-                           PasswordEncoder passwordEncoder, UserRepository userRepository, RoleRepository roleRepository) {
+                           PasswordEncoder passwordEncoder, UserRepository userRepository, RoleRepository roleRepository, RSAKeyProps rsaKeyProps) {
         this.authenticationManager = authenticationManager;
         this.jwtUtil = jwtUtil;
         this.passwordEncoder = passwordEncoder;
         this.userRepository = userRepository;
 
         this.roleRepository = roleRepository;
+        this.rsaKeyProps = rsaKeyProps;
     }
 
 
@@ -104,6 +109,10 @@ public class AuthServiceImpl implements AuthService {
             throw new RuntimeException(INVALID_LOGIN_CREDENTIALS, e);
         }
     }
+    @GetMapping("/public-key")
+    public String getPublicKey() {
+        return Base64.getEncoder().encodeToString(rsaKeyProps.getPublicKey().getEncoded());
+    }
 
 
     @Override
@@ -120,4 +129,5 @@ public class AuthServiceImpl implements AuthService {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, INVALID_REFRESH_TOKEN);
         }
     }
+
 }

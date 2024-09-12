@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom'; // Import useLocation and useNavigate
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
@@ -10,31 +10,43 @@ import AuthButtons from './AuthButton.jsx';
 import LoginForm from '../Forms/LoginForm';
 import RegisterForm from '../Forms/RegisterForm.jsx';
 import classes from './Navbar.module.css';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 export default function Navbar() {
     const navigate = useNavigate();
+    const location = useLocation(); // Get the current route path
     const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
     const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
 
 
-    const handleHomeRedirect = () => {
-        navigate('/');
-    };
+    useEffect(() => {
+        if (location.pathname === '/login') {
+            setIsLoginModalOpen(true);
+            setIsRegisterModalOpen(false);
+        } else if (location.pathname === '/register') {
+            setIsRegisterModalOpen(true);
+            setIsLoginModalOpen(false);
+        } else {
 
+            setIsLoginModalOpen(false);
+            setIsRegisterModalOpen(false);
+        }
+    }, [location.pathname]);
+
+    const handleHomeRedirect = () => {
+        navigate('/'); //
+    };
 
     const handleLoginClick = () => {
-
-        setIsLoginModalOpen(true);
+        navigate('/login');
     };
-    
+
     const handleRegisterClick = () => {
-        setIsRegisterModalOpen(true);
+        navigate('/register');
     };
 
     const handleCloseModal = () => {
-        setIsRegisterModalOpen(false); 
-        setIsLoginModalOpen(false);
+        navigate('/home');
     };
 
     return (
@@ -79,12 +91,12 @@ export default function Navbar() {
                         <SearchBar />
                     </Box>
 
-                    <AuthButtons onLoginClick={handleLoginClick} onRegisterClick={handleRegisterClick}/>
+                    <AuthButtons onLoginClick={handleLoginClick} onRegisterClick={handleRegisterClick} />
                 </Toolbar>
             </AppBar>
 
-
-           {isLoginModalOpen && (
+            {/* Conditionally render LoginForm or RegisterForm based on route or button click */}
+            {isLoginModalOpen && (
                 <LoginForm onClose={handleCloseModal} />
             )}
             {isRegisterModalOpen && (

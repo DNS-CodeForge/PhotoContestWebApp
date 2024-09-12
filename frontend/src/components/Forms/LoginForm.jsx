@@ -65,6 +65,7 @@ function LoginForm({ onClose }) {
         </Form>
         {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
         <p>
+
           Don't have an account?{' '}
           <a href="#" className={classes['a2']}>
             Sign up!

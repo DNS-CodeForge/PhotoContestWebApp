@@ -1,7 +1,7 @@
-import {useState, useEffect} from 'react';
+import { useState, useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import CircularProgress from '@mui/material/CircularProgress';
-import {Box, Button, Typography} from '@mui/material';
-import {useParams} from 'react-router-dom';
+import { Box, Button, Typography } from '@mui/material';
 import portraitImage from '../../assets/portrait.png';
 import landscapeImage from '../../assets/landscape.png';
 import streetImage from '../../assets/street.png';
@@ -10,19 +10,19 @@ import abstractImage from '../../assets/abstract.png';
 import ContestInfo from './ContestInfo';
 import Ranking from './Ranking';
 import SubmissionsList from './SubmissionsList';
+import ContestRules from './ContestRules.jsx';
 import classes from './Details.module.css';
-import ContestRules from "./ContestRules.jsx";
 
 const BACKEND_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
 export default function ContestDetail() {
-
     const [contest, setContest] = useState([]);
     const [rankedUsers, setRankedUsers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const {id} = useParams();
+    const { id } = useParams();
     const [selectedTab, setSelectedTab] = useState('submissions');
+    const navigate = useNavigate();
 
     const categoryToImageMap = {
         'PORTRAIT': portraitImage,
@@ -44,21 +44,31 @@ export default function ContestDetail() {
                 const response = await fetch(`${BACKEND_BASE_URL}api/contest/${id}`, {
                     method: 'GET',
                     headers: {
-                        'Authorization': `Bearer ${accessToken}`,
-                        'Content-Type': 'application/json'
-                    }
+                        Authorization: `Bearer ${accessToken}`,
+                        'Content-Type': 'application/json',
+                    },
                 });
+
+                if (!response.ok) {
+                    if (response.status === 401) {
+                        navigate('/login');
+                    }
+                    throw new Error('Failed to fetch contest');
+                }
 
                 const usersResponse = await fetch(`${BACKEND_BASE_URL}api/contest/${id}/ranking?limit=5`, {
                     method: 'GET',
                     headers: {
-                        'Authorization': `Bearer ${accessToken}`,
-                        'Content-Type': 'application/json'
-                    }
+                        Authorization: `Bearer ${accessToken}`,
+                        'Content-Type': 'application/json',
+                    },
                 });
 
-                if (!response.ok) {
-                    throw new Error('Failed to fetch contests');
+                if (!usersResponse.ok) {
+                    if (usersResponse.status === 401) {
+                        navigate('/login');
+                    }
+                    throw new Error('Failed to fetch rankings');
                 }
 
                 const responseJsonContest = await response.json();
@@ -66,7 +76,6 @@ export default function ContestDetail() {
 
                 setContest(responseJsonContest);
                 setRankedUsers(responseJsonUsers);
-
             } catch (error) {
                 setError(error.message);
             } finally {
@@ -75,47 +84,52 @@ export default function ContestDetail() {
         };
 
         fetchData();
-    }, [id]);
-
+    }, [id, navigate]);
 
     if (loading) {
-        return <Box display={"flex"} justifyContent={"center"} alignItems={"center"} height={"100%"}> <CircularProgress
-            color='gray'/> </Box>;
+        return (
+            <Box display={'flex'} justifyContent={'center'} alignItems={'center'} height={'100%'}>
+                <CircularProgress color="gray" />
+            </Box>
+        );
     }
 
     if (error) {
         return <div>Error: {error}</div>;
     }
 
-    const image = categoryToImageMap[contest.category.toUpperCase()] || abstractImage;
+    const image = categoryToImageMap[contest.category?.toUpperCase()] || abstractImage;
 
     const buttonStyle = (tab) => ({
-        fontSize: "1.2rem",
+        fontSize: '1.2rem',
         backgroundColor: selectedTab === tab ? '#222831' : '#393E46',
-        border: selectedTab === tab ?  '1px inset rgba(154, 149, 149, 0.3)' :'1px groove rgba(154, 149, 149, 0.3)' ,
-        borderBottom: selectedTab === tab ?  'none' :'0.5px groove rgba(154, 149, 149, 0.02)' ,
-        boxShadow: "none !important",
-        borderRadius: "12px 12px 0 0",
-        overflow: "hidden",
-
+        border: selectedTab === tab ? '1px inset rgba(154, 149, 149, 0.3)' : '1px groove rgba(154, 149, 149, 0.3)',
+        borderBottom: selectedTab === tab ? 'none' : '0.5px groove rgba(154, 149, 149, 0.02)',
+        boxShadow: 'none !important',
+        borderRadius: '12px 12px 0 0',
+        overflow: 'hidden',
     });
 
     return (
         <>
             <div className={classes.detailContainer}>
-                <Box display={"flex"} alignItems={"center"} flexDirection={"column"} sx={{
-                    position: 'relative',
-                    backgroundImage: `url(${image})`,
-                    backgroundSize: 'cover',
-                    backgroundRepeat: 'no-repeat',
-                    backgroundPosition: 'center',
-                    height: '50vh',
-                    width: '100%',
-                    overflow: 'hidden',
-                    borderTopLeftRadius: '1rem',
-                    borderTopRightRadius: '1rem',
-
-                }}>
+                <Box
+                    display={'flex'}
+                    alignItems={'center'}
+                    flexDirection={'column'}
+                    sx={{
+                        position: 'relative',
+                        backgroundImage: `url(${image})`,
+                        backgroundSize: 'cover',
+                        backgroundRepeat: 'no-repeat',
+                        backgroundPosition: 'center',
+                        height: '50vh',
+                        width: '100%',
+                        overflow: 'hidden',
+                        borderTopLeftRadius: '1rem',
+                        borderTopRightRadius: '1rem',
+                    }}
+                >
                     <Box
                         sx={{
                             position: 'absolute',
@@ -127,19 +141,18 @@ export default function ContestDetail() {
                             padding: '2rem',
                             borderRadius: '1rem',
                             textAlign: 'center',
-
                         }}
                     >
 
                         <Typography
-                            variant='body1'
+                            variant="body1"
+                            component="div"
                             sx={{
-                                marginBottom: "1rem",
-                                fontSize: '1.2rem'
+                                marginBottom: '1rem',
+                                fontSize: '1.2rem',
                             }}
                         >
                             <ContestInfo contest={contest} />
-
                         </Typography>
 
                         <Button
@@ -164,32 +177,34 @@ export default function ContestDetail() {
                         >
                             Join Contest
                         </Button>
-
-
                     </Box>
 
-
-                    <Box display={"flex"} marginTop={"auto"} width={"100%"} justifyContent="space-between"
-                         sx={{
-                             padding: "0 10px",
-                         }}>
+                    <Box
+                        display={'flex'}
+                        marginTop={'auto'}
+                        width={'100%'}
+                        justifyContent="space-between"
+                        sx={{
+                            padding: '0 10px',
+                        }}
+                    >
                         <Button
                             variant="contained"
-                            sx={{...buttonStyle('submissions'), flexGrow: 1, margin: "0 5px", maxWidth: '20rem'}}
+                            sx={{ ...buttonStyle('submissions'), flexGrow: 1, margin: '0 5px', maxWidth: '20rem' }}
                             onClick={() => handleTabChange('submissions')}
                         >
                             Entries
                         </Button>
                         <Button
                             variant="contained"
-                            sx={{...buttonStyle('ranking'), flexGrow: 1, margin: "0 5px", maxWidth: '20rem'}}
+                            sx={{ ...buttonStyle('ranking'), flexGrow: 1, margin: '0 5px', maxWidth: '20rem' }}
                             onClick={() => handleTabChange('ranking')}
                         >
                             Ranking
                         </Button>
                         <Button
                             variant="contained"
-                            sx={{...buttonStyle('details'), flexGrow: 1, margin: "0 5px", maxWidth: '20rem'}}
+                            sx={{ ...buttonStyle('details'), flexGrow: 1, margin: '0 5px', maxWidth: '20rem' }}
                             onClick={() => handleTabChange('details')}
                         >
                             Details
@@ -197,13 +212,11 @@ export default function ContestDetail() {
                     </Box>
                 </Box>
 
-
                 <Box>
-                    {selectedTab === 'details' && <ContestRules contest={contest}/>}
-                    {selectedTab === 'submissions' && <SubmissionsList contest={contest}/>}
-                    {selectedTab === 'ranking' && <Ranking rankedUsers={rankedUsers}/>}
+                    {selectedTab === 'details' && <ContestRules contest={contest} />}
+                    {selectedTab === 'submissions' && <SubmissionsList contest={contest} />}
+                    {selectedTab === 'ranking' && <Ranking rankedUsers={rankedUsers} />}
                 </Box>
-
             </div>
         </>
     );
