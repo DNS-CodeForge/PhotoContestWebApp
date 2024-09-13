@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import ContestList from '../components/ContestList/ContestList.jsx';
 import Pagination from '../components/ContestList/Pagination.jsx';
 import Box from "@mui/material/Box";
 import CircularProgress from "@mui/material/CircularProgress";
 
 const BACKEND_BASE_URL = import.meta.env.VITE_BACKEND_URL;
-
 
 const getSizeBasedOnScreenWidth = () => {
     if (window.matchMedia("(min-width: 2540px)").matches) {
@@ -23,13 +23,16 @@ const getSizeBasedOnScreenWidth = () => {
     }
 };
 
-function HomePage() {
+function Home() {
+    const { page } = useParams();
+    const navigate = useNavigate();
     const [contests, setContests] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [currentPage, setCurrentPage] = useState(1);
+    const [currentPage, setCurrentPage] = useState(Number(page) || 1);
     const [totalPages, setTotalPages] = useState(1);
     const [currentBreakpoint, setCurrentBreakpoint] = useState(getSizeBasedOnScreenWidth());
+
 
     const fetchContests = async (page = 1, size = 12) => {
         try {
@@ -47,10 +50,20 @@ function HomePage() {
         }
     };
 
+
     useEffect(() => {
         const size = getSizeBasedOnScreenWidth();
         fetchContests(currentPage, size);
+    }, [currentPage]);
 
+
+    useEffect(() => {
+        if (Number(page) !== currentPage) {
+            setCurrentPage(Number(page) || 1);
+        }
+    }, [page, currentPage]);
+
+    useEffect(() => {
         const handleResize = () => {
             const newSize = getSizeBasedOnScreenWidth();
             if (newSize !== currentBreakpoint) {
@@ -82,6 +95,7 @@ function HomePage() {
 
     const handlePageChange = (event, value) => {
         setCurrentPage(value);
+        navigate(`/home/page/${value}`);
     };
 
     if (loading) {
@@ -91,7 +105,6 @@ function HomePage() {
             </Box>
         );
     }
-
     if (error) {
         return <div>Error: {error}</div>;
     }
@@ -113,4 +126,4 @@ function HomePage() {
     );
 }
 
-export default HomePage;
+export default Home;

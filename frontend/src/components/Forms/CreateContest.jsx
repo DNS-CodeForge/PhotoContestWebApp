@@ -18,18 +18,18 @@ const BACKEND_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
 export default function CreateContest({ onClose }) {
   const [category, setCategory] = useState('');
-  const [startDateTime] = useState(dayjs().add(1, 'day')); // Static, can't be changed
-  const [endDateTime, setEndDateTime] = useState(dayjs().add(2, 'day')); // Initial default, one day after start
+  const [startDateTime] = useState(dayjs().add(1, 'day'));
+  const [endDateTime, setEndDateTime] = useState(dayjs().add(2, 'day'));
   const [error, setError] = useState('');
   const [hour, setHour] = useState('');
   const [title, setTitle] = useState('');
   const [isPrivate, setIsPrivate] = useState(false);
 
- 
+
   const calculatePhaseDurationInDays = () => {
     const start = dayjs(startDateTime);
     const end = dayjs(endDateTime);
-    return end.diff(start, 'day'); // Returns the difference in days
+    return end.diff(start, 'day');
   };
 
   const handleHourChange = (event) => {
@@ -44,7 +44,7 @@ export default function CreateContest({ onClose }) {
   };
 
   const handleEndDateTimeChange = (newValue) => {
-    const maxEndDate = dayjs(startDateTime).add(30, 'day'); // Calculate max 30 days after start
+    const maxEndDate = dayjs(startDateTime).add(30, 'day');
 
     if (newValue && newValue.isAfter(maxEndDate)) {
       setError('The end date cannot be more than 30 days after the start date.');
@@ -76,7 +76,7 @@ export default function CreateContest({ onClose }) {
       phaseDurationInDays,
       phaseTwoDurationInHours: Number(hour),
       isPrivate,
-    };  
+    };
 
       try {
 
@@ -125,7 +125,7 @@ export default function CreateContest({ onClose }) {
             minWidth: '8rem',
           '& .MuiOutlinedInput-root': {
             '& fieldset': {
-              borderColor: 'white', 
+              borderColor: 'white',
             },
             '&:hover fieldset': {
               borderColor: 'orange',
@@ -143,7 +143,7 @@ export default function CreateContest({ onClose }) {
           '& .MuiSelect-icon': {
             color: 'white',
           },
-        }}          
+        }}
       >
             <InputLabel>Category</InputLabel>
             <Select
@@ -153,17 +153,17 @@ export default function CreateContest({ onClose }) {
               MenuProps={{
                 PaperProps: {
                   sx: {
-                    backgroundColor: 'black', 
-                    color: 'white', 
+                    backgroundColor: 'black',
+                    color: 'white',
                   },
                 },
               }}
               sx={{
                 '& .MuiSelect-select': {
-                  color: 'white', 
+                  color: 'white',
                 },
                 '& .MuiSelect-icon': {
-                  color: 'white', 
+                  color: 'white',
                 },
               }}
             >
@@ -173,7 +173,7 @@ export default function CreateContest({ onClose }) {
               <MenuItem value={"WILDLIFE"}>Wildlife</MenuItem>
               <MenuItem value={"ABSTRACT"}>Abstract</MenuItem>
             </Select>
-          </FormControl>  
+          </FormControl>
 
          <LocalizationProvider dateAdapter={AdapterDayjs}>
           <DemoContainer components={['DatePicker']} sx={{
@@ -204,12 +204,12 @@ export default function CreateContest({ onClose }) {
               }
           }}>
             <DatePicker
-              label="Submission phase start date" 
+              label="Submission phase start date"
               readOnly
               value={startDateTime}
               autoFocus
               />
-      
+
           </DemoContainer>
          </LocalizationProvider>
 
@@ -241,12 +241,12 @@ export default function CreateContest({ onClose }) {
                   color: 'orange'
               }
           }}>
-        <DatePicker 
-      label="Submission phase end date" 
+        <DatePicker
+      label="Submission phase end date"
       value={endDateTime}
-      onChange={handleEndDateTimeChange} 
-      minDate={dayjs().add(1, 'day')} 
-      maxDate={dayjs().add(31, 'day')} 
+      onChange={handleEndDateTimeChange}
+      minDate={dayjs().add(1, 'day')}
+      maxDate={dayjs().add(31, 'day')}
       />
           </DemoContainer>
          </LocalizationProvider>
@@ -308,7 +308,7 @@ export default function CreateContest({ onClose }) {
             <span></span>
             <span></span>
             Create 
-          </button>        
+          </button>
           </Box>
 
         </form>
