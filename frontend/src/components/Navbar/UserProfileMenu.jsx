@@ -7,7 +7,6 @@ import Avatar from '@mui/material/Avatar';
 import Tooltip from '@mui/material/Tooltip';
 import Box from '@mui/material/Box';
 import ListItemIcon from '@mui/material/ListItemIcon';
-import Divider from '@mui/material/Divider';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import LogoutIcon from '@mui/icons-material/Logout';
 
@@ -46,30 +45,32 @@ export default function UserProfileMenu() {
                 anchorEl={anchorEl}
                 open={Boolean(anchorEl)}
                 onClose={handleMenuClose}
-                PaperProps={{
-                    elevation: 0,
-                    sx: {
-                        bgcolor: '#393E46',
-                        overflow: 'visible',
-                        filter: 'drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.15))',
-                        mt: 1.5,
-                        '& .MuiAvatar-root': {
-                            width: 32,
-                            height: 32,
-                            ml: -0.5,
-                            mr: 1,
-                        },
-                        '&:before': {
-                            content: '""',
-                            display: 'block',
-                            position: 'absolute',
-                            top: 0,
-                            right: 14,
-                            width: 10,
-                            height: 10,
+                slotProps={{
+                    paper: {
+                        elevation: 0,
+                        sx: {
                             bgcolor: '#393E46',
-                            transform: 'translateY(-50%) rotate(45deg)',
-                            zIndex: 0,
+                            overflow: 'visible',
+                            filter: 'drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.15))',
+                            mt: 1.5,
+                            '& .MuiAvatar-root': {
+                                width: 32,
+                                height: 32,
+                                ml: -0.5,
+                                mr: 1,
+                            },
+                            '&:before': {
+                                content: '""',
+                                display: 'block',
+                                position: 'absolute',
+                                top: 0,
+                                right: 14,
+                                width: 10,
+                                height: 10,
+                                bgcolor: '#393E46',
+                                transform: 'translateY(-50%) rotate(45deg)',
+                                zIndex: 0,
+                            },
                         },
                     },
                 }}
@@ -94,8 +95,6 @@ export default function UserProfileMenu() {
                     </ListItemIcon>
                     <span style={{ color: '#fff' }}>Profile</span>
                 </MenuItem>
-
-                <Divider sx={{ bgcolor: '#555' }} />
 
                 <MenuItem
                     onClick={handleLogout}

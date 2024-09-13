@@ -44,7 +44,7 @@ export default function ToolbarMenu() {
                         overflow: 'hidden',
                     }}
                 >
-                    <img src={logo} alt="Logo" style={{ height: '3rem', width: '3rem', borderRadius: '50%' }} /> {/* Your logo */}
+                    <img src={logo} alt="Logo" style={{ height: '3rem', width: '3rem', borderRadius: '50%' }} />
                 </IconButton>
             </Tooltip>
 
@@ -62,7 +62,8 @@ export default function ToolbarMenu() {
                             mt: 1.5,
                             '& .MuiMenuItem-root': {
                                 '&:hover': {
-                                    backgroundColor: 'rgba(211, 84, 36, 0.3)',
+                                    backgroundColor: 'rgba(211, 84, 36, 0.8)',
+                                    color: '#fff',
                                 },
                             },
                         },
@@ -77,22 +78,70 @@ export default function ToolbarMenu() {
                     horizontal: 'center',
                 }}
             >
-                <MenuItem onClick={() => handleNavigation('/home')}>
+                <MenuItem
+                    onClick={() => handleNavigation('/home')}
+                    sx={{
+                        padding: '1rem 1rem',
+                        paddingRight: '3rem',
+                        fontSize: '1rem',
+                        justifyContent: 'flex-start',
+                        '&:hover': {
+                            backgroundColor: 'rgba(211, 84, 36, 0.8)',
+                            color: '#fff',
+                        },
+                    }}
+                >
                     <HomeIcon sx={{ mr: 1, color: '#fff' }} />
                     Home
                 </MenuItem>
 
-                <MenuItem onClick={() => handleNavigation('/contest')}>
+                <MenuItem
+                    onClick={() => handleNavigation('/contest')}
+                    sx={{
+                        padding: '1rem 1rem',
+                        paddingRight: '3rem',
+                        fontSize: '1rem',
+                        justifyContent: 'flex-start',
+                        '&:hover': {
+                            backgroundColor: 'rgba(211, 84, 36, 0.8)',
+                            color: '#fff',
+                        },
+                    }}
+                >
                     <EmojiEventsIcon sx={{ mr: 1, color: '#fff' }} />
                     Contest
                 </MenuItem>
 
-                <MenuItem onClick={() => handleNavigation('/organizer')}>
+                <MenuItem
+                    onClick={() => handleNavigation('/organizer')}
+                    sx={{
+                        padding: '1rem 1rem',
+                        paddingRight: '3rem',
+                        fontSize: '1rem',
+                        justifyContent: 'flex-start',
+                        '&:hover': {
+                            backgroundColor: 'rgba(211, 84, 36, 0.8)',
+                            color: '#fff',
+                        },
+                    }}
+                >
                     <GroupIcon sx={{ mr: 1, color: '#fff' }} />
                     Organizer
                 </MenuItem>
 
-                <MenuItem onClick={() => handleNavigation('/about')}>
+                <MenuItem
+                    onClick={() => handleNavigation('/about')}
+                    sx={{
+                        padding: '1rem 1rem',
+                        paddingRight: '3rem',
+                        fontSize: '1rem',
+                        justifyContent: 'flex-start',
+                        '&:hover': {
+                            backgroundColor: 'rgba(211, 84, 36, 0.8)',
+                            color: '#fff',
+                        },
+                    }}
+                >
                     <InfoIcon sx={{ mr: 1, color: '#fff' }} />
                     About
                 </MenuItem>
