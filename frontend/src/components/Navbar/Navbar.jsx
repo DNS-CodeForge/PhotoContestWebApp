@@ -70,10 +70,9 @@ export default function Navbar() {
                 }}
             >
                 <Toolbar>
-                    {/* ToolbarMenu inside IconButton */}
-                    <IconButton sx={{ boxShadow: 'none' }}>
+
                         <ToolbarMenu />
-                    </IconButton>
+
 
                     <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'center' }}>
                         <SearchBar />
