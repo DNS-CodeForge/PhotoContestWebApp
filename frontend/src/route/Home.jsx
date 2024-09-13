@@ -8,7 +8,7 @@ const BACKEND_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
 
 const getSizeBasedOnScreenWidth = () => {
-    if (window.matchMedia("(min-width: 2560px)").matches) {
+    if (window.matchMedia("(min-width: 2540px)").matches) {
         return 16;
     } else if (window.matchMedia("(min-width: 1920px)").matches) {
         return 12;

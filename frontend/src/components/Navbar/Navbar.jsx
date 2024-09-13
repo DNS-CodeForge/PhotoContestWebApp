@@ -34,7 +34,7 @@ export default function Navbar() {
     }, [location.pathname]);
 
     const handleHomeRedirect = () => {
-        navigate('/'); //
+        navigate('/create-contest'); //
     };
 
     const handleLoginClick = () => {

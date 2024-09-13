@@ -14,14 +14,23 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import dayjs from 'dayjs';
-import { Padding } from '@mui/icons-material';
+const BACKEND_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
 export default function CreateContest({ onClose }) {
-  const [category, setCategory] = React.useState('');
-  const [startDateTime, setStartDateTime] = React.useState(dayjs());
-  const [endDateTime, setEndDateTime] = React.useState(dayjs().add(1, 'hour'));
-  const [error, setError] = React.useState('');
+  const [category, setCategory] = useState('');
+  const [startDateTime] = useState(dayjs().add(1, 'day')); // Static, can't be changed
+  const [endDateTime, setEndDateTime] = useState(dayjs().add(2, 'day')); // Initial default, one day after start
+  const [error, setError] = useState('');
   const [hour, setHour] = useState('');
+  const [title, setTitle] = useState('');
+  const [isPrivate, setIsPrivate] = useState(false);
+
+ 
+  const calculatePhaseDurationInDays = () => {
+    const start = dayjs(startDateTime);
+    const end = dayjs(endDateTime);
+    return end.diff(start, 'day'); // Returns the difference in days
+  };
 
   const handleHourChange = (event) => {
     const value = event.target.value;
@@ -34,16 +43,11 @@ export default function CreateContest({ onClose }) {
     setCategory(event.target.value);
   };
 
-  const handleStartDateTimeChange = (newValue) => {
-    setStartDateTime(newValue);
-  };
-
   const handleEndDateTimeChange = (newValue) => {
-    const today = dayjs();
-    const maxDate = today.add(30, 'day');
+    const maxEndDate = dayjs(startDateTime).add(30, 'day'); // Calculate max 30 days after start
 
-    if (newValue && newValue.isAfter(maxDate)) {
-      setError('The end date cannot be more than 30 days in the future.');
+    if (newValue && newValue.isAfter(maxEndDate)) {
+      setError('The end date cannot be more than 30 days after the start date.');
       return;
     }
 
@@ -53,6 +57,51 @@ export default function CreateContest({ onClose }) {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+
+    const phaseDurationInDays = calculatePhaseDurationInDays();
+
+    if (phaseDurationInDays < 1 || phaseDurationInDays > 30) {
+      setError("Phase duration must be between 1 and 30 days.");
+      return;
+    }
+
+    if (!title || !category || !hour || !phaseDurationInDays) {
+      setError('Please fill all the required fields.');
+      return;
+    }
+
+    const createContestDTO = {
+      title,
+      category,
+      phaseDurationInDays,
+      phaseTwoDurationInHours: Number(hour),
+      isPrivate,
+    };  
+
+      try {
+
+      const accessToken = localStorage.getItem('accessToken');
+
+      const response = await fetch(`${BACKEND_BASE_URL}api/contest`, {
+        method: 'POST',
+       headers: {
+            Authorization: `Bearer ${accessToken}`,
+            'Content-Type': 'application/json',
+        },
+          body: JSON.stringify(createContestDTO),
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        console.log('Contest created:', result);
+        onClose();
+      } else {
+        const errorResponse = await response.json();
+        setError(errorResponse.message || 'Failed to create contest.');
+      }
+    } catch (error) {
+      setError('Error creating contest. Please try again later.');
+    }
   };
 
   return (
@@ -60,8 +109,14 @@ export default function CreateContest({ onClose }) {
       <div className={classes['form-box']} >
         <form method="post" onSubmit={handleSubmit}>
           <p>Create contest</p>
-          <div className={classes['user-box']}>
-            <input name="title" type="text" required />
+           <div className={classes['user-box']}>
+            <input
+              name="title"
+              type="text"
+              required
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+            />
             <label>Title</label>
           </div>
 
@@ -148,7 +203,13 @@ export default function CreateContest({ onClose }) {
                   color: 'orange'
               }
           }}>
-            <DatePicker label="Phase 1 start date" />
+            <DatePicker
+              label="Submission phase start date" 
+              readOnly
+              value={startDateTime}
+              autoFocus
+              />
+      
           </DemoContainer>
          </LocalizationProvider>
 
@@ -180,12 +241,18 @@ export default function CreateContest({ onClose }) {
                   color: 'orange'
               }
           }}>
-        <DatePicker label="Phase 1 end date" />
+        <DatePicker 
+      label="Submission phase end date" 
+      value={endDateTime}
+      onChange={handleEndDateTimeChange} 
+      minDate={dayjs().add(1, 'day')} 
+      maxDate={dayjs().add(31, 'day')} 
+      />
           </DemoContainer>
          </LocalizationProvider>
 
         <TextField
-              label="Phase 2 duration"
+              label="Review phase duration"
               value={hour}
               onChange={handleHourChange}
               placeholder="1-30"
@@ -204,21 +271,26 @@ export default function CreateContest({ onClose }) {
                    '.css-18pjc51-MuiFormLabel-root-MuiInputLabel-root.Mui-focused': {
                        color: 'orange',
                   },
+                  '.css-18pjc51-MuiFormLabel-root-MuiInputLabel-root': {
+                      color: 'white'
+                  },
                   '.css-j882ge-MuiInputBase-root-MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
                       borderColor: 'orange'
                   },
                   '.css-j882ge-MuiInputBase-root-MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline': {
                       borderColor: 'orange'
+                  },
+                  '.css-j882ge-MuiInputBase-root-MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline *': {
+                      color: 'orange'
                   }
-
-
               }}
             />
 
 
           <Box display={"flex"} alignItems={"center"}>
             <Checkbox
-              defaultChecked
+              checked={isPrivate}
+              onChange={(e) => setIsPrivate(e.target.checked)}
               sx={{
                 color: "orange",
                 '&.Mui-checked': {
@@ -227,6 +299,16 @@ export default function CreateContest({ onClose }) {
               }}
             />
             <p>is private</p>
+          </Box>
+
+          <Box justifyContent={"center"} display={"flex"}>
+          <button type="submit" className={classes['animated-button']}>
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            Create 
+          </button>        
           </Box>
 
         </form>
