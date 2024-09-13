@@ -41,7 +41,6 @@ export default function ContestDetail() {
             try {
                 const accessToken = localStorage.getItem('accessToken');
 
-
                 const response = await fetch(`${BACKEND_BASE_URL}api/contest/${id}`, {
                     method: 'GET',
                     headers: {
@@ -103,12 +102,12 @@ export default function ContestDetail() {
 
     const buttonStyle = (tab) => ({
         fontSize: '1.2rem',
-        backgroundColor: selectedTab === tab ? '#222831' : '#393E46',
-        border: selectedTab === tab ? '1px inset rgba(154, 149, 149, 0.3)' : '1px groove rgba(154, 149, 149, 0.3)',
-        borderBottom: selectedTab === tab ? 'none' : '0.5px groove rgba(154, 149, 149, 0.02)',
-        boxShadow: 'none !important',
+        backgroundColor: selectedTab === tab ? '#393E46' : 'rgba(12,12,12,0.38)',
+        border: 'none',
         borderRadius: '12px 12px 0 0',
-        overflow: 'hidden',
+        padding: '1rem 3vw',
+        transition: 'all 0.3s ease',
+        boxShadow: 'none',
     });
 
     return (
@@ -127,8 +126,7 @@ export default function ContestDetail() {
                         height: '50vh',
                         width: '100%',
                         overflow: 'hidden',
-                        borderTopLeftRadius: '1rem',
-                        borderTopRightRadius: '1rem',
+                        borderRadius: '16px',
                     }}
                 >
                     <Box
@@ -144,7 +142,6 @@ export default function ContestDetail() {
                             textAlign: 'center',
                         }}
                     >
-
                         <Typography
                             variant="body1"
                             component="div"
@@ -179,44 +176,77 @@ export default function ContestDetail() {
                             Join Contest
                         </Button>
                     </Box>
+                </Box>
 
+                <Box
+                    sx={{
+                        backgroundColor: 'transparent',
+                        width: '100%',
+                        padding: '1rem 0',
+                        marginTop: '1rem',
+                        boxShadow: 'none',
+                    }}
+                >
                     <Box
                         display={'flex'}
-                        marginTop={'auto'}
-                        width={'100%'}
-                        justifyContent="space-between"
-                        sx={{
-                            padding: '0 10px',
-                        }}
+                        justifyContent="flex-start"
+                        width="100%"
+                        overflow="hidden"
                     >
                         <Button
                             variant="contained"
-                            sx={{ ...buttonStyle('submissions'), flexGrow: 1, margin: '0 5px', maxWidth: '20rem' }}
+                            sx={{
+                                ...buttonStyle('submissions'),
+                                marginRight: '2px',
+                                marginLeft: 0,
+                                padding: '1vh 8vw',
+                                flexGrow: 1,
+                                overflow: 'hidden',
+                            }}
                             onClick={() => handleTabChange('submissions')}
                         >
                             Entries
                         </Button>
                         <Button
                             variant="contained"
-                            sx={{ ...buttonStyle('ranking'), flexGrow: 1, margin: '0 5px', maxWidth: '20rem' }}
+                            sx={{
+                                ...buttonStyle('ranking'),
+                                marginRight: '2px',
+                                padding: '1vh 8vw',
+                                flexGrow: 1,
+                                overflow: 'hidden',
+                            }}
                             onClick={() => handleTabChange('ranking')}
                         >
                             Ranking
                         </Button>
                         <Button
                             variant="contained"
-                            sx={{ ...buttonStyle('details'), flexGrow: 1, margin: '0 5px', maxWidth: '20rem' }}
+                            sx={{
+                                ...buttonStyle('details'),
+                                padding: '1vh 8vw',
+                                flexGrow: 1,
+                                overflow: 'hidden',
+                            }}
                             onClick={() => handleTabChange('details')}
                         >
                             Details
                         </Button>
                     </Box>
-                </Box>
 
-                <Box>
-                    {selectedTab === 'details' && <ContestRules contest={contest} />}
-                    {selectedTab === 'submissions' && <SubmissionsList contest={contest} />}
-                    {selectedTab === 'ranking' && <Ranking rankedUsers={rankedUsers} />}
+                    <Box
+                        sx={{
+                            marginTop: '0',
+                            padding: '1rem',
+                            backgroundColor: '#393E46',
+                            borderRadius: '0 0 12px 12px',
+                            boxShadow: '0px 4px 8px -2px rgba(0, 0, 0, 0.3)',
+                        }}
+                    >
+                        {selectedTab === 'details' && <ContestRules contest={contest} />}
+                        {selectedTab === 'submissions' && <SubmissionsList contest={contest} />}
+                        {selectedTab === 'ranking' && <Ranking rankedUsers={rankedUsers} />}
+                    </Box>
                 </Box>
             </div>
         </>

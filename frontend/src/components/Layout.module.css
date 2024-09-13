@@ -1,11 +1,11 @@
 main {
-    padding: 7vh 0;
+    padding: 0vh 0;
 }
 
 
 @media (max-width: 1024px) {
     main {
-        padding: 7vh 3.6vw;
+        padding: 0vh 3.6vw;
     }
 }
 

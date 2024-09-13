@@ -12,7 +12,12 @@ const routes = [
         element: <Layout />,
         children: [
             {
+
                 path: 'home',
+                element: <Navigate to="/home/page/1" replace />,
+            },
+            {
+                path: '',
                 element: <Navigate to="/home/page/1" replace />,
             },
 
