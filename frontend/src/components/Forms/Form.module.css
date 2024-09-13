@@ -7,6 +7,13 @@ p {
 a {
     color: orange;
 }
+.a2 {
+  cursor: pointer;
+}
+
+.a2:hover {
+  color: #815002;
+}
 
 .form-box {
   position: absolute;

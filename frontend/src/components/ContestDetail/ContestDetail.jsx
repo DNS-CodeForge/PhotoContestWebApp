@@ -40,7 +40,7 @@ export default function ContestDetail() {
         const fetchData = async () => {
             try {
                 const accessToken = localStorage.getItem('accessToken');
-                console.log('Access Token:', accessToken);
+
 
                 const response = await fetch(`${BACKEND_BASE_URL}api/contest/${id}`, {
                     method: 'GET',

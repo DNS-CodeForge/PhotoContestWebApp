@@ -1,23 +1,26 @@
 import * as React from 'react';
-import { useNavigate, useLocation } from 'react-router-dom'; // Import useLocation and useNavigate
+import { useNavigate, useLocation } from 'react-router-dom';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
 import IconButton from '@mui/material/IconButton';
-import MenuIcon from '@mui/icons-material/Menu';
 import SearchBar from './Search';
 import AuthButtons from './AuthButton.jsx';
 import LoginForm from '../Forms/LoginForm';
 import RegisterForm from '../Forms/RegisterForm.jsx';
+import UserProfileMenu from './UserProfileMenu';
 import classes from './Navbar.module.css';
 import { useState, useEffect } from 'react';
+import { isAuthenticated } from '../../utils/authUtils';
+import ToolbarMenu from './ToolbarMenu.jsx';
 
 export default function Navbar() {
     const navigate = useNavigate();
-    const location = useLocation(); // Get the current route path
+    const location = useLocation();
     const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
     const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
 
+    const authenticated = isAuthenticated();
 
     useEffect(() => {
         if (location.pathname === '/login') {
@@ -27,15 +30,11 @@ export default function Navbar() {
             setIsRegisterModalOpen(true);
             setIsLoginModalOpen(false);
         } else {
-
             setIsLoginModalOpen(false);
             setIsRegisterModalOpen(false);
         }
     }, [location.pathname]);
 
-    const handleHomeRedirect = () => {
-        navigate('/create-contest'); //
-    };
 
     const handleLoginClick = () => {
         navigate('/login');
@@ -65,43 +64,31 @@ export default function Navbar() {
                     '&:hover': {
                         boxShadow: '0px 4px 6px rgba(211, 84, 36, 0.3)',
                     },
+                    '&:hover .MuiIconButton-root': {
+                        boxShadow: 'none',
+                    },
                 }}
             >
                 <Toolbar>
-                    <IconButton
-                        size="large"
-                        edge="start"
-                        color="inherit"
-                        aria-label="open drawer"
-                        onClick={handleHomeRedirect}
-                        sx={{
-                            mr: 2,
-                            '&:focus': {
-                                color: '#EEEEEE',
-                            },
-                            '&:active': {
-                                color: 'rgba(211, 84, 36)',
-                            },
-                        }}
-                    >
-                        <MenuIcon />
+                    {/* ToolbarMenu inside IconButton */}
+                    <IconButton sx={{ boxShadow: 'none' }}>
+                        <ToolbarMenu />
                     </IconButton>
 
                     <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'center' }}>
                         <SearchBar />
                     </Box>
 
-                    <AuthButtons onLoginClick={handleLoginClick} onRegisterClick={handleRegisterClick} />
+                    {!authenticated ? (
+                        <AuthButtons onLoginClick={handleLoginClick} onRegisterClick={handleRegisterClick} />
+                    ) : (
+                        <UserProfileMenu />
+                    )}
                 </Toolbar>
             </AppBar>
 
-            {/* Conditionally render LoginForm or RegisterForm based on route or button click */}
-            {isLoginModalOpen && (
-                <LoginForm onClose={handleCloseModal} />
-            )}
-            {isRegisterModalOpen && (
-                <RegisterForm onClose={handleCloseModal} />
-            )}
+            {!authenticated && isLoginModalOpen && <LoginForm onClose={handleCloseModal} />}
+            {!authenticated && isRegisterModalOpen && <RegisterForm onClose={handleCloseModal} />}
         </Box>
     );
 }

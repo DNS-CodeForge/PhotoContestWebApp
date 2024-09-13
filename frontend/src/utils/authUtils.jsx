@@ -60,3 +60,26 @@ export const refreshToken = async (navigate) => {
     }
     return false;
 };
+
+
+
+export const isAuthenticated = () => {
+
+    const accessToken = localStorage.getItem('accessToken');
+
+    if (!accessToken) {
+        return false;
+    }
+
+    const decoded = decodeToken(accessToken);
+
+    if (!decoded) {
+        return false;
+    }
+
+    const expiryTime = decoded.exp * 1000;
+    const currentTime = Date.now();
+
+    return currentTime < expiryTime;
+};
+

@@ -1,11 +1,12 @@
-import { useState} from 'react';
-import { Form } from 'react-router-dom';
+import { useState } from 'react';
+import { Form, useNavigate } from 'react-router-dom';
 import Modal from '../Modal/Modal';
 import classes from './Form.module.css';
 const BACKEND_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
 function RegisterForm({ onClose }) {
     const [errorMessage, setErrorMessage] = useState(null);
+    const navigate = useNavigate();
 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -28,55 +29,59 @@ function RegisterForm({ onClose }) {
             });
 
             if (response.ok) {
-                setIsSuccess(true);
-                onClose(); 
+                onClose();
             } else {
                 const errorData = await response.json();
                 setErrorMessage(errorData.message || 'Registration failed');
-                setIsSuccess(false); 
             }
         } catch (error) {
             setErrorMessage(error.message);
         }
     };
 
- return (
- <Modal onClose={onClose}>
-      <div className={classes['form-box']}>
-        <p>Register</p>
-        <Form method="post" onSubmit={handleSubmit}>
+    const handleLoginClick = (event) => {
+        event.preventDefault();
+        navigate('/login');
+    };
 
-         <div className={classes['user-box']}>
-            <input name="email" type="text" required />
-            <label>Email</label>
-          </div>
+    return (
+        <Modal onClose={onClose}>
+            <div className={classes['form-box']}>
+                <p>Register</p>
+                <Form method="post" onSubmit={handleSubmit}>
 
-          <div className={classes['user-box']}>
-            <input name="username" type="text" required />
-            <label>Username</label>
-          </div>
-          <div className={classes['user-box']}>
-            <input name="password" type="password" required />
-            <label>Password</label>
-          </div>
+                    <div className={classes['user-box']}>
+                        <input name="email" type="text" required />
+                        <label>Email</label>
+                    </div>
 
-          <button type="submit" className={classes['animated-button']}>
-            <span></span>
-            <span></span>
-            <span></span>
-            <span></span>
-            Submit
-          </button>        
-        </Form>
-        {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
-        <p>
-          Have an account?{' '}
-          <a href="#" className={classes['a2']}>
-            Sign in!
-          </a>
-        </p>
-      </div>
-    </Modal>       
+                    <div className={classes['user-box']}>
+                        <input name="username" type="text" required />
+                        <label>Username</label>
+                    </div>
+
+                    <div className={classes['user-box']}>
+                        <input name="password" type="password" required />
+                        <label>Password</label>
+                    </div>
+
+                    <button type="submit" className={classes['animated-button']}>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        Submit
+                    </button>
+                </Form>
+                {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
+                <p>
+                    Have an account?{' '}
+                    <a href="#" onClick={handleLoginClick} className={classes['a2']}>
+                        Sign in!
+                    </a>
+                </p>
+            </div>
+        </Modal>
     );
 }
 
