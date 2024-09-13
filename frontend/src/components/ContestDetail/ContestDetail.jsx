@@ -23,7 +23,6 @@ export default function ContestDetail() {
     const { id } = useParams();
     const [selectedTab, setSelectedTab] = useState('submissions');
     const navigate = useNavigate();
-
     const categoryToImageMap = {
         'PORTRAIT': portraitImage,
         'LANDSCAPE': landscapeImage,
@@ -31,6 +30,7 @@ export default function ContestDetail() {
         'WILDLIFE': wildlifeImage,
         'ABSTRACT': abstractImage,
     };
+    console.log(contest);
 
     const handleTabChange = (tab) => {
         setSelectedTab(tab);
@@ -40,7 +40,6 @@ export default function ContestDetail() {
         const fetchData = async () => {
             try {
                 const accessToken = localStorage.getItem('accessToken');
-
                 const response = await fetch(`${BACKEND_BASE_URL}api/contest/${id}`, {
                     method: 'GET',
                     headers: {
@@ -55,6 +54,7 @@ export default function ContestDetail() {
                     }
                     throw new Error('Failed to fetch contest');
                 }
+
 
                 const usersResponse = await fetch(`${BACKEND_BASE_URL}api/contest/${id}/ranking?limit=5`, {
                     method: 'GET',
@@ -71,11 +71,14 @@ export default function ContestDetail() {
                     throw new Error('Failed to fetch rankings');
                 }
 
+
+
                 const responseJsonContest = await response.json();
                 const responseJsonUsers = await usersResponse.json();
 
                 setContest(responseJsonContest);
                 setRankedUsers(responseJsonUsers);
+
             } catch (error) {
                 setError(error.message);
             } finally {
@@ -146,35 +149,12 @@ export default function ContestDetail() {
                             variant="body1"
                             component="div"
                             sx={{
-                                marginBottom: '1rem',
                                 fontSize: '1.2rem',
                             }}
                         >
                             <ContestInfo contest={contest} />
                         </Typography>
 
-                        <Button
-                            variant="contained"
-                            sx={{
-                                backgroundColor: 'rgba(0, 0, 0, 0.5)',
-                                color: '#ffffff',
-                                fontSize: '1.5rem',
-                                fontWeight: 'bold',
-                                padding: '0.8rem 2rem',
-                                borderRadius: '8px',
-                                boxShadow: '0 4px 8px rgba(0, 0, 0, 0.3)',
-                                textTransform: 'uppercase',
-                                transition: 'background-color 0.3s ease',
-                                '&:hover': {
-                                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
-                                },
-                                '&:active': {
-                                    backgroundColor: 'rgba(0, 0, 0, 0.9)',
-                                },
-                            }}
-                        >
-                            Join Contest
-                        </Button>
                     </Box>
                 </Box>
 

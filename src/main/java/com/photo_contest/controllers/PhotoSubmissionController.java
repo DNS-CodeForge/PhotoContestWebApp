@@ -50,6 +50,12 @@ public class PhotoSubmissionController {
         List<PhotoSubmission> submissions = photoSubmissionService.getAllPhotoSubmissions();
         return ResponseEntity.ok(submissions);
     }
+    @GetMapping("/contest/{contestId}/submissions")
+    public ResponseEntity<List<PhotoSubmission>> getSubmissionsByContestId(@PathVariable Long contestId) {
+        List<PhotoSubmission> submissions = photoSubmissionService.getSubmissionsByContestId(contestId);
+        return ResponseEntity.ok(submissions);
+    }
+
 
     @PutMapping("/submission/{id}")
     public ResponseEntity<PhotoSubmission> updatePhotoSubmission(

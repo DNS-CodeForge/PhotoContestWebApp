@@ -33,4 +33,6 @@ public interface PhotoSubmissionRepository extends JpaRepository<PhotoSubmission
     List<RankedUserResponseDTO> getFinalScoresByContestId(@Param("contestId") Long contestId);
 
 
+    List<PhotoSubmission> findByContestId(Long contestId);
+
 }

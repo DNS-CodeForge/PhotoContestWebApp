@@ -1,15 +1,14 @@
+import moment from 'moment';
+
 export function arrayToDate(arr) {
     const [year, month, day, hour, minute, second = 0, millisecond = 0] = arr;
-    return new Date(year, month - 1, day, hour, minute, second, millisecond);
+
+    const validMillisecond = Math.floor(millisecond % 1000);
+
+    const date = moment.utc([year, month - 1, day, hour, minute, second, validMillisecond]);
+    return date;
 }
 
 export function formatDate(date) {
-    return date.toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'numeric',
-        day: 'numeric',
-        hour: 'numeric',
-        minute: 'numeric',
-        hour12: false
-    });
+    return date.format('YYYY-MM-DD HH:mm:ss');
 }

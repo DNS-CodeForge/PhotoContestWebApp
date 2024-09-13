@@ -1,18 +1,5 @@
 import { jwtDecode } from "jwt-decode";
 
-export async function fetchPublicKey() {
-    try {
-        const response = await fetch('/publicKey.pem');
-        if (!response.ok) {
-            throw new Error('Failed to load public key');
-        }
-        return await response.text();
-    } catch (error) {
-        console.error('Error fetching public key:', error);
-        throw error;
-    }
-}
-
 export function decodeToken(token) {
     try {
         return jwtDecode(token);
@@ -20,4 +7,19 @@ export function decodeToken(token) {
         console.error('Token decoding failed:', error);
         return null;
     }
+}
+
+export function getId(token) {
+    const decoded = decodeToken(token);
+    return decoded ? decoded.userId : null;
+}
+
+export function getUsername(token) {
+    const decoded = decodeToken(token);
+    return decoded ? decoded.username : null;
+}
+
+export function getRoles(token) {
+    const decoded = decodeToken(token);
+    return decoded ? decoded.roles : [];
 }

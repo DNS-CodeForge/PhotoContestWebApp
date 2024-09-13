@@ -79,6 +79,14 @@ public class PhotoSubmissionServiceImpl implements PhotoSubmissionService {
         return photoSubmissionRepository.save(photoSubmission);
     }
 
+    @Override
+    public List<PhotoSubmission> getSubmissionsByContestId(Long contestId) {
+        Contest contest = contestRepository.findById(contestId)
+                .orElseThrow(() -> new EntityNotFoundException(INVALID_ID.formatted("Contest", contestId)));
+        return photoSubmissionRepository.findByContestId(contestId);
+    }
+
+
 
     @Override
     public PhotoSubmission getPhotoSubmissionById(Long id) {

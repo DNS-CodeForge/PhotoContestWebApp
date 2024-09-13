@@ -29,6 +29,9 @@ a {
   box-shadow: var(--box-shadow);
   border-radius: 10px;
 }
+.form-box p:last-child{
+  margin-top: 1em;
+}
 
 .form-box p:first-child {
   margin: 0 0 30px;

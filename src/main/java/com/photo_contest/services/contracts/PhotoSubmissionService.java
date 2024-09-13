@@ -8,8 +8,9 @@ import com.photo_contest.models.DTO.PhotoSubmissionDTO;
 import org.springframework.web.multipart.MultipartFile;
 
 public interface PhotoSubmissionService {
-    public PhotoSubmission createPhotoSubmission(Long contestId, PhotoSubmissionDTO photoSubmissionDTO, MultipartFile file) throws IOException;
+    PhotoSubmission createPhotoSubmission(Long contestId, PhotoSubmissionDTO photoSubmissionDTO, MultipartFile file) throws IOException;
 
+    List<PhotoSubmission> getSubmissionsByContestId(Long contestId);
 
     PhotoSubmission getPhotoSubmissionById(Long id);
 
