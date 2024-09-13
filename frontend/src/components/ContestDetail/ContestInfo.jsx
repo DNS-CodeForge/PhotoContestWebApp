@@ -17,7 +17,7 @@ import { arrayToDate, formatDate } from '../../utils/dateUtils';
 
 export default function ContestInfo({ contest }) {
 
-
+    console.log(contest);
     const currentDate = new Date();
     const startDate = arrayToDate(contest.startDate);
     const submissionEndDate = arrayToDate(contest.submissionEndDate);
