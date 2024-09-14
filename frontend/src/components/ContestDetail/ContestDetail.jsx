@@ -30,7 +30,7 @@ export default function ContestDetail() {
         'WILDLIFE': wildlifeImage,
         'ABSTRACT': abstractImage,
     };
-    console.log(contest);
+
 
     const handleTabChange = (tab) => {
         setSelectedTab(tab);

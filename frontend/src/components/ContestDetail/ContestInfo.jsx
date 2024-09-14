@@ -26,7 +26,7 @@ export default function ContestInfo({ contest, submissions }) {
     const startDate = arrayToDate(contest.startDate);
     const submissionEndDate = arrayToDate(contest.submissionEndDate);
     const endDate = arrayToDate(contest.endDate);
-    console.log(contest)
+
     const formattedStartDate = formatDate(startDate);
     const formattedSubmissionEndDate = formatDate(submissionEndDate);
     const formattedEndDate = formatDate(endDate);

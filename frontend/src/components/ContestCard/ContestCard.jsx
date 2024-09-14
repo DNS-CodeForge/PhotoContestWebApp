@@ -5,6 +5,8 @@ import landscapeImage from '../../assets/landscape.png';
 import streetImage from '../../assets/street.png';
 import wildlifeImage from '../../assets/wild.png';
 import abstractImage from '../../assets/abstract.png';
+import {arrayToDate} from "../../utils/dateUtils.jsx";
+import moment from "moment";
 
 const categoryToImageMap = {
     'PORTRAIT': portraitImage,
@@ -15,17 +17,17 @@ const categoryToImageMap = {
 };
 
 const getContestStatus = (startDate, submissionEndDate, endDate) => {
-    const start = new Date(startDate);
-    const subEnd = new Date(submissionEndDate);
-    const end = new Date(endDate);
-    const now = new Date();
+    const start = arrayToDate(startDate);
+    const subEnd = arrayToDate(submissionEndDate);
+    const end = arrayToDate(endDate);
+    const now = new moment;
 
-    if (now < start) {
+    if (now.isBefore(start)) {
         return "Starting Soon";
-    } else if (now >= start && now < subEnd) {
+    } else if (now.isBetween(start, subEnd, null, '[)')) {
         return "Ongoing";
-    } else if (now >= subEnd && now < end) {
-        return "Ranking";
+    } else if (now.isBetween(subEnd, end, null, '[)')) {
+        return "Reviewing";
     } else {
         return "Finished";
     }

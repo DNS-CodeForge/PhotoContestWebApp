@@ -5,39 +5,19 @@ import FileUploadIcon from '@mui/icons-material/FileUpload';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import HowToVoteIcon from '@mui/icons-material/HowToVote';
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
+import {arrayToDate, formatDate} from "../../utils/dateUtils.jsx";
 
 
 export default function ContestRules({ contest }) {
-    const startDate = new Date(contest.startDate);
-    const submissionEndDate = new Date(contest.submissionEndDate);
-    const endDate = new Date(contest.endDate);
+    const startDate = arrayToDate(contest.startDate);
+    const submissionEndDate = arrayToDate(contest.submissionEndDate);
+    const endDate = arrayToDate(contest.endDate);
 
-    const formattedStartDate = startDate.toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'numeric',
-        day: 'numeric',
-        hour: 'numeric',
-        minute: 'numeric',
-        hour12: false
-    });
+    const formattedStartDate = formatDate(startDate);
 
-    const formattedSubmissionEndDate = submissionEndDate.toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'numeric',
-        day: 'numeric',
-        hour: 'numeric',
-        minute: 'numeric',
-        hour12: false
-    });
+    const formattedSubmissionEndDate = formatDate(submissionEndDate);
 
-    const formattedEndDate = endDate.toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'numeric',
-        day: 'numeric',
-        hour: 'numeric',
-        minute: 'numeric',
-        hour12: false
-    });
+    const formattedEndDate = formatDate(endDate);
 
     return (
         <>
