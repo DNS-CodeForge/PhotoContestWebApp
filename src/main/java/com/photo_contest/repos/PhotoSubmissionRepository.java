@@ -32,6 +32,8 @@ public interface PhotoSubmissionRepository extends JpaRepository<PhotoSubmission
             "ORDER BY COALESCE(SUM(pr.score), 0) + ((COUNT(j) - COUNT(pr.id)) * 3) DESC")
     List<RankedUserResponseDTO> getFinalScoresByContestId(@Param("contestId") Long contestId);
 
+    boolean existsByContestIdAndCreatorId(Long contestId, Long creatorId);
+
 
     List<PhotoSubmission> findByContestId(Long contestId);
 

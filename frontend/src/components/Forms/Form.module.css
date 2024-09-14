@@ -69,6 +69,10 @@ a {
   pointer-events: none;
   transition: .5s;
 }
+.label {
+  color: white;
+}
+
 
 .form-box .user-box input:focus ~ label,
 .form-box .user-box input:valid ~ label {
@@ -98,7 +102,7 @@ a {
 }
 
 .form-box form button:hover {
-  background: #FFA500; /* Orange background on hover */
+  background: #FFA500;
   color: #272727;
   border-radius: 5px;
 }
@@ -113,7 +117,7 @@ a {
   left: -100%;
   width: 100%;
   height: 2px;
-  background: linear-gradient(90deg, transparent, #FFA500); /* Orange animation */
+  background: linear-gradient(90deg, transparent, #FFA500);
   animation: btn-anim1 1.5s linear infinite;
 }
 
@@ -132,7 +136,7 @@ a {
   right: 0;
   width: 2px;
   height: 100%;
-  background: linear-gradient(180deg, transparent, #FFA500); /* Orange animation */
+  background: linear-gradient(180deg, transparent, #FFA500);
   animation: btn-anim2 1.5s linear infinite;
   animation-delay: .375s;
 }
@@ -152,7 +156,7 @@ a {
   right: -100%;
   width: 100%;
   height: 2px;
-  background: linear-gradient(270deg, transparent, #FFA500); /* Orange animation */
+  background: linear-gradient(270deg, transparent, #FFA500);
   animation: btn-anim3 1.5s linear infinite;
   animation-delay: .75s;
 }
@@ -187,22 +191,93 @@ a {
   }
 }
 
-/* Autofill for Chrome, Safari, and other WebKit-based browsers */
+.custom-file-upload {
+  display: inline-block;
+  background-color: transparent;
+  color: #FFA500;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  border: 2px solid transparent;
+  position: relative;
+  font-size: 14px;
+  font-weight: bold;
+  overflow: hidden;
+}
+
+.custom-file-upload:hover {
+  background-color: #FFA500;
+  color: #1c1a19;
+}
+
+
+
+
+
+.image-preview {
+  margin: 1rem 0;
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+
+.file-upload-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-top: 1rem;
+}
+.form-box .user-box textarea {
+  width: 100%;
+  height: 100px;
+  padding: 10px 0;
+  font-size: 16px;
+  color: #fff;
+  margin-bottom: 30px;
+  border: none;
+  border-bottom: 1px solid #fff;
+  outline: none;
+  background: transparent;
+  resize: none;
+  box-sizing: border-box;
+}
+
+.form-box .user-box textarea:focus ~ label,
+.form-box .user-box textarea:valid ~ label {
+  top: -20px;
+  left: 0;
+  color: #fff;
+  font-size: 12px;
+}
+
+.disabled-button {
+  background-color: #ccc !important;
+  color: #666 !important;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+
+
 input:-webkit-autofill {
   background-color: transparent !important;
-  -webkit-text-fill-color: #fff !important; /* Force text color to white */
+  -webkit-text-fill-color: #fff !important;
   border-bottom: 1px solid #fff !important;
   transition: background-color 5000s ease-in-out 0s;
 }
 
-/* Autofill for Firefox */
+
 input:-moz-autofill {
   background-color: transparent !important;
   color: #fff !important;
   border-bottom: 1px solid #fff !important;
 }
 
-/* Autofill for Edge */
 input:-ms-autofill {
   background-color: transparent !important;
   color: #fff !important;

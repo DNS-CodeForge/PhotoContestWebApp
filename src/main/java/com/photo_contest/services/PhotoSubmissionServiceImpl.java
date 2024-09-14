@@ -17,6 +17,7 @@ import com.photo_contest.services.contracts.CloudinaryImageService;
 import com.photo_contest.services.contracts.ContestService;
 import com.photo_contest.services.contracts.PhotoSubmissionService;
 
+import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -43,30 +44,32 @@ public class PhotoSubmissionServiceImpl implements PhotoSubmissionService {
         this.contestService = contestService;
         this.cloudinaryImageService = cloudinaryImageService;
     }
-
     @Override
     public PhotoSubmission createPhotoSubmission(Long contestId, PhotoSubmissionDTO photoSubmissionDTO, MultipartFile file) {
-        Contest contest = contestRepository.findById(contestId).orElseThrow(() -> new IllegalArgumentException("Contest not found"));
+        Contest contest = contestRepository.findById(contestId)
+                .orElseThrow(() -> new IllegalArgumentException("Contest not found"));
 
-
-        if (!contestRepository.findAllContestsByUserProfileId(authContextManager.getId()).contains(contest)) {
+        if (!contestRepository.findAllContestsByUserProfileId(authContextManager.getId()).contains(contest) && contest.isPrivate()) {
             throw new AuthorizationException(INVALID_SUBMISSION);
         }
-
 
         if (contestService.getCurrentPhase(contestId) != 1) {
             throw new ContestPhaseViolationException(PH_ONE_SUBMISSION);
         }
 
-        String uploadedPhotoUrl;
-        try {
+        Long userId = authContextManager.getId();
+        boolean submissionExists = photoSubmissionRepository.existsByContestIdAndCreatorId(contestId, userId);
 
-            uploadedPhotoUrl = cloudinaryImageService.uploadImage(file);
-        } catch (IOException e) {
-
-            throw new ImageUploadException(IMG_UPLOAD_FAIL + ".", e);
+        if (submissionExists) {
+            throw new EntityExistsException("User has already submitted a photo for this contest.");
         }
 
+        String uploadedPhotoUrl;
+        try {
+            uploadedPhotoUrl = cloudinaryImageService.uploadImage(file);
+        } catch (IOException e) {
+            throw new ImageUploadException(IMG_UPLOAD_FAIL + ".", e);
+        }
 
         PhotoSubmission photoSubmission = new PhotoSubmission();
         photoSubmission.setTitle(photoSubmissionDTO.getTitle());
@@ -75,6 +78,10 @@ public class PhotoSubmissionServiceImpl implements PhotoSubmissionService {
         photoSubmission.setCreator(authContextManager.getLoggedInUser());
         photoSubmission.setContest(contest);
         photoSubmission.setPhotoReviews(Collections.emptyList());
+
+
+        contest.getParticipants().add(authContextManager.getLoggedInUser());
+        contestRepository.save(contest);
 
         return photoSubmissionRepository.save(photoSubmission);
     }

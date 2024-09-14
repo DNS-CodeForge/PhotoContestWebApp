@@ -11,7 +11,7 @@ import ContestInfo from './ContestInfo';
 import Ranking from './Ranking';
 import SubmissionsList from './SubmissionsList';
 import ContestRules from './ContestRules.jsx';
-import JoinContestModalForm from '../Forms/JoinContestForm';
+import JoinContestModalForm from '../Forms/SubmissionForm.jsx';
 import EditSubmissionModalForm from '../Forms/UpdateSubmissionForm';
 import classes from './Details.module.css';
 

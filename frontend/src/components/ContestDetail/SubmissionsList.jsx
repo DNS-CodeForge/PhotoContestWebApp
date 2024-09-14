@@ -30,7 +30,7 @@ export default function SubmissionsList({itemData}) {
   return (
       <ImageList cols={cols} gap={8} sx={{ margin: '1rem' }}>
         {itemData.map((item) => (
-            <ImageListItem key={item.img}>
+            <ImageListItem key={item.id}>
               <img
                   srcSet={`${item.photoUrl}?w=225&h=225&fit=crop&auto=format&dpr=2 2x`}
                   src={`${item.photoUrl}?w=225&h=225&fit=crop&auto=format`}
