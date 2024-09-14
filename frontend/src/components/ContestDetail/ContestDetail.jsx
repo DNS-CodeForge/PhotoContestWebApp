@@ -224,7 +224,7 @@ export default function ContestDetail() {
                         }}
                     >
                         {selectedTab === 'details' && <ContestRules contest={contest} />}
-                        {selectedTab === 'submissions' && <SubmissionsList contest={contest} />}
+                        {selectedTab === 'submissions' && <SubmissionsList itemData={contest.photoSubmissions} />}
                         {selectedTab === 'ranking' && <Ranking rankedUsers={rankedUsers} />}
                     </Box>
                 </Box>
