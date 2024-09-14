@@ -11,6 +11,8 @@ import ContestInfo from './ContestInfo';
 import Ranking from './Ranking';
 import SubmissionsList from './SubmissionsList';
 import ContestRules from './ContestRules.jsx';
+import JoinContestModalForm from '../Forms/JoinContestForm';
+import EditSubmissionModalForm from '../Forms/UpdateSubmissionForm';
 import classes from './Details.module.css';
 
 const BACKEND_BASE_URL = import.meta.env.VITE_BACKEND_URL;
@@ -23,6 +25,11 @@ export default function ContestDetail() {
     const { id } = useParams();
     const [selectedTab, setSelectedTab] = useState('submissions');
     const navigate = useNavigate();
+
+
+    const [showJoinModal, setShowJoinModal] = useState(false);
+    const [showEditModal, setShowEditModal] = useState(false);
+
     const categoryToImageMap = {
         'PORTRAIT': portraitImage,
         'LANDSCAPE': landscapeImage,
@@ -30,7 +37,6 @@ export default function ContestDetail() {
         'WILDLIFE': wildlifeImage,
         'ABSTRACT': abstractImage,
     };
-
 
     const handleTabChange = (tab) => {
         setSelectedTab(tab);
@@ -55,7 +61,6 @@ export default function ContestDetail() {
                     throw new Error('Failed to fetch contest');
                 }
 
-
                 const usersResponse = await fetch(`${BACKEND_BASE_URL}api/contest/${id}/ranking?limit=5`, {
                     method: 'GET',
                     headers: {
@@ -71,14 +76,11 @@ export default function ContestDetail() {
                     throw new Error('Failed to fetch rankings');
                 }
 
-
-
                 const responseJsonContest = await response.json();
                 const responseJsonUsers = await usersResponse.json();
 
                 setContest(responseJsonContest);
                 setRankedUsers(responseJsonUsers);
-
             } catch (error) {
                 setError(error.message);
             } finally {
@@ -152,9 +154,12 @@ export default function ContestDetail() {
                                 fontSize: '1.2rem',
                             }}
                         >
-                            <ContestInfo contest={contest} />
+                            <ContestInfo
+                                contest={contest}
+                                setShowJoinModal={setShowJoinModal}
+                                setShowEditModal={setShowEditModal}
+                            />
                         </Typography>
-
                     </Box>
                 </Box>
 
@@ -167,12 +172,7 @@ export default function ContestDetail() {
                         boxShadow: 'none',
                     }}
                 >
-                    <Box
-                        display={'flex'}
-                        justifyContent="flex-start"
-                        width="100%"
-                        overflow="hidden"
-                    >
+                    <Box display={'flex'} justifyContent="flex-start" width="100%" overflow="hidden">
                         <Button
                             variant="contained"
                             sx={{
@@ -229,6 +229,10 @@ export default function ContestDetail() {
                     </Box>
                 </Box>
             </div>
+
+
+            {showJoinModal && <JoinContestModalForm onClose={() => setShowJoinModal(false)} contestId={contest.id} />}
+            {showEditModal && <EditSubmissionModalForm onClose={() => setShowEditModal(false)} contestId={contest.id} />}
         </>
     );
 }

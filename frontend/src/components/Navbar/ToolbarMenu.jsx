@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, {useState} from 'react';
+import {useNavigate} from 'react-router-dom';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import IconButton from '@mui/material/IconButton';
@@ -12,8 +12,8 @@ import InfoIcon from '@mui/icons-material/Info';
 import CollectionsIcon from '@mui/icons-material/Collections';
 import HowToVoteIcon from '@mui/icons-material/HowToVote';
 import logo from '../../assets/logo.png';
-import { getRoles } from "../../utils/jwtUtils.jsx";
-import { isAuthenticated } from "../../utils/authUtils.jsx";
+import {getRoles} from '../../utils/jwtUtils.jsx';
+import {isAuthenticated} from '../../utils/authUtils.jsx';
 
 export default function ToolbarMenu() {
     const navigate = useNavigate();
@@ -32,8 +32,13 @@ export default function ToolbarMenu() {
         handleMenuClose();
     };
 
+
+    const accessToken = localStorage.getItem('accessToken');
+    const isLoggedIn = isAuthenticated(accessToken);
+    const isAdmin = isLoggedIn && getRoles(accessToken).includes('ADMIN');
+
     return (
-        <Box sx={{ display: 'flex', alignItems: 'center', textAlign: 'center' }}>
+        <Box sx={{display: 'flex', alignItems: 'center', textAlign: 'center'}}>
             <Tooltip title="Navigation" placement="bottom">
                 <IconButton
                     onClick={handleMenuOpen}
@@ -48,7 +53,7 @@ export default function ToolbarMenu() {
                         overflow: 'hidden',
                     }}
                 >
-                    <img src={logo} alt="Logo" style={{ height: '3rem', width: '3rem', borderRadius: '50%' }} />
+                    <img src={logo} alt="Logo" style={{height: '3rem', width: '3rem', borderRadius: '50%'}}/>
                 </IconButton>
             </Tooltip>
 
@@ -95,82 +100,86 @@ export default function ToolbarMenu() {
                         },
                     }}
                 >
-                    <HomeIcon sx={{ mr: 1, color: '#fff' }} />
+                    <HomeIcon sx={{mr: 1, color: '#fff'}}/>
                     Home
                 </MenuItem>
 
-                {isAuthenticated(localStorage.getItem('accessToken')) && (
-                    <>
-                        <MenuItem
-                            onClick={() => handleNavigation('/contest')}
-                            sx={{
-                                padding: '1rem 1rem',
-                                paddingRight: '3rem',
-                                fontSize: '1rem',
-                                justifyContent: 'flex-start',
-                                '&:hover': {
-                                    backgroundColor: 'rgba(211, 84, 36, 0.8)',
-                                    color: '#fff',
-                                },
-                            }}
-                        >
-                            <EmojiEventsIcon sx={{ mr: 1, color: '#fff' }} />
-                            Contest
-                        </MenuItem>
+                {isLoggedIn && (
 
-                        <MenuItem
-                            onClick={() => handleNavigation('/my-contests')}
-                            sx={{
-                                padding: '1rem 1rem',
-                                paddingRight: '3rem',
-                                fontSize: '1rem',
-                                justifyContent: 'flex-start',
-                                '&:hover': {
-                                    backgroundColor: 'rgba(211, 84, 36, 0.8)',
-                                    color: '#fff',
-                                },
-                            }}
-                        >
-                            <CollectionsIcon sx={{ mr: 1, color: '#fff' }} />
-                            My Contests
-                        </MenuItem>
+                    <MenuItem
+                        onClick={() => handleNavigation('/contest')}
+                        sx={{
+                            padding: '1rem 1rem',
+                            paddingRight: '3rem',
+                            fontSize: '1rem',
+                            justifyContent: 'flex-start',
+                            '&:hover': {
+                                backgroundColor: 'rgba(211, 84, 36, 0.8)',
+                                color: '#fff',
+                            },
+                        }}
+                    >
+                        <EmojiEventsIcon sx={{mr: 1, color: '#fff'}}/>
+                        Contest
+                    </MenuItem>
+                )}
+                {isLoggedIn && (
 
-                        <MenuItem
-                            onClick={() => handleNavigation('/my-submissions')}
-                            sx={{
-                                padding: '1rem 1rem',
-                                paddingRight: '3rem',
-                                fontSize: '1rem',
-                                justifyContent: 'flex-start',
-                                '&:hover': {
-                                    backgroundColor: 'rgba(211, 84, 36, 0.8)',
-                                    color: '#fff',
-                                },
-                            }}
-                        >
-                            <HowToVoteIcon sx={{ mr: 1, color: '#fff' }} />
-                            My Submissions
-                        </MenuItem>
+                    <MenuItem
+                        onClick={() => handleNavigation('/my-contests')}
+                        sx={{
+                            padding: '1rem 1rem',
+                            paddingRight: '3rem',
+                            fontSize: '1rem',
+                            justifyContent: 'flex-start',
+                            '&:hover': {
+                                backgroundColor: 'rgba(211, 84, 36, 0.8)',
+                                color: '#fff',
+                            },
+                        }}
+                    >
+                        <CollectionsIcon sx={{mr: 1, color: '#fff'}}/>
+                        My Contests
+                    </MenuItem>
+                )}
+                {isLoggedIn && (
 
-                        {getRoles(localStorage.getItem('accessToken')).includes('ADMIN') && (
-                            <MenuItem
-                                onClick={() => handleNavigation('/organizer')}
-                                sx={{
-                                    padding: '1rem 1rem',
-                                    paddingRight: '3rem',
-                                    fontSize: '1rem',
-                                    justifyContent: 'flex-start',
-                                    '&:hover': {
-                                        backgroundColor: 'rgba(211, 84, 36, 0.8)',
-                                        color: '#fff',
-                                    },
-                                }}
-                            >
-                                <GroupIcon sx={{ mr: 1, color: '#fff' }} />
-                                Organizer
-                            </MenuItem>
-                        )}
-                    </>
+                    <MenuItem
+                        onClick={() => handleNavigation('/my-submissions')}
+                        sx={{
+                            padding: '1rem 1rem',
+                            paddingRight: '3rem',
+                            fontSize: '1rem',
+                            justifyContent: 'flex-start',
+                            '&:hover': {
+                                backgroundColor: 'rgba(211, 84, 36, 0.8)',
+                                color: '#fff',
+                            },
+                        }}
+                    >
+                        <HowToVoteIcon sx={{mr: 1, color: '#fff'}}/>
+                        My Submissions
+                    </MenuItem>
+
+                )}
+
+                {isAdmin && (
+                    <MenuItem
+                        onClick={() => handleNavigation('/organizer')}
+                        sx={{
+                            padding: '1rem 1rem',
+                            paddingRight: '3rem',
+                            fontSize: '1rem',
+                            justifyContent: 'flex-start',
+                            '&:hover': {
+                                backgroundColor: 'rgba(211, 84, 36, 0.8)',
+                                color: '#fff',
+                            },
+                        }}
+                    >
+                        <GroupIcon sx={{mr: 1, color: '#fff'}}/>
+                        Organizer
+                    </MenuItem>
                 )}
 
                 <MenuItem
@@ -186,10 +195,11 @@ export default function ToolbarMenu() {
                         },
                     }}
                 >
-                    <InfoIcon sx={{ mr: 1, color: '#fff' }} />
+                    <InfoIcon sx={{mr: 1, color: '#fff'}}/>
                     About
                 </MenuItem>
             </Menu>
         </Box>
-    );
+    )
+        ;
 }

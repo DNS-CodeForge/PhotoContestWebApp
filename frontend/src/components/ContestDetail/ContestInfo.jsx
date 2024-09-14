@@ -1,4 +1,3 @@
-
 import { Typography, Box } from '@mui/material';
 import InsertPhotoIcon from '@mui/icons-material/InsertPhoto';
 import LandscapeIcon from '@mui/icons-material/Landscape';
@@ -12,17 +11,12 @@ import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import FileUploadIcon from '@mui/icons-material/FileUpload';
 import RateReviewIcon from '@mui/icons-material/RateReview';
 import DoneIcon from '@mui/icons-material/Done';
-import ContestJoinButton from './ContestJoinButton';
+import ContestButton from './ContestButton';
+import { arrayToDate, formatDate } from '../../utils/dateUtils';
 import moment from 'moment';
 
-import { arrayToDate, formatDate } from '../../utils/dateUtils';
-import { getId } from '../../utils/jwtUtils';
-
-export default function ContestInfo({ contest, submissions }) {
-
+export default function ContestInfo({ contest, setShowJoinModal, setShowEditModal }) {
     const currentDate = moment();
-
-
     const startDate = arrayToDate(contest.startDate);
     const submissionEndDate = arrayToDate(contest.submissionEndDate);
     const endDate = arrayToDate(contest.endDate);
@@ -31,49 +25,35 @@ export default function ContestInfo({ contest, submissions }) {
     const formattedSubmissionEndDate = formatDate(submissionEndDate);
     const formattedEndDate = formatDate(endDate);
 
-
-    let phase = "";
+    let phase = '';
     let phaseIcon = null;
-    let phaseDate = "";
+    let phaseDate = '';
+
 
     if (currentDate.isBefore(startDate)) {
-        phase = "Start";
-        phaseIcon = <PlayArrowIcon sx={{ height: "2rem", width: "2rem", marginRight: '0.8rem', marginLeft: '0.8rem' }} />;
+        phase = 'Start';
+        phaseIcon = <PlayArrowIcon sx={{ height: '2rem', width: '2rem', marginRight: '0.8rem', marginLeft: '0.8rem' }} />;
         phaseDate = formattedStartDate;
     } else if (currentDate.isSameOrAfter(startDate) && currentDate.isBefore(submissionEndDate)) {
-        phase = "Submission";
-        phaseIcon = <FileUploadIcon sx={{ height: "2rem", width: "2rem", marginRight: '0.8rem', marginLeft: '0.8rem' }} />;
+        phase = 'Submission';
+        phaseIcon = <FileUploadIcon sx={{ height: '2rem', width: '2rem', marginRight: '0.8rem', marginLeft: '0.8rem' }} />;
         phaseDate = formattedSubmissionEndDate;
     } else if (currentDate.isSameOrAfter(submissionEndDate) && currentDate.isBefore(endDate)) {
-        phase = "Reviewing";
-        phaseIcon = <RateReviewIcon sx={{ height: "2rem", width: "2rem", marginRight: '0.8rem', marginLeft: '0.8rem' }} />;
+        phase = 'Reviewing';
+        phaseIcon = <RateReviewIcon sx={{ height: '2rem', width: '2rem', marginRight: '0.8rem', marginLeft: '0.8rem' }} />;
         phaseDate = formattedEndDate;
     } else if (currentDate.isSameOrAfter(endDate)) {
-        phase = "Finished";
-        phaseIcon = <DoneIcon sx={{ height: "2rem", width: "2rem", marginRight: '0.8rem', marginLeft: '0.8rem' }} />;
+        phase = 'Finished';
+        phaseIcon = <DoneIcon sx={{ height: '2rem', width: '2rem', marginRight: '0.8rem', marginLeft: '0.8rem' }} />;
         phaseDate = formattedEndDate;
     }
 
     const categoryIcons = {
-        LANDSCAPE: <LandscapeIcon sx={{ height: "2rem", width: "2rem", marginRight: '0.8rem', marginLeft: '0.8rem' }} />,
-        PORTRAIT: <PersonIcon sx={{ height: "2rem", width: "2rem", marginRight: '0.8rem', marginLeft: '0.8rem' }} />,
-        STREET: <LocationCityIcon sx={{ height: "2rem", width: "2rem", marginRight: '0.8rem', marginLeft: '0.8rem' }} />,
-        WILDLIFE: <PetsIcon sx={{ height: "2rem", width: "2rem", marginRight: '0.8rem', marginLeft: '0.8rem' }} />,
-        ABSTRACT: <BrushIcon sx={{ height: "2rem", width: "2rem", marginRight: '0.8rem', marginLeft: '0.8rem' }} />
-    };
-
-    const handleJoinContest = () => {
-        const accessToken = localStorage.getItem('accessToken');
-        if (accessToken) {
-            const userId = getId(accessToken);
-            const userSubmission = submissions.find(sub => sub.creator.id === userId);
-
-            if (userSubmission) {
-                console.log('Implement Edit Modal');
-            } else {
-                console.log('Implement Submit Modal');
-            }
-        }
+        LANDSCAPE: <LandscapeIcon sx={{ height: '2rem', width: '2rem', marginRight: '0.8rem', marginLeft: '0.8rem' }} />,
+        PORTRAIT: <PersonIcon sx={{ height: '2rem', width: '2rem', marginRight: '0.8rem', marginLeft: '0.8rem' }} />,
+        STREET: <LocationCityIcon sx={{ height: '2rem', width: '2rem', marginRight: '0.8rem', marginLeft: '0.8rem' }} />,
+        WILDLIFE: <PetsIcon sx={{ height: '2rem', width: '2rem', marginRight: '0.8rem', marginLeft: '0.8rem' }} />,
+        ABSTRACT: <BrushIcon sx={{ height: '2rem', width: '2rem', marginRight: '0.8rem', marginLeft: '0.8rem' }} />,
     };
 
     return (
@@ -81,17 +61,18 @@ export default function ContestInfo({ contest, submissions }) {
             <Typography variant="h4" sx={{ marginBottom: '1.2rem', fontSize: '2rem', fontFamily: 'serif', fontWeight: 'bold' }}>
                 {contest.title}
             </Typography>
+
             <Box display="flex" flexDirection="column" gap={0} sx={{ marginBottom: '2rem' }}>
                 <Box display="flex" alignItems="center" justifyContent="left">
-                    {categoryIcons[contest.category] || <InsertPhotoIcon sx={{ height: "2rem", width: "2rem", marginRight: '0.8rem', marginLeft: '0.8rem' }} />}
+                    {categoryIcons[contest.category] || <InsertPhotoIcon sx={{ height: '2rem', width: '2rem', marginRight: '0.8rem', marginLeft: '0.8rem' }} />}
                     <Typography variant="body2" sx={{ fontSize: '1.2rem', fontFamily: 'sans-serif' }}>{contest.category}</Typography>
                 </Box>
                 <Box display="flex" alignItems="center" justifyContent="left">
-                    <GavelIcon sx={{ height: "2rem", width: "2rem", marginRight: '0.8rem', marginLeft: '0.8rem' }} />
+                    <GavelIcon sx={{ height: '2rem', width: '2rem', marginRight: '0.8rem', marginLeft: '0.8rem' }} />
                     <Typography variant="body2" sx={{ fontSize: '1.2rem', fontFamily: 'sans-serif' }}>Jury: {contest.jury.length}</Typography>
                 </Box>
                 <Box display="flex" alignItems="center" justifyContent="left">
-                    <InsertPhotoIcon sx={{ height: "2rem", width: "2rem", marginRight: '0.8rem', marginLeft: '0.8rem' }} />
+                    <InsertPhotoIcon sx={{ height: '2rem', width: '2rem', marginRight: '0.8rem', marginLeft: '0.8rem' }} />
                     <Typography variant="body2" sx={{ fontSize: '1.2rem', fontFamily: 'sans-serif' }}>Entries: {contest.photoSubmissions.length}</Typography>
                 </Box>
                 <Box display="flex" alignItems="center" justifyContent="left">
@@ -99,16 +80,17 @@ export default function ContestInfo({ contest, submissions }) {
                     <Typography variant="body2" sx={{ fontSize: '1.2rem', fontFamily: 'sans-serif' }}>{phase}</Typography>
                 </Box>
                 <Box display="flex" alignItems="center" justifyContent="left">
-                    <WatchLaterIcon sx={{ height: "2rem", width: "2rem", marginRight: '0.8rem', marginLeft: '0.8rem' }} />
+                    <WatchLaterIcon sx={{ height: '2rem', width: '2rem', marginRight: '0.8rem', marginLeft: '0.8rem' }} />
                     <Typography variant="body2" sx={{ fontSize: '1.2rem', fontFamily: 'sans-serif' }}>{phaseDate}</Typography>
                 </Box>
             </Box>
 
-            <ContestJoinButton
-                onClick={handleJoinContest}
+            <ContestButton
                 contest={contest}
                 phase={phase}
-                submissions={submissions}
+                submissions={contest.photoSubmissions}
+                setShowJoinModal={setShowJoinModal}
+                setShowEditModal={setShowEditModal}
             />
         </>
     );
