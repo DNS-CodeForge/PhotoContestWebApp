@@ -6,6 +6,7 @@ import java.util.Optional;
 import com.photo_contest.models.Contest;
 import com.photo_contest.models.DTO.CreateContestDTO;
 import com.photo_contest.models.DTO.RankedUserResponseDTO;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -34,4 +35,6 @@ public interface ContestService {
     List<Long> inviteJudges(Long contestId, List<Long> userId);
 
     int getCurrentPhase(Long contestId);
+
+    List<Contest> findAllContestsByUserProfileId(long id);
 }

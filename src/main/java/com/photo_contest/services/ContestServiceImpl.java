@@ -1,6 +1,9 @@
 package com.photo_contest.services;
 
-import static com.photo_contest.constants.ModelValidationConstants.*;
+import static com.photo_contest.constants.ModelValidationConstants.CONTEST_EXISTS;
+import static com.photo_contest.constants.ModelValidationConstants.INVALID_ID;
+import static com.photo_contest.constants.ModelValidationConstants.NOT_ORGANIZER;
+import static com.photo_contest.constants.ModelValidationConstants.PRIVATE_CONTEST;
 import static com.photo_contest.services.PhaseServiceImpl.DAILY_CHECK_HOUR;
 
 import java.time.LocalDateTime;
@@ -11,11 +14,12 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-import com.photo_contest.exeptions.AuthorizationException;
-import com.photo_contest.filterSpec.ContestFilterSpecification;
 import jakarta.persistence.EntityExistsException;
+import jakarta.persistence.EntityNotFoundException;
 
 import com.photo_contest.config.AuthContextManager;
+import com.photo_contest.exeptions.AuthorizationException;
+import com.photo_contest.filterSpec.ContestFilterSpecification;
 import com.photo_contest.models.Contest;
 import com.photo_contest.models.Phase;
 import com.photo_contest.models.UserProfile;
@@ -27,10 +31,7 @@ import com.photo_contest.repos.RoleRepository;
 import com.photo_contest.repos.UserProfileRepository;
 import com.photo_contest.services.contracts.ContestService;
 import com.photo_contest.services.contracts.PhaseService;
-import com.photo_contest.services.contracts.UserService;
-import com.photo_contest.utils.ContestUtils;
 
-import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -295,6 +296,11 @@ public class ContestServiceImpl implements ContestService {
         contest.setParticipants(List.of());
         contest.setPhotoSubmissions(List.of());
         return contest;
+    }
+
+    @Override
+    public List<Contest> findAllContestsByUserProfileId(long id) {
+        return contestRepository.findAllContestsByUserProfileId(id);
     }
 
 }
