@@ -14,6 +14,7 @@ import ContestRules from './ContestRules.jsx';
 import JoinContestModalForm from '../Forms/SubmissionForm.jsx';
 import EditSubmissionModalForm from '../Forms/UpdateSubmissionForm';
 import classes from './Details.module.css';
+import {getId} from "../../utils/jwtUtils.jsx";
 
 const BACKEND_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
@@ -114,6 +115,7 @@ export default function ContestDetail() {
         transition: 'all 0.3s ease',
         boxShadow: 'none',
     });
+    console.log("contest.photoSubmissions", contest.photoSubmissions);
 
     return (
         <>
@@ -232,7 +234,15 @@ export default function ContestDetail() {
 
 
             {showJoinModal && <JoinContestModalForm onClose={() => setShowJoinModal(false)} contestId={contest.id} />}
-            {showEditModal && <EditSubmissionModalForm onClose={() => setShowEditModal(false)} contestId={contest.id} />}
+            {showEditModal && (
+                <EditSubmissionModalForm
+
+                    onClose={() => setShowEditModal(false)}
+                    submission={contest.photoSubmissions.find(
+                        (s) => s.creator.id === getId(localStorage.getItem("accessToken"))
+                    )}
+                />
+            )}
         </>
     );
 }

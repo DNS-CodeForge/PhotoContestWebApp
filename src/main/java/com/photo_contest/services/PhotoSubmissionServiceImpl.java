@@ -80,8 +80,8 @@ public class PhotoSubmissionServiceImpl implements PhotoSubmissionService {
         photoSubmission.setPhotoReviews(Collections.emptyList());
 
 
-        contest.getParticipants().add(authContextManager.getLoggedInUser());
-        contestRepository.save(contest);
+
+        contestService.joinContest(contestId, userId);
 
         return photoSubmissionRepository.save(photoSubmission);
     }
@@ -111,14 +111,18 @@ public class PhotoSubmissionServiceImpl implements PhotoSubmissionService {
         PhotoSubmission photoSubmission = getPhotoSubmissionById(id);
         photoSubmission.setTitle(photoSubmissionDTO.getTitle());
         photoSubmission.setStory(photoSubmissionDTO.getStory());
-        String uploadedPhotoUrl;
-        try {
 
-            uploadedPhotoUrl = cloudinaryImageService.uploadImage(file);
-            photoSubmission.setPhotoUrl(uploadedPhotoUrl);
-        } catch (IOException e) {
 
-            throw new ImageUploadException(IMG_UPLOAD_FAIL + ".", e);
+        if (file != null && !file.isEmpty()) {
+            try {
+                String uploadedPhotoUrl = cloudinaryImageService.uploadImage(file);
+
+                if (!uploadedPhotoUrl.equals(photoSubmission.getPhotoUrl())) {
+                    photoSubmission.setPhotoUrl(uploadedPhotoUrl);
+                }
+            } catch (IOException e) {
+                throw new ImageUploadException(IMG_UPLOAD_FAIL + ".", e);
+            }
         }
 
         return photoSubmissionRepository.save(photoSubmission);

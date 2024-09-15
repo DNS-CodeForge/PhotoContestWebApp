@@ -57,7 +57,6 @@ export default function SubmissionForm({ onClose, contestId }) {
 
             if (response.ok) {
                 const result = await response.json();
-                console.log('Submitted to contest:', result);
                 onClose();
                 window.location.reload();
             } else {
@@ -73,7 +72,7 @@ export default function SubmissionForm({ onClose, contestId }) {
     return (
         <Modal onClose={onClose}>
             <div className={classes['form-box']}>
-                <p>Submit to Contest</p>
+                <p>Enter Submission</p>
                 <form method="post" onSubmit={handleSubmit}>
                     <div className={classes['user-box']}>
                         <input

@@ -60,7 +60,7 @@ public class PhotoSubmissionController {
     @PutMapping("/submission/{id}")
     public ResponseEntity<PhotoSubmission> updatePhotoSubmission(
             @PathVariable Long id,
-            @RequestParam("file") MultipartFile file,
+            @RequestParam(value = "file", required = false) MultipartFile file,
             @RequestParam("data") String data) throws IOException {
 
 
