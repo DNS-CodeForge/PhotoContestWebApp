@@ -2,9 +2,8 @@ package com.photo_contest.repos;
 
 import java.util.List;
 
-
-import com.photo_contest.models.DTO.RankedUserResponseDTO;
 import com.photo_contest.models.PhotoSubmission;
+import com.photo_contest.models.DTO.RankedUserResponseDTO;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -36,5 +35,7 @@ public interface PhotoSubmissionRepository extends JpaRepository<PhotoSubmission
 
 
     List<PhotoSubmission> findByContestId(Long contestId);
+
+    List<PhotoSubmission> findByCreatorId(Long userId);
 
 }

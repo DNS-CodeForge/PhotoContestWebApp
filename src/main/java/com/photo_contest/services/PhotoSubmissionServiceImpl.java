@@ -1,8 +1,16 @@
 package com.photo_contest.services;
 
+import static com.photo_contest.constants.ModelValidationConstants.IMG_UPLOAD_FAIL;
+import static com.photo_contest.constants.ModelValidationConstants.INVALID_ID;
+import static com.photo_contest.constants.ModelValidationConstants.INVALID_SUBMISSION;
+import static com.photo_contest.constants.ModelValidationConstants.PH_ONE_SUBMISSION;
+
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
+
+import jakarta.persistence.EntityExistsException;
+import jakarta.persistence.EntityNotFoundException;
 
 import com.photo_contest.config.AuthContextManager;
 import com.photo_contest.exeptions.AuthorizationException;
@@ -17,13 +25,9 @@ import com.photo_contest.services.contracts.CloudinaryImageService;
 import com.photo_contest.services.contracts.ContestService;
 import com.photo_contest.services.contracts.PhotoSubmissionService;
 
-import jakarta.persistence.EntityExistsException;
-import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
-import static com.photo_contest.constants.ModelValidationConstants.*;
 
 @Service
 public class PhotoSubmissionServiceImpl implements PhotoSubmissionService {
@@ -134,5 +138,10 @@ public class PhotoSubmissionServiceImpl implements PhotoSubmissionService {
             throw new EntityNotFoundException(INVALID_ID.formatted("Photo Submission", id));
         }
         photoSubmissionRepository.deleteById(id);
+    }
+
+    @Override
+     public List<PhotoSubmission> getSubmissionsByUserId(Long userId) {
+        return photoSubmissionRepository.findByCreatorId(userId);
     }
 }
