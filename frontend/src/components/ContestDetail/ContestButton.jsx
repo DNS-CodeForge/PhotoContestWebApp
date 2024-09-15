@@ -52,21 +52,18 @@ export default function ContestButton({ contest, phase, submissions, setShowJoin
                 alignItems="center"
                 justifyContent="center"
                 sx={{
-                    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-                    color: '#ffffff',
+                    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+                    color: '#a0a0a0',
                     fontSize: '1.5rem',
                     fontWeight: 'bold',
                     padding: '0.8rem 2rem',
                     borderRadius: '8px',
                     boxShadow: '0 4px 8px rgba(0, 0, 0, 0.3)',
                     textTransform: 'uppercase',
-                    cursor: 'pointer',
+                    cursor: 'not-allowed',
                     transition: 'background-color 0.3s ease',
-                    '&:hover': {
-                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
-                    },
                 }}
-                onClick={() => setShowJoinModal(true)}
+
             >
                 <LockIcon sx={{ height: '2rem', width: '2rem', marginRight: '0.8rem' }} />
                 <Typography variant="body2" sx={{ fontSize: '1.5rem', fontFamily: 'sans-serif', fontWeight: 'bold' }}>
@@ -75,6 +72,7 @@ export default function ContestButton({ contest, phase, submissions, setShowJoin
             </Box>
         );
     }
+
 
 
     if (!userSubmission) {

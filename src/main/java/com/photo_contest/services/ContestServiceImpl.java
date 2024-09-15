@@ -155,28 +155,33 @@ public class ContestServiceImpl implements ContestService {
     @Override
     public void joinContest(Long contestId, Long userId) {
 
-
         Contest contest = contestRepository.findById(contestId)
                 .orElseThrow(() -> new EntityNotFoundException(INVALID_ID.formatted("Contest", contestId)));
         UserProfile userProfile = authContextManager.getLoggedInUser();
 
-        if (contest.getParticipants().stream().anyMatch(participant -> Objects.equals(participant.getId(), userId))) {
-            throw new AuthorizationException(USER_IS_ALREADY_A_PARTICIPANT);
-        }
+        boolean isParticipant = contest.getParticipants().stream()
+                .anyMatch(participant -> Objects.equals(participant.getId(), userId));
 
         if (!contest.isPrivate()) {
-            userProfile.getContests().add(contest);
-
-
-            contest.getParticipants().add(userProfile);
-            userProfile.setPoints(userProfile.getPoints() + 1);
+            if (isParticipant) {
+                userProfile.setPoints(userProfile.getPoints() + 1);
+            } else {
+                userProfile.getContests().add(contest);
+                contest.getParticipants().add(userProfile);
+                userProfile.setPoints(userProfile.getPoints() + 1);
+            }
 
             userProfileRepository.save(userProfile);
             contestRepository.save(contest);
-        } else {
-            throw new AuthorizationException(PRIVATE_CONTEST);
-        }
 
+        } else {
+            if (isParticipant) {
+                userProfile.setPoints(userProfile.getPoints() + 3);
+                userProfileRepository.save(userProfile);
+            } else {
+                throw new AuthorizationException(PRIVATE_CONTEST);
+            }
+        }
     }
 
     @Override
@@ -184,13 +189,10 @@ public class ContestServiceImpl implements ContestService {
         Contest contest = contestRepository.findById(contestId)
                 .orElseThrow(() -> new EntityNotFoundException(INVALID_ID.formatted("Contest", contestId)));
 
-
         if (!Objects.equals(contest.getOrganizer().getId(), authContextManager.getLoggedInUser().getId())) {
             throw new AuthorizationException(NOT_ORGANIZER.formatted("participants"));
         }
 
-
-        int points = contest.isPrivate() ? 3 : 1;
         List<Long> failedInvites = new ArrayList<>();
 
         for (Long userId : userIds) {
@@ -204,16 +206,17 @@ public class ContestServiceImpl implements ContestService {
 
                 contest.getParticipants().add(userProfile);
                 userProfile.getContests().add(contest);
-                userProfile.setPoints(userProfile.getPoints() + points);
 
             } catch (Exception e) {
                 failedInvites.add(userId);
             }
         }
+
         contestRepository.save(contest);
 
         return failedInvites;
     }
+
 
     @Override
     public List<Long> inviteJudges(Long contestId, List<Long> userIds) {
