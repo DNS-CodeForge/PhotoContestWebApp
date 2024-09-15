@@ -131,7 +131,7 @@ export default function SubmissionForm({ onClose, submission }) {
                         disabled={isLoading}
                     >
                         <span></span><span></span><span></span><span></span>
-                        {isLoading ? 'Submitting...' : 'Submit'}
+                        {isLoading ? 'Drawing...' : 'Edit'}
                     </button>
                 </form>
                 {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
