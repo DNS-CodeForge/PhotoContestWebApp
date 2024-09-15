@@ -225,13 +225,43 @@ export default function ContestDetail() {
                         }}
                     >
                         {selectedTab === 'details' && <ContestRules contest={contest} />}
-                        {selectedTab === 'submissions' && <SubmissionsList itemData={contest.photoSubmissions} />}
+                        {selectedTab === 'submissions' && (
+                            contest.photoSubmissions.length > 0 ? (
+                                <SubmissionsList itemData={contest.photoSubmissions} />
+                            ) : (
+                                <Box
+                                    display="flex"
+                                    justifyContent="center"
+                                    alignItems="center"
+                                    height={"20vh"}
+
+                                >
+                                    <Typography variant="h6" color="white" sx>
+                                        No photo submissions yet. Be the first to participate!
+                                    </Typography>
+                                </Box>
+                            )
+                        )}
+
                         {selectedTab === 'ranking' && (
-                            <Ranking
-                                rankedUsers={rankedUsers}
-                                juryCount={contest.jury.length}
-                                submissions={contest.photoSubmissions}
-                            />
+                            rankedUsers.length > 0 ? (
+                                <Ranking
+                                    rankedUsers={rankedUsers}
+                                    juryCount={contest.jury.length}
+                                    submissions={contest.photoSubmissions}
+                                />
+                            ) : (
+                                <Box
+                                    display="flex"
+                                    justifyContent="center"
+                                    alignItems="center"
+                                    height={"20vh"}
+                                >
+                                    <Typography variant="h6" color="white">
+                                        No rankings available yet. Check back later for the results!
+                                    </Typography>
+                                </Box>
+                            )
                         )}
                     </Box>
                 </Box>

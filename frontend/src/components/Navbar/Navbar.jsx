@@ -75,7 +75,9 @@ export default function Navbar() {
 
 
                     <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'center' }}>
+                        {isAuthenticated(localStorage.getItem('accessToken')) &&
                         <SearchBar />
+                        }
                     </Box>
 
                     {!authenticated ? (

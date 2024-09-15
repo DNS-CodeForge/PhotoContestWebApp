@@ -115,7 +115,7 @@ function Home() {
 
     return (
         <>
-            <ContestList contests={contests} />
+            <ContestList contests={contests} heading={"Contests"} />
 
             <Pagination
                 count={totalPages}
