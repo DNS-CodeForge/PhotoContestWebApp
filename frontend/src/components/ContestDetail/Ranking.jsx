@@ -6,7 +6,16 @@ import ListSubheader from '@mui/material/ListSubheader';
 import Typography from '@mui/material/Typography';
 import Link from '@mui/material/Link';
 
-export default function ContestDetails({ rankedUsers }) {
+export default function ContestDetails({rankedUsers, submissions, juryCount}) {
+
+
+    const getReviewsCount = (user) => {
+        const userId = user.userId;
+        const submission = submissions.find(submission => submission.creator.id === userId);
+        return submission && submission.photoReviews ? submission.photoReviews.length : 0;
+    };
+
+
     return (
         <Box
             display="flex"
@@ -17,11 +26,10 @@ export default function ContestDetails({ rankedUsers }) {
                 backgroundColor: 'transparent',
                 width: '100%',
                 height: '100%',
-
             }}
         >
             <List
-                sx={{ width: '100%', maxWidth: '100%', bgcolor: 'transparent',padding: '0 0', }}
+                sx={{width: '100%', maxWidth: '100%', bgcolor: 'transparent', padding: '0 0'}}
                 subheader={
                     <ListSubheader
                         component="div"
@@ -35,15 +43,14 @@ export default function ContestDetails({ rankedUsers }) {
                             borderTopLeftRadius: '12px',
                         }}
                     >
-                        <Typography sx={{ width: '10%', textAlign: 'center' }}>Rank</Typography>
-                        <Typography sx={{ width: '30%', textAlign: 'center' }}>Username</Typography>
-                        <Typography sx={{ width: '20%', textAlign: 'center' }}>Submissions</Typography>
-                        <Typography sx={{ width: '20%', textAlign: 'center' }}>Reviews</Typography>
-                        <Typography sx={{ width: '20%', textAlign: 'center' }}>Points</Typography>
+                        <Typography sx={{width: '10%', textAlign: 'center'}}>Rank</Typography>
+                        <Typography sx={{width: '30%', textAlign: 'center'}}>Username</Typography>
+                        <Typography sx={{width: '20%', textAlign: 'center'}}>Submissions</Typography>
+                        <Typography sx={{width: '20%', textAlign: 'center'}}>Reviews</Typography>
+                        <Typography sx={{width: '20%', textAlign: 'center'}}>Points</Typography>
                     </ListSubheader>
                 }
             >
-
                 {rankedUsers.map((user, index) => (
                     <ListItem
                         key={user.username}
@@ -51,7 +58,6 @@ export default function ContestDetails({ rankedUsers }) {
                             display: 'flex',
                             justifyContent: 'space-between',
                             backgroundColor: 'rgba(0, 0, 0, 0.4)',
-
                             padding: '10px',
                             textAlign: 'center',
                             '&:hover': {
@@ -61,15 +67,18 @@ export default function ContestDetails({ rankedUsers }) {
                             transition: 'background-color 0.3s ease',
                         }}
                     >
-                        <Typography sx={{ width: '10%' }}>{index + 1}</Typography>
-                        <Typography sx={{ width: '30%' }}>{user.username}</Typography>
-                        <Typography sx={{ width: '20%' }}>
+                        <Typography sx={{width: '10%'}}>{index + 1}</Typography>
+                        <Typography sx={{width: '30%'}}>{user.username}</Typography>
+                        <Typography sx={{width: '20%'}}>
                             <Link href="#" underline="hover" color="inherit">
                                 View Submission
                             </Link>
                         </Typography>
-                        <Typography sx={{ width: '20%' }}>7/11</Typography>
-                        <Typography sx={{ width: '20%' }}>{user.points}</Typography>
+
+                        <Typography sx={{width: '20%'}}>
+                            {getReviewsCount(user)}/{juryCount}
+                        </Typography>
+                        <Typography sx={{width: '20%'}}>{user.points}</Typography>
                     </ListItem>
                 ))}
             </List>

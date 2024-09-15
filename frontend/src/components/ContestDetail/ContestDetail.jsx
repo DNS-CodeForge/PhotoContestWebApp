@@ -115,7 +115,6 @@ export default function ContestDetail() {
         transition: 'all 0.3s ease',
         boxShadow: 'none',
     });
-    console.log("contest.photoSubmissions", contest.photoSubmissions);
 
     return (
         <>
@@ -227,7 +226,13 @@ export default function ContestDetail() {
                     >
                         {selectedTab === 'details' && <ContestRules contest={contest} />}
                         {selectedTab === 'submissions' && <SubmissionsList itemData={contest.photoSubmissions} />}
-                        {selectedTab === 'ranking' && <Ranking rankedUsers={rankedUsers} />}
+                        {selectedTab === 'ranking' && (
+                            <Ranking
+                                rankedUsers={rankedUsers}
+                                juryCount={contest.jury.length}
+                                submissions={contest.photoSubmissions}
+                            />
+                        )}
                     </Box>
                 </Box>
             </div>

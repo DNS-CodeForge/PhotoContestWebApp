@@ -1,5 +1,6 @@
 package com.photo_contest.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -50,7 +51,7 @@ public class PhotoReview {
 
     @ManyToOne
     @JoinColumn(name = "photo_submission_id", nullable = false)
-    @JsonManagedReference
+    @JsonBackReference
     private PhotoSubmission photoSubmission;
 
     @Column(nullable = false)
