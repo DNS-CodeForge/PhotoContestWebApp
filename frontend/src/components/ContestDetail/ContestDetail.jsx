@@ -163,7 +163,7 @@ export default function ContestDetail({ contest, rankedUsers }) {
                                     height={"20vh"}
 
                                 >
-                                    <Typography variant="h6" color="white" sx>
+                                    <Typography variant="h6" color="white" >
                                         No photo submissions yet. Be the first to participate!
                                     </Typography>
                                 </Box>

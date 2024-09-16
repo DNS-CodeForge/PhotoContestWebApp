@@ -48,7 +48,7 @@ const ContestCard = ({ contest }) => {
         <div className={classes.card} onClick={handleCardClick} style={{ cursor: 'pointer' }}>
             <div className={classes.card_form}>
                 <img src={image} alt='contest category'/>
-                <span>{contest.isPrivate ? "Private" : "Public"}
+                <span>{contest.private ? "Private" : "Public"}
                     <p>{getContestStatus(contest.startDate, contest.submissionEndDate, contest.endDate)}</p>
                 </span>
             </div>
