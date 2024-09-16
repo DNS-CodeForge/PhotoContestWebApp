@@ -1,5 +1,10 @@
 package com.photo_contest.models;
 
+import static com.photo_contest.constants.ModelValidationConstants.FIRST_NAME_SIZE_MSG;
+import static com.photo_contest.constants.ModelValidationConstants.LAST_NAME_SIZE_MSG;
+import static com.photo_contest.constants.ModelValidationConstants.NAME_MAX_SIZE;
+
+import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.persistence.CascadeType;
@@ -15,11 +20,11 @@ import jakarta.persistence.OneToOne;
 import jakarta.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import static com.photo_contest.constants.ModelValidationConstants.*;
 
 @Entity
 @Data
@@ -51,7 +56,7 @@ public class UserProfile {
 
     @OneToMany(mappedBy = "organizer", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JsonBackReference
-    private List<Contest> contests;
+    private List<Contest> contests = new ArrayList<>();
 
     private int points = 0;
 
