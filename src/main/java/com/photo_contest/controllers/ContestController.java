@@ -77,9 +77,30 @@ public class ContestController {
             @RequestParam(defaultValue = "12") int size,
             HttpServletRequest request
     ) {
+        System.out.println(size);
         Pageable pageable = PageRequest.of(page, size);
 
         Page<Contest> contestPage = contestService.getContests(title, category, isPrivate, active, activeSubmission, sort, pageable);
+
+        UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(request.getRequestURL().toString())
+                .query(request.getQueryString());
+
+        CustomResponse response = ResponseUtil.buildPaginatedContestResponse(contestPage, uriBuilder);
+
+        return ResponseEntity.ok(response);
+    }
+    @GetMapping("/sample-contest")
+    public ResponseEntity<CustomResponse> getSampleContest(
+            @RequestParam(defaultValue = "12") int size,
+            HttpServletRequest request
+    ) {
+        int page = 0;
+        boolean active = true;
+
+        Pageable pageable = PageRequest.of(page, size);
+
+
+        Page<Contest> contestPage = contestService.getContests(null, null, null, active, null, null, pageable);
 
         UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(request.getRequestURL().toString())
                 .query(request.getQueryString());

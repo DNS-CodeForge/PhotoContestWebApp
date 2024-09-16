@@ -1,11 +1,12 @@
 import ContestPage from './ContestPage.jsx';
 import Layout from '../components/Layout';
 import { Navigate } from 'react-router-dom';
-
 import UserProfile from '../components/UserProfile/UserProfile';
 import CreateContest from '../components/Forms/CreateContest';
 import ProtectedRoute from './ProtectedRoute';
-import ContestDetailPage from "./ContestDetailPage.jsx";
+import ContestDetailPage from './ContestDetailPage.jsx';
+import HomePage from './HomePage';
+import { isAuthenticated } from '../utils/authUtils';
 
 const routes = [
     {
@@ -14,29 +15,37 @@ const routes = [
         children: [
             {
 
-                path: 'home',
-                element: <Navigate to="/contest/page/1" replace />,
+                path: '/',
+                element: <HomePage />,
             },
             {
-                path: '',
-                element: <Navigate to="/contest/page/1" replace />,
-            },
 
-            {
-                path: 'contest/page/:page',
-                element: <ContestPage />,
+                path: 'contest',
+                element: <Navigate to="/contest/page/1" replace />,
             },
             {
+
+                path: 'contest/page/:page',
+                element: (
+                    <ProtectedRoute>
+                        <ContestPage />
+                    </ProtectedRoute>
+                ),
+            },
+            {
+
                 path: 'login',
-                element: <ContestPage />,
+                element: isAuthenticated() ? <Navigate to="/" replace /> : <HomePage />,
                 state: { modalType: 'login' },
             },
             {
+
                 path: 'register',
-                element: <ContestPage />,
+                element: isAuthenticated() ? <Navigate to="/" replace /> : <HomePage />,
                 state: { modalType: 'register' },
             },
             {
+
                 path: 'contest/:id',
                 element: (
                     <ProtectedRoute>
@@ -45,6 +54,7 @@ const routes = [
                 ),
             },
             {
+
                 path: 'create-contest',
                 element: (
                     <ProtectedRoute>
@@ -53,6 +63,7 @@ const routes = [
                 ),
             },
             {
+
                 path: 'profile',
                 element: (
                     <ProtectedRoute>
@@ -62,7 +73,7 @@ const routes = [
             },
             {
                 path: '*',
-                element: <Navigate to="/contest/page/1" replace />,
+                element: <Navigate to="/" replace />,
             },
         ],
     },

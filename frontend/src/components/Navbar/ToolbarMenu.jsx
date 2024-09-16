@@ -88,7 +88,7 @@ export default function ToolbarMenu() {
                 }}
             >
                 <MenuItem
-                    onClick={() => handleNavigation('/home')}
+                    onClick={() => handleNavigation('/')}
                     sx={{
                         padding: '1rem 1rem',
                         paddingRight: '3rem',
@@ -107,7 +107,7 @@ export default function ToolbarMenu() {
                 {isLoggedIn && (
 
                     <MenuItem
-                        onClick={() => handleNavigation('/contest')}
+                        onClick={() => handleNavigation('/contest/page/1')}
                         sx={{
                             padding: '1rem 1rem',
                             paddingRight: '3rem',

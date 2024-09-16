@@ -57,10 +57,8 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> {
                     auth.requestMatchers("/api/auth/**").permitAll();
-                    auth.requestMatchers("/api/contest").permitAll();
+                    auth.requestMatchers("/api/contest/sample-contest").permitAll();
                     auth.requestMatchers("/api/**").authenticated();
-                    // TODO
-//                    auth.requestMatchers("/api/**").authenticated();
                 })
                 .oauth2ResourceServer(oauth2 -> oauth2
                         .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter())))

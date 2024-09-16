@@ -35,8 +35,15 @@ function ContestPage() {
 
 
     const fetchContests = async (page = 1, size = 12) => {
+        const accessToken = localStorage.getItem('accessToken');
         try {
-            const response = await fetch(`${BACKEND_BASE_URL}api/contest?page=${page - 1}&size=${size}`);
+            const response = await fetch(`${BACKEND_BASE_URL}api/contest?page=${page - 1}&size=${size}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${accessToken}`,
+                    'Content-Type': 'application/json',
+                },
+            });
             if (!response.ok) {
                 throw new Error('Failed to fetch contests');
             }
@@ -95,7 +102,7 @@ function ContestPage() {
 
     const handlePageChange = (event, value) => {
         setCurrentPage(value);
-        navigate(`/contest/page/${value}`);
+        navigate(`/home/page/${value}`);
     };
 
     if (loading) {

@@ -3,7 +3,6 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
-import IconButton from '@mui/material/IconButton';
 import SearchBar from './Search';
 import AuthButtons from './AuthButton.jsx';
 import LoginForm from '../Forms/LoginForm';
@@ -45,7 +44,7 @@ export default function Navbar() {
     };
 
     const handleCloseModal = () => {
-        navigate('/home');
+        navigate('/');
     };
 
     return (
