@@ -7,6 +7,7 @@ import java.util.Map;
 import com.photo_contest.models.Contest;
 import com.photo_contest.models.PhotoSubmission;
 import com.photo_contest.models.UserProfile;
+import com.photo_contest.models.DTO.EditProfileDTO;
 import com.photo_contest.services.contracts.ContestService;
 import com.photo_contest.services.contracts.PhotoSubmissionService;
 import com.photo_contest.services.contracts.UserService;
@@ -90,9 +91,8 @@ public class UserController {
         return ResponseEntity.noContent().build();
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<UserProfile> updateUser(@PathVariable int id, @RequestBody UserProfile updatedUser) {
-        updatedUser.setId((long) id);
+    @PutMapping
+    public ResponseEntity<UserProfile> updateLoggedUser(@RequestBody EditProfileDTO updatedUser) {
         UserProfile user = userService.updateUserProfile(updatedUser);
         return ResponseEntity.ok(user);
     }

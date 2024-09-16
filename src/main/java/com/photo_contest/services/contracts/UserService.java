@@ -3,9 +3,10 @@ package com.photo_contest.services.contracts;
 import java.util.List;
 
 import com.photo_contest.models.AppUser;
-
 import com.photo_contest.models.Contest;
 import com.photo_contest.models.UserProfile;
+import com.photo_contest.models.DTO.EditProfileDTO;
+
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -18,7 +19,7 @@ public interface UserService extends UserDetailsService {
 
     UserProfile getUserByUsername(String name);
 
-    UserProfile updateUserProfile(UserProfile userProfile);
+    UserProfile updateUserProfile(EditProfileDTO editProfileDTO);
 
     List<UserProfile> getAllUsers();
 

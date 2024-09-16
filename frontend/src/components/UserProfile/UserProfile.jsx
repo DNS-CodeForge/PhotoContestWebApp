@@ -3,6 +3,7 @@ import { decodeToken } from '../../utils/jwtUtils';
 import { Box, Typography, CircularProgress, Button, Avatar } from '@mui/material';
 import SubmissionsList from '../ContestDetail/SubmissionsList';
 import ContestList from '../ContestList/ContestList';
+import EditProfileForm from '../Forms/EditProfileForm';
 
 const BACKEND_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 import organizerImage from '../../assets/organizer.png';
@@ -25,6 +26,18 @@ export default function UserProfile() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [selectedTab, setSelectedTab] = useState('submissions');
+    const [isEditProfileModalOpen, setIsEditProfileModalOpen] = useState(false); 
+
+   const handleUpdateUserData = (updatedProfile) => {
+        setUserData(prevData => ({
+            ...prevData,
+            userProfile: {
+                ...prevData.userProfile,
+                firstName: updatedProfile.firstName,
+                lastName: updatedProfile.lastName,
+            }
+        }));
+    };
 
     useEffect(() => {
         const fetchUserData = async () => {
@@ -46,7 +59,6 @@ export default function UserProfile() {
 
                     const data = await response.json();
                     setUserData(data);
-                    console.log(data);
                 } else {
                     throw new Error('Failed to decode token');
                 }
@@ -82,6 +94,14 @@ export default function UserProfile() {
     };
 
     const userAvatar = userData.userProfile.avatar || rankAvatars[userData.userProfile.rank.toLowerCase()] || rank1Image;
+
+    const handleOpenEditProfileModal = () => {
+        setIsEditProfileModalOpen(true);
+    };
+
+    const handleCloseEditProfileModal = () => {
+        setIsEditProfileModalOpen(false);
+    };
 
     const buttonStyle = (tab) => ({
         fontSize: '1rem',
@@ -129,12 +149,16 @@ export default function UserProfile() {
 
     return (
         <>
+
+            {isEditProfileModalOpen && <EditProfileForm email={userData.email} firstName={userData.userProfile.firstName} lastName={userData.userProfile.lastName} handleClose={handleCloseEditProfileModal} handleUpdateUserData={handleUpdateUserData}/>}
             <Box display={"flex"} sx={{ backgroundColor: '#393E46' }} height={"12rem"} marginTop={"10rem"} flexDirection={'row'} justifyContent={"space-around"} alignItems={"center"}>
                 <Box display={"flex"} flexDirection={"column"} justifyContent={"center"} alignItems={"center"} padding={"5px"} marginLeft={"1rem"} sx={{ borderRadius: '12px', backgroundColor: '#282c34', width: '20rem', height: '10rem' }}>
                     <Typography variant='p'> First name: {userData.userProfile.firstName}</Typography>
                     <Typography variant='p'> Last name: {userData.userProfile.lastName}</Typography>
                     <Typography variant='p'> Email: {userData.email}</Typography>
-                    <Button variant='contained' sx={{ marginTop: '13px', backgroundColor: 'orange' }}>Edit Profile</Button>
+
+                    <Button variant='contained' sx={{marginTop: '13px', backgroundColor: 'orange'}} onClick={handleOpenEditProfileModal}>Edit Profile</Button>
+
                 </Box>
 
                 <Box display={"flex"} flexDirection={"column"} alignItems={"center"}>

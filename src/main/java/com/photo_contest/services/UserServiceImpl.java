@@ -2,10 +2,12 @@ package com.photo_contest.services;
 
 import java.util.List;
 
+import com.photo_contest.config.AuthContextManager;
 import com.photo_contest.models.AppUser;
 import com.photo_contest.models.Contest;
 import com.photo_contest.models.Role;
 import com.photo_contest.models.UserProfile;
+import com.photo_contest.models.DTO.EditProfileDTO;
 import com.photo_contest.repos.ContestRepository;
 import com.photo_contest.repos.RoleRepository;
 import com.photo_contest.repos.UserProfileRepository;
@@ -20,17 +22,19 @@ import org.springframework.stereotype.Service;
 @Service
 public class UserServiceImpl implements UserService {
 
+    AuthContextManager authContextManager;
     private final UserRepository userRepository;
     private final UserProfileRepository userProfileRepository;
     private final RoleRepository roleRepository;
     private final ContestRepository contestRepository;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, UserProfileRepository userProfileRepository, RoleRepository roleRepository, ContestRepository contestRepository) {
+    public UserServiceImpl(UserRepository userRepository, UserProfileRepository userProfileRepository, RoleRepository roleRepository, ContestRepository contestRepository, AuthContextManager authContextManager) {
         this.userRepository = userRepository;
         this.userProfileRepository = userProfileRepository;
         this.roleRepository = roleRepository;
         this.contestRepository = contestRepository;
+        this.authContextManager = authContextManager;
     }
 
     @Override
@@ -52,8 +56,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserProfile updateUserProfile(UserProfile userProfile) {
-        return userProfileRepository.save(userProfile);
+    public UserProfile updateUserProfile(EditProfileDTO editProfileDTO) {
+        UserProfile profile = authContextManager.getLoggedInUser();
+        profile.setFirstName(editProfileDTO.getFirstName());
+        profile.setLastName(editProfileDTO.getLastName());
+        return userProfileRepository.save(profile);
     }
 
     @Override
