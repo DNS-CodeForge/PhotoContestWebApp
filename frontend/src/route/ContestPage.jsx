@@ -102,7 +102,7 @@ function ContestPage() {
 
     const handlePageChange = (event, value) => {
         setCurrentPage(value);
-        navigate(`/home/page/${value}`);
+        navigate(`/contest/page/${value}`);
     };
 
     if (loading) {
