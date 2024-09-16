@@ -7,6 +7,7 @@ import ProtectedRoute from './ProtectedRoute';
 import ContestDetailPage from './ContestDetailPage.jsx';
 import HomePage from './HomePage';
 import { isAuthenticated } from '../utils/authUtils';
+import AboutPage from '../components/AboutPage.jsx';
 
 const routes = [
     {
@@ -17,6 +18,11 @@ const routes = [
 
                 path: '/',
                 element: <HomePage />,
+            },
+            {
+
+                path: '/about',
+                element: <AboutPage />,
             },
             {
 
