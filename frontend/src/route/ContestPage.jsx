@@ -23,7 +23,7 @@ const getSizeBasedOnScreenWidth = () => {
     }
 };
 
-function Home() {
+function ContestPage() {
     const { page } = useParams();
     const navigate = useNavigate();
     const [contests, setContests] = useState([]);
@@ -95,7 +95,7 @@ function Home() {
 
     const handlePageChange = (event, value) => {
         setCurrentPage(value);
-        navigate(`/home/page/${value}`);
+        navigate(`/contest/page/${value}`);
     };
 
     if (loading) {
@@ -126,4 +126,4 @@ function Home() {
     );
 }
 
-export default Home;
+export default ContestPage;
