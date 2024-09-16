@@ -1,26 +1,31 @@
-
 import React from 'react';
 import { Container, Typography, Paper, Box, Avatar, IconButton, Stack } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { GitHub, LinkedIn } from '@mui/icons-material'; // Example icons
+import { GitHub, LinkedIn } from '@mui/icons-material';
 
-// Define custom styles using styled
 const StyledPaper = styled(Paper)({
   padding: '24px',
   textAlign: 'center',
-  backgroundColor: 'rgba(0, 0, 0, 0)', 
+  backgroundColor: 'rgba(0, 0, 0, 0)',
   color: 'white',
-    boxShadow: 'none'
+  boxShadow: 'none',
 });
 
 const SectionBox = styled(Box)({
   marginBottom: '32px',
 });
 
+const DeveloperCard = styled(Paper)(({ theme }) => ({
+  padding: '24px',
+  backgroundColor: 'rgba(0, 0, 0, 0.7)', 
+  color: theme.palette.text.primary,
+  boxShadow: theme.shadows[3],
+  borderRadius: '8px',
+}));
+
 const DeveloperBox = styled(Box)({
   display: 'flex',
   alignItems: 'center',
-  justifyContent: 'center',
   textAlign: 'left',
   marginBottom: '16px',
 });
@@ -37,70 +42,73 @@ const DeveloperAvatar = styled(Avatar)({
 
 const AboutPage = () => {
   return (
-    <Container component="main" maxWidth="md" sx={{ backgroundColor: 'transparent', padding: 0 }}>
-      <StyledPaper>
-        <Typography variant="h4" component="h1" gutterBottom>
-          About Us
-        </Typography>
-        <SectionBox>
-          <Typography variant="h6" component="h2">
-            Welcome to the Photo Contest App!
+      <Container component="main" maxWidth="md" sx={{ backgroundColor: 'transparent', padding: 0 }}>
+        <StyledPaper>
+          <Typography variant="h4" component="h1" gutterBottom>
+            About Us
           </Typography>
-          <Typography variant="body1" paragraph>
-            We are excited to present our Photo Contest App, a platform designed to foster creativity and community through photo contests. Our goal is to provide a user-friendly experience where participants can easily enter contests, share their work, and interact with fellow users.
-          </Typography>
-        </SectionBox>
-        <SectionBox>
-          <Typography variant="h6" component="h2">
-            Meet the Developers
-          </Typography>
-          <Stack spacing={2}>
-            <DeveloperBox>
-              <DeveloperAvatar>S</DeveloperAvatar>
-              <div>
-                <Typography variant="body1" paragraph>
-                  <strong>S:</strong> S is a versatile developer with experience in both front-end and back-end technologies. S has focused on crafting a seamless user experience and ensuring the app's interface is both functional and aesthetically pleasing.
-                </Typography>
-                <Box>
-                  <IconButton color="inherit" href="https://github.com/developerS" target="_blank">
-                    <GitHub />
-                  </IconButton>
-                  <IconButton color="inherit" href="https://www.linkedin.com/in/developerS" target="_blank">
-                    <LinkedIn />
-                  </IconButton>
-                </Box>
-              </div>
-            </DeveloperBox>
-            <DeveloperBox>
-              <DeveloperAvatar>D</DeveloperAvatar>
-              <div>
-                <Typography variant="body1" paragraph>
-                  <strong>D:</strong> D is a skilled developer who has worked extensively on both the server-side and client-side aspects of the app. D's expertise in backend architecture and database management has been key in making sure the app performs efficiently and reliably.
-                </Typography>
-                <Box>
-                  <IconButton color="inherit" href="https://github.com/developerD" target="_blank">
-                    <GitHub />
-                  </IconButton>
-                  <IconButton color="inherit" href="https://www.linkedin.com/in/developerD" target="_blank">
-                    <LinkedIn />
-                  </IconButton>
-                </Box>
-              </div>
-            </DeveloperBox>
-          </Stack>
-        </SectionBox>
-        <SectionBox>
-          <Typography variant="h6" component="h2">
-            Our Vision
-          </Typography>
-          <Typography variant="body1" paragraph>
-            Our vision is to build a robust and dynamic platform that enhances the experience of participating in and organizing photo contests. We aim to create an engaging space where users can showcase their work, compete, and connect, regardless of their level of expertise.
-          </Typography>
-        </SectionBox>
-      </StyledPaper>
-    </Container>
+          <SectionBox>
+            <Typography variant="h6" component="h2">
+              Welcome to the Photo Contest App!
+            </Typography>
+            <Typography variant="body1" component="p">
+              We are excited to present our Photo Contest App, a platform designed to foster creativity and community through photo contests. Our goal is to provide a user-friendly experience where participants can easily enter contests, share their work, and interact with fellow users.
+            </Typography>
+          </SectionBox>
+          <SectionBox>
+            <Typography variant="h6" component="h2">
+              Meet the Developers
+            </Typography>
+            <Stack spacing={2}>
+              <DeveloperCard>
+                <DeveloperBox>
+                  <DeveloperAvatar>S</DeveloperAvatar>
+                  <div>
+                    <Typography variant="body1" component="p">
+                      <strong>S:</strong> S is a versatile developer with experience in both front-end and back-end technologies. S has focused on crafting a seamless user experience and ensuring the app's interface is both functional and aesthetically pleasing.
+                    </Typography>
+                    <Box>
+                      <IconButton color="inherit" href="https://github.com/DNS-CodeForge" target="_blank">
+                        <GitHub sx={{ color: 'white' }} />
+                      </IconButton>
+                      <IconButton color="inherit" href="https://www.linkedin.com" target="_blank">
+                        <LinkedIn sx={{ color: 'white' }} />
+                      </IconButton>
+                    </Box>
+                  </div>
+                </DeveloperBox>
+              </DeveloperCard>
+              <DeveloperCard>
+                <DeveloperBox>
+                  <DeveloperAvatar>D</DeveloperAvatar>
+                  <div>
+                    <Typography variant="body1" component="p">
+                      <strong>D:</strong> D is a skilled developer who has worked extensively on both the server-side and client-side aspects of the app. D's expertise in backend architecture and database management has been key in making sure the app performs efficiently and reliably.
+                    </Typography>
+                    <Box>
+                      <IconButton color="inherit" href="https://github.com/DNS-CodeForge" target="_blank">
+                        <GitHub sx={{ color: 'white' }} />
+                      </IconButton>
+                      <IconButton color="inherit" href="https://www.linkedin.com" target="_blank">
+                        <LinkedIn sx={{ color: 'white' }} />
+                      </IconButton>
+                    </Box>
+                  </div>
+                </DeveloperBox>
+              </DeveloperCard>
+            </Stack>
+          </SectionBox>
+                  <SectionBox>
+            <Typography variant="h6" component="h2">
+              Disclaimer
+            </Typography>
+            <Typography variant="body1" component="p">
+              This is a Demo app developed as part of a journey to expand knowledge in web development. All artistic materials used are royalty-free, with heartfelt appreciation extended to the creators who contribute to the beauty of art in all its forms.
+            </Typography>
+          </SectionBox>
+        </StyledPaper>
+      </Container>
   );
 };
 
 export default AboutPage;
-

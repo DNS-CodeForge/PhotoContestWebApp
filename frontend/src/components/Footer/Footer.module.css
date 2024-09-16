@@ -3,7 +3,7 @@
 .footer {
   background-color: var(--gray-color);
   color: #fff;
-  padding: 0.5rem 0;
+  padding: 1.8rem 0;
   text-align: center;
   align-items: center;
   margin-top: auto;
@@ -23,7 +23,7 @@
 }
 
 .navLinks .link {
-  margin: 0 0.65rem;
+  margin: 0 0.5rem;
   line-height: 1;
 }
 
@@ -32,13 +32,13 @@
 }
 
 .link {
-  font-size: 0.85rem;
+  font-size: 1rem;
   text-decoration: none;
   color: #fff;
 }
 
 .navLinks, .copyright, .container {
-  margin-bottom: 0.4rem;
+  margin-bottom: 1.4rem;
 }
 .footerSpacer{
   margin-top: 5rem;

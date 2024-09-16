@@ -8,16 +8,17 @@ const Footer = () => {
             <footer className={classes.footer}>
                 <div className={classes.container}>
                     <div className={classes.copyright}>
-                        <p>© 2024 Photo Contest. All rights reserved.</p>
+                        <p>© 2024 D&S CodeForge. All rights reserved.</p>
                     </div>
                     <div className={classes.navLinks}>
-                        <a href="/rules" className={classes.link}>Contest Rules</a>
-                        <a href="/privacy" className={classes.link}>Privacy Policy</a>
-                        <a href="/terms" className={classes.link}>Terms of Service</a>
-                        <a href="/faq" className={classes.link}>FAQs</a>
+                        <a href="/faq-info#rules" className={classes.link}>Contest Rules</a>
+                        <a href="/faq-info#privacy" className={classes.link}>Privacy Policy</a>
+                        <a href="/faq-info#terms" className={classes.link}>Terms of Service</a>
+                        <a href="/faq-info#faq" className={classes.link}>FAQs</a>
                     </div>
+
                     <div className={classes.contact}>
-                        <a href="mailto:info@photocontest.com" className={classes.link}>Contact Us</a>
+                        <a href="https://github.com/DNS-CodeForge" className={classes.link} target="_blank">Contact Us</a>
                     </div>
                 </div>
             </footer>

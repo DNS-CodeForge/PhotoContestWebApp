@@ -14,7 +14,7 @@ const WelcomeHeader = () => {
         <Box
             sx={{
                 padding: '2vh 1vw',
-                backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                backgroundColor: ' #393E46',
                 borderRadius: '16px',
                 margin: '0 auto',
                 marginBottom: '5vh',

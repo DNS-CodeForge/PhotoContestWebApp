@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import Modal from "../Modal/Modal";
 import classes from './Form.module.css';
-import { Box, Button, Typography } from '@mui/material';
+import { Button } from '@mui/material';
 
 const BACKEND_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
-export default function EditProfileForm({ firstName, lastName, email, handleClose, handleUpdateUserData}) {
+export default function EditProfileForm({ firstName, lastName, handleClose, handleUpdateUserData}) {
     const [formValues, setFormValues] = useState({
         firstName: firstName || '',
         lastName: lastName || '',
@@ -51,7 +51,7 @@ export default function EditProfileForm({ firstName, lastName, email, handleClos
     };
 
     return (
-        <Modal>
+        <Modal onClose={handleClose}>
             <div className={classes['form-box']}>
                 <form onSubmit={handleSave}>
                     <p>Edit Profile</p>

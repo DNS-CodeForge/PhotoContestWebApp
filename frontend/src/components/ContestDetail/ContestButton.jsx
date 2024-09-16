@@ -27,8 +27,9 @@ export default function ContestButton({ contest, phase, submissions, setShowJoin
     useEffect(() => {
         if (userId && submissions) {
             const submission = submissions.find(sub => sub.creator.id === userId);
-            setUserSubmission(submission);
+            console.log(submission.photoReviews);
 
+            setUserSubmission(submission);
             const participant = contest.participants.some(participant => participant.id === userId);
             setIsParticipant(participant);
         }
@@ -79,7 +80,9 @@ export default function ContestButton({ contest, phase, submissions, setShowJoin
         return <JoinContestButton onClick={() => setShowJoinModal(true)} />;
     }
 
-
+    if (userSubmission.photoReviews.length > 0) {
+        return null
+    }
     return <EditSubmissionButton onClick={() => setShowEditModal(true)} />;
 }
 

@@ -11,18 +11,16 @@ const Layout = () => {
 
     useEffect(() => {
         const attemptTokenRefresh = async () => {
-
             const isOnHomePage = location.pathname === '/';
             const isOnLoginPage = location.pathname === '/login';
             const isOnRegisterPage = location.pathname === '/register';
+            const isOnAboutPage = location.pathname === '/about';
 
+            if (!isOnLoginPage && !isOnRegisterPage && !isOnAboutPage) {
 
-            if (!isOnLoginPage && !isOnRegisterPage) {
-                // Attempt to refresh the token, pass whether it's the homepage
                 await refreshTokenIfNecessary(navigate, isOnHomePage);
             }
         };
-
 
         attemptTokenRefresh();
 

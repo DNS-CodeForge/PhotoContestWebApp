@@ -8,6 +8,7 @@ import ContestDetailPage from './ContestDetailPage.jsx';
 import HomePage from './HomePage';
 import { isAuthenticated } from '../utils/authUtils';
 import AboutPage from '../components/AboutPage.jsx';
+import FAQInfoPage from "./FAQInfoPage.jsx";
 
 const routes = [
     {
@@ -67,6 +68,11 @@ const routes = [
                         <CreateContest />
                     </ProtectedRoute>
                 ),
+
+            },
+            {
+                path: '/faq-info',
+                element: <FAQInfoPage />,
             },
             {
 
