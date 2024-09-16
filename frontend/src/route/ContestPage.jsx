@@ -1,9 +1,10 @@
-import { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import ContestList from '../components/ContestList/ContestList.jsx';
 import Pagination from '../components/ContestList/Pagination.jsx';
 import Box from "@mui/material/Box";
 import CircularProgress from "@mui/material/CircularProgress";
+import { refreshTokenIfNecessary } from '../utils/authUtils';
 
 const BACKEND_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
@@ -30,23 +31,29 @@ function ContestPage() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [currentPage, setCurrentPage] = useState(Number(page) || 1);
-    const [totalPages, setTotalPages] = useState(1);
+    const [totalPages, setTotalPages] = useState(null);
     const [currentBreakpoint, setCurrentBreakpoint] = useState(getSizeBasedOnScreenWidth());
 
-
     const fetchContests = async (page = 1, size = 12) => {
-        const accessToken = localStorage.getItem('accessToken');
         try {
+            const tokenRefreshSuccess = await refreshTokenIfNecessary(navigate);
+            if (!tokenRefreshSuccess) {
+                return;
+            }
+
+            const accessToken = localStorage.getItem('accessToken');
             const response = await fetch(`${BACKEND_BASE_URL}api/contest?page=${page - 1}&size=${size}`, {
                 method: 'GET',
                 headers: {
-                    'Authorization': `Bearer ${accessToken}`,
+                    Authorization: `Bearer ${accessToken}`,
                     'Content-Type': 'application/json',
                 },
             });
+
             if (!response.ok) {
                 throw new Error('Failed to fetch contests');
             }
+
             const responseJson = await response.json();
             setContests(Array.isArray(responseJson.data.contests) ? responseJson.data.contests : []);
             setTotalPages(responseJson.data.pagination.totalPages);
@@ -57,16 +64,21 @@ function ContestPage() {
         }
     };
 
-
     useEffect(() => {
         const size = getSizeBasedOnScreenWidth();
         fetchContests(currentPage, size);
     }, [currentPage]);
 
+    useEffect(() => {
+        if (totalPages !== null && (currentPage < 1 || currentPage > totalPages)) {
+            navigate(`/contest/page/${Math.min(Math.max(1, currentPage), totalPages)}`);
+        }
+    }, [totalPages, currentPage, navigate]);
 
     useEffect(() => {
-        if (Number(page) !== currentPage) {
-            setCurrentPage(Number(page) || 1);
+        const newPage = Number(page);
+        if (newPage !== currentPage) {
+            setCurrentPage(newPage || 1);
         }
     }, [page, currentPage]);
 
@@ -79,26 +91,12 @@ function ContestPage() {
             }
         };
 
-        const debouncedResize = debounce(handleResize, 300);
-
-        window.addEventListener('resize', debouncedResize);
+        window.addEventListener('resize', handleResize);
 
         return () => {
-            window.removeEventListener('resize', debouncedResize);
+            window.removeEventListener('resize', handleResize);
         };
     }, [currentPage, currentBreakpoint]);
-
-    const debounce = (func, wait) => {
-        let timeout;
-        return (...args) => {
-            const later = () => {
-                clearTimeout(timeout);
-                func(...args);
-            };
-            clearTimeout(timeout);
-            timeout = setTimeout(later, wait);
-        };
-    };
 
     const handlePageChange = (event, value) => {
         setCurrentPage(value);
@@ -108,10 +106,11 @@ function ContestPage() {
     if (loading) {
         return (
             <Box display={"flex"} justifyContent={"center"} alignItems={"center"} height={"100%"}>
-                <CircularProgress color='gray' />
+                <CircularProgress color="gray" />
             </Box>
         );
     }
+
     if (error) {
         return <div>Error: {error}</div>;
     }
@@ -123,7 +122,6 @@ function ContestPage() {
     return (
         <>
             <ContestList contests={contests} heading={"Contests"} />
-
             <Pagination
                 count={totalPages}
                 page={currentPage}
