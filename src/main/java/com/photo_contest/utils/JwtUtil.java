@@ -28,11 +28,12 @@ public class JwtUtil {
     }
 
 
-    public String generateAccessToken(String username, Long userId, List<String> roles) {
+    public String generateAccessToken(String username, Long userId, List<String> roles, String rank) {
         return Jwts.builder()
                 .setSubject(username)
                 .claim("userId", userId)
                 .claim("roles", roles)
+                .claim("rank", rank)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + ACCESS_TOKEN_VALIDITY))
                 .signWith(privateKey, SignatureAlgorithm.RS256)

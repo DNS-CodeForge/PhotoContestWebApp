@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
@@ -9,10 +9,43 @@ import Box from '@mui/material/Box';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import LogoutIcon from '@mui/icons-material/Logout';
+import { getRank } from '../../utils/jwtUtils.jsx';
+import organizerImage from '../../assets/organizer.png';
+import rank1Image from '../../assets/rank1.png';
+import rank2Image from '../../assets/rank2.png';
+import rank3Image from '../../assets/rank3.png';
+import rank4Image from '../../assets/rank4.png';
 
 export default function UserProfileMenu() {
     const [anchorEl, setAnchorEl] = useState(null);
+    const [userAvatar, setUserAvatar] = useState(null);
     const navigate = useNavigate();
+
+    useEffect(() => {
+        const accessToken = localStorage.getItem('accessToken');
+        const rank = getRank(accessToken);
+
+        switch (rank.toLowerCase()) {
+            case 'organizer':
+                setUserAvatar(organizerImage);
+                break;
+            case 'junkie':
+                setUserAvatar(rank1Image);
+                break;
+            case 'enthusiast':
+                setUserAvatar(rank2Image);
+                break;
+            case 'master':
+                setUserAvatar(rank3Image);
+                break;
+            case 'dictator':
+                setUserAvatar(rank4Image);
+                break;
+            default:
+                setUserAvatar(rank1Image);
+                break;
+        }
+    }, []);
 
     const handleMenuOpen = (event) => {
         setAnchorEl(event.currentTarget);
@@ -38,7 +71,7 @@ export default function UserProfileMenu() {
         <Box sx={{ display: 'flex', alignItems: 'center', textAlign: 'center' }}>
             <Tooltip title="Open settings">
                 <IconButton onClick={handleMenuOpen} size="small" sx={{ ml: 2 }}>
-                    <Avatar alt="User" src="/path-to-your-profile-image.jpg" />
+                    <Avatar alt="User" src={userAvatar} />
                 </IconButton>
             </Tooltip>
             <Menu

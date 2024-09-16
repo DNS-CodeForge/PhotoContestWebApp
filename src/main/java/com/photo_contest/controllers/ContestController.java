@@ -77,7 +77,6 @@ public class ContestController {
             @RequestParam(defaultValue = "12") int size,
             HttpServletRequest request
     ) {
-        System.out.println(size);
         Pageable pageable = PageRequest.of(page, size);
 
         Page<Contest> contestPage = contestService.getContests(title, category, isPrivate, active, activeSubmission, sort, pageable);

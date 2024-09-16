@@ -19,6 +19,11 @@ export function getUsername(token) {
     return decoded ? decoded.username : null;
 }
 
+export function getRank(token) {
+    const decoded = decodeToken(token);
+    return decoded ? decoded.rank : null;
+}
+
 export function getRoles(token) {
     const decoded = decodeToken(token);
     return decoded ? decoded.roles : [];

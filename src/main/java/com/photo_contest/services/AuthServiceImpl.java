@@ -6,6 +6,7 @@ import com.photo_contest.models.DTO.RegistrationDTO;
 import com.photo_contest.models.Role;
 import com.photo_contest.models.UserProfile;
 import com.photo_contest.repos.RoleRepository;
+import com.photo_contest.repos.UserProfileRepository;
 import com.photo_contest.repos.UserRepository;
 import com.photo_contest.services.contracts.AuthService;
 
@@ -44,10 +45,11 @@ public class AuthServiceImpl implements AuthService {
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
+    private final UserProfileRepository userProfileRepository;
 
 
     @Autowired
-    public AuthServiceImpl(RSAKeyProps rsaKeyProps, AuthenticationManager authenticationManager, JwtUtil jwtUtil, PasswordEncoder passwordEncoder, UserRepository userRepository, RoleRepository roleRepository) {
+    public AuthServiceImpl(RSAKeyProps rsaKeyProps, AuthenticationManager authenticationManager, JwtUtil jwtUtil, PasswordEncoder passwordEncoder, UserRepository userRepository, RoleRepository roleRepository, UserProfileRepository userProfileRepository) {
         this.rsaKeyProps = rsaKeyProps;
         this.authenticationManager = authenticationManager;
         this.jwtUtil = jwtUtil;
@@ -55,7 +57,7 @@ public class AuthServiceImpl implements AuthService {
         this.userRepository = userRepository;
 
         this.roleRepository = roleRepository;
-
+        this.userProfileRepository = userProfileRepository;
     }
 
 
@@ -95,8 +97,8 @@ public class AuthServiceImpl implements AuthService {
 
             List<String> roles = authentication.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList());
 
-
-            String accessToken = jwtUtil.generateAccessToken(username, userId, roles);
+            String rank = userProfileRepository.findById(userId).get().getRank().toString();
+            String accessToken = jwtUtil.generateAccessToken(username, userId, roles, rank);
             String refreshToken = jwtUtil.generateRefreshToken(username, userId);
 
             return new LoginResponseDTO(accessToken, refreshToken);
@@ -121,9 +123,10 @@ public class AuthServiceImpl implements AuthService {
 
             AppUser user = userRepository.findById(userId).orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not found"));
 
-            List<String> roles = user.getRoles().stream().map(Role::getAuthority).collect(Collectors.toList());
 
-            String newAccessToken = jwtUtil.generateAccessToken(username, userId, roles);
+            List<String> roles = user.getRoles().stream().map(Role::getAuthority).collect(Collectors.toList());
+            String rank = userProfileRepository.findById(userId).get().getRank().toString();
+            String newAccessToken = jwtUtil.generateAccessToken(username, userId, roles, rank);
 
             return new LoginResponseDTO(newAccessToken, null);
         } else {
