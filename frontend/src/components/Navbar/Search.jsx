@@ -56,8 +56,20 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
     },
 }));
 
-export default function SearchBar() {
+
+export default function SearchBar({ onSearch }) {
     const [focused, setFocused] = useState(false);
+    const [searchTerm, setSearchTerm] = useState('');
+
+    const handleInputChange = (event) => {
+        setSearchTerm(event.target.value);
+    };
+
+    const handleKeyDown = (event) => {
+        if (event.key === 'Enter' && searchTerm.trim()) {
+            onSearch(searchTerm);  // Trigger search on Enter
+        }
+    };
 
     return (
         <Search focused={focused}>
@@ -75,8 +87,12 @@ export default function SearchBar() {
                 inputProps={{ 'aria-label': 'search' }}
                 onFocus={() => setFocused(true)}
                 onBlur={() => setFocused(false)}
+                onChange={handleInputChange}
+                onKeyDown={handleKeyDown}  // Handle Enter key press
+                value={searchTerm}
                 sx={{ color: '#EEEEEE' }}
             />
         </Search>
     );
 }
+

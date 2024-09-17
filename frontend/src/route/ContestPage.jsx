@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import ContestList from '../components/ContestList/ContestList.jsx';
 import Pagination from '../components/ContestList/Pagination.jsx';
 import Box from "@mui/material/Box";
@@ -27,14 +27,16 @@ const getSizeBasedOnScreenWidth = () => {
 function ContestPage() {
     const { page } = useParams();
     const navigate = useNavigate();
+    const location = useLocation();
     const [contests, setContests] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [currentPage, setCurrentPage] = useState(Number(page) || 1);
     const [totalPages, setTotalPages] = useState(null);
     const [currentBreakpoint, setCurrentBreakpoint] = useState(getSizeBasedOnScreenWidth());
+    const [searchQuery, setSearchQuery] = useState(new URLSearchParams(location.search).get('query') || '');
 
-    const fetchContests = async (page = 1, size = 12) => {
+    const fetchContests = async (page = 1, size = 12, query = '') => {
         try {
             const tokenRefreshSuccess = await refreshTokenIfNecessary(navigate);
             if (!tokenRefreshSuccess) {
@@ -42,7 +44,7 @@ function ContestPage() {
             }
 
             const accessToken = localStorage.getItem('accessToken');
-            const response = await fetch(`${BACKEND_BASE_URL}api/contest?page=${page - 1}&size=${size}`, {
+            const response = await fetch(`${BACKEND_BASE_URL}api/contest?page=${page - 1}&size=${size}&title=${encodeURIComponent(query)}`, {
                 method: 'GET',
                 headers: {
                     Authorization: `Bearer ${accessToken}`,
@@ -66,28 +68,22 @@ function ContestPage() {
 
     useEffect(() => {
         const size = getSizeBasedOnScreenWidth();
-        fetchContests(currentPage, size);
-    }, [currentPage]);
-
-    useEffect(() => {
-        if (totalPages !== null && (currentPage < 1 || currentPage > totalPages)) {
-            navigate(`/contest/page/${Math.min(Math.max(1, currentPage), totalPages)}`);
-        }
-    }, [totalPages, currentPage, navigate]);
+        fetchContests(currentPage, size, searchQuery);
+    }, [currentPage, searchQuery]);
 
     useEffect(() => {
         const newPage = Number(page);
         if (newPage !== currentPage) {
             setCurrentPage(newPage || 1);
         }
-    }, [page, currentPage]);
+    }, [page]);
 
     useEffect(() => {
         const handleResize = () => {
             const newSize = getSizeBasedOnScreenWidth();
             if (newSize !== currentBreakpoint) {
                 setCurrentBreakpoint(newSize);
-                fetchContests(currentPage, newSize);
+                fetchContests(currentPage, newSize, searchQuery);
             }
         };
 
@@ -96,11 +92,19 @@ function ContestPage() {
         return () => {
             window.removeEventListener('resize', handleResize);
         };
-    }, [currentPage, currentBreakpoint]);
+    }, [currentPage, currentBreakpoint, searchQuery]);
+
+    useEffect(() => {
+        const query = new URLSearchParams(location.search).get('query') || '';
+        if (query !== searchQuery) {
+            setSearchQuery(query);
+            setCurrentPage(1); // Reset to page 1 on new search
+        }
+    }, [location.search]);
 
     const handlePageChange = (event, value) => {
         setCurrentPage(value);
-        navigate(`/contest/page/${value}`);
+        navigate(`/contest/page/${value}?query=${encodeURIComponent(searchQuery)}`);
     };
 
     if (loading) {
@@ -132,3 +136,4 @@ function ContestPage() {
 }
 
 export default ContestPage;
+

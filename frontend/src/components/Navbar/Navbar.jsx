@@ -1,4 +1,5 @@
-import * as React from 'react';
+
+import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
@@ -34,7 +35,6 @@ export default function Navbar() {
         }
     }, [location.pathname]);
 
-
     const handleLoginClick = () => {
         navigate('/login');
     };
@@ -45,6 +45,10 @@ export default function Navbar() {
 
     const handleCloseModal = () => {
         navigate('/');
+    };
+
+    const handleSearch = (searchTerm) => {
+        navigate(`/contest/page/1?query=${encodeURIComponent(searchTerm)}`);
     };
 
     return (
@@ -69,14 +73,11 @@ export default function Navbar() {
                 }}
             >
                 <Toolbar>
-
-                        <ToolbarMenu />
-
-
+                    <ToolbarMenu />
                     <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'center' }}>
-                        {isAuthenticated(localStorage.getItem('accessToken')) &&
-                        <SearchBar />
-                        }
+                        {isAuthenticated(localStorage.getItem('accessToken')) && (
+                            <SearchBar onSearch={handleSearch} />
+                        )}
                     </Box>
 
                     {!authenticated ? (
@@ -92,3 +93,4 @@ export default function Navbar() {
         </Box>
     );
 }
+
