@@ -3,7 +3,7 @@ import { Modal, Box, Typography, TextField, Chip, Stack, List, ListItem, ListIte
 
 const BACKEND_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
-const JudgesModal = ({ open, onClose, judges, addJudge, contestId }) => {
+const JudgesModal = ({ open, onClose, judges, contestId }) => {
     const [newlyAddedJudges, setNewlyAddedJudges] = useState([]);
     const [suggestions, setSuggestions] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
@@ -38,7 +38,6 @@ const JudgesModal = ({ open, onClose, judges, addJudge, contestId }) => {
 
     const fetchSuggestions = async (query) => {
         if (!contestId || !query) {
-
             return;
         }
 
@@ -50,8 +49,6 @@ const JudgesModal = ({ open, onClose, judges, addJudge, contestId }) => {
             if (!token) throw new Error('No access token found');
 
             const url = `${BACKEND_BASE_URL}api/user/jury/suggestions?query=${query}&contestId=${contestId}`;
-
-
             const response = await fetch(url, {
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -62,8 +59,6 @@ const JudgesModal = ({ open, onClose, judges, addJudge, contestId }) => {
             if (!response.ok) throw new Error(`Failed to fetch suggestions: ${response.statusText}`);
 
             const fetchedSuggestions = await response.json();
-
-
             const filteredSuggestions = fetchedSuggestions.filter(
                 (suggestion) => !finalJudges.some((judge) => judge.id === suggestion.id)
             );
@@ -71,21 +66,39 @@ const JudgesModal = ({ open, onClose, judges, addJudge, contestId }) => {
             setSuggestions(filteredSuggestions);
         } catch (err) {
             setError(`Error fetching suggestions: ${err.message}`);
-
         } finally {
             setLoading(false);
         }
     };
 
     const handleSubmit = async () => {
-        const allJudges = [...finalJudges];
+        const selectedJudgeIds = newlyAddedJudges.map(judge => judge.id); // Get selected judge IDs
+        const url = `${BACKEND_BASE_URL}api/contest/${contestId}/judges/invite`;
+
         try {
-            await addJudge(allJudges);
-            onClose();
+            const token = localStorage.getItem('accessToken');
+            if (!token) throw new Error('No access token found');
+
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(selectedJudgeIds),
+            });
+
+            if (!response.ok) throw new Error(`Failed to invite judges: ${response.statusText}`);
+
+            // After successful submission, close the modal and call the parent refresh function
+            onClose(); // Close the modal
         } catch (error) {
             console.error("Error submitting judges:", error);
         }
     };
+
+
+
 
     return (
         <Modal open={open} onClose={onClose}>

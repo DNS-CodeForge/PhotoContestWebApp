@@ -93,7 +93,6 @@ export default function CreateContest({ onClose }) {
 
       if (response.ok) {
         const result = await response.json();
-        console.log('Contest created:', result);
         onClose();
       } else {
         const errorResponse = await response.json();

@@ -79,11 +79,11 @@ export default function ContestButton({ contest, phase, submissions, setShowJoin
     return <EditSubmissionButton onClick={() => setShowEditModal(true)} />;
 }
 
-function EditContestButton({ contestId }) {
+function EditContestButton() {
     const navigate = useNavigate();
 
     const handleEditClick = () => {
-        navigate(`/organizer/contest/${contestId}/edit`);
+        navigate(`/organizer`);
     };
 
     return (

@@ -95,6 +95,9 @@ public class ContestServiceImpl implements ContestService {
 
     @Override
     public void deleteContest(Long contestId) {
+        if (!contestRepository.existsById(contestId)) {
+            throw new EntityNotFoundException("Contest not found");
+        }
         contestRepository.deleteById(contestId);
     }
 

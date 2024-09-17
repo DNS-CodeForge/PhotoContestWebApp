@@ -110,15 +110,10 @@ public class UserController {
             @RequestParam Long contestId) {
         try {
             List<UserAppProfileDTO> suggestions = userService.findUserWithProfileByUsernameAndNotInContest(query, contestId);
-            System.out.println(suggestions);
-            var map = new HashMap<String, Object>();
-//            map.put("data", suggestions);
+
             return ResponseEntity.ok(suggestions);
         } catch (Exception e) {
-            // Log the error for debugging
-            System.err.println("Error fetching user suggestions: " + e.getMessage());
 
-            // Return an error response
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Failed to fetch user suggestions: " + e.getMessage());
         }

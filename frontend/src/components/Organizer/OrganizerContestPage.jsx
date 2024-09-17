@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Typography, Button, CircularProgress, Pagination, Modal, Stack } from '@mui/material';
+import { Box, Typography, Button, CircularProgress, Pagination, Stack, Modal } from '@mui/material';
 import ContestInfoModal from './ContestInfoModal';
-import JudgesModal from './JudgesModal'; // Import JudgesModal
-import ParticipantsModal from './ParticipantsModal'; // Import ParticipantsModal
+import JudgesModal from './JudgesModal';
+import ParticipantsModal from './ParticipantsModal';
 import CreateContest from '../Forms/CreateContest';
+import DeleteContestModal from './DeleteContestModal'; // Import the delete modal
 import { refreshTokenIfNecessary } from '../../utils/authUtils';
 import { arrayToDate } from '../../utils/dateUtils';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -16,15 +17,17 @@ const OrganizerContestPage = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [showCreateModal, setShowCreateModal] = useState(false);
-    const [selectedContest, setSelectedContest] = useState(null); // Used for Info modal only
-    const [selectedJudgesContest, setSelectedJudgesContest] = useState(null); // Separate state for Judges modal
-    const [selectedParticipantsContest, setSelectedParticipantsContest] = useState(null); // Separate state for Participants modal
+    const [selectedContest, setSelectedContest] = useState(null);
+    const [selectedJudgesContest, setSelectedJudgesContest] = useState(null);
+    const [selectedParticipantsContest, setSelectedParticipantsContest] = useState(null);
+    const [selectedDeleteContest, setSelectedDeleteContest] = useState(null); // State for the contest to delete
     const [totalPages, setTotalPages] = useState(1);
     const pageSize = 10;
 
-    // Modal state for Judges and Participants
     const [openJudgesModal, setOpenJudgesModal] = useState(false);
     const [openParticipantsModal, setOpenParticipantsModal] = useState(false);
+    const [openDeleteModal, setOpenDeleteModal] = useState(false); // State for delete modal
+    const [modalUpdate, setModalUpdate] = useState(false); // State to trigger re-fetch
 
     const navigate = useNavigate();
     const { page } = useParams();
@@ -61,7 +64,7 @@ const OrganizerContestPage = () => {
 
     useEffect(() => {
         fetchOrganizerContests(currentPage);
-    }, [currentPage]);
+    }, [currentPage, modalUpdate]);
 
     const handleOpenCreateModal = () => {
         setShowCreateModal(true);
@@ -69,14 +72,16 @@ const OrganizerContestPage = () => {
 
     const handleCloseCreateModal = () => {
         setShowCreateModal(false);
+        setModalUpdate(!modalUpdate); // Toggle to trigger re-fetch
     };
 
     const handleViewContestInfo = (contest) => {
-        setSelectedContest(contest); // Open the Info modal by setting selectedContest
+        setSelectedContest(contest);
     };
 
     const handleCloseInfoModal = () => {
-        setSelectedContest(null); // Close Info modal
+        setSelectedContest(null);
+        setModalUpdate(!modalUpdate); // Toggle to trigger re-fetch
     };
 
     const handlePageChange = (event, value) => {
@@ -90,23 +95,36 @@ const OrganizerContestPage = () => {
     };
 
     const handleOpenJudgesModal = (contest) => {
-        setSelectedJudgesContest(contest); // Set contest for Judges modal
-        setOpenJudgesModal(true); // Open Judges modal
+        setSelectedJudgesContest(contest);
+        setOpenJudgesModal(true);
     };
 
     const handleCloseJudgesModal = () => {
-        setOpenJudgesModal(false); // Close Judges modal
-        setSelectedJudgesContest(null); // Clear selected contest for Judges modal
+        setOpenJudgesModal(false);
+        setSelectedJudgesContest(null);
+        setModalUpdate(!modalUpdate); // Toggle to trigger re-fetch
     };
 
     const handleOpenParticipantsModal = (contest) => {
-        setSelectedParticipantsContest(contest); // Set contest for Participants modal
-        setOpenParticipantsModal(true); // Open Participants modal
+        setSelectedParticipantsContest(contest);
+        setOpenParticipantsModal(true);
     };
 
     const handleCloseParticipantsModal = () => {
-        setOpenParticipantsModal(false); // Close Participants modal
-        setSelectedParticipantsContest(null); // Clear selected contest for Participants modal
+        setOpenParticipantsModal(false);
+        setSelectedParticipantsContest(null);
+        setModalUpdate(!modalUpdate); // Toggle to trigger re-fetch
+    };
+
+    const handleOpenDeleteModal = (contest) => {
+        setSelectedDeleteContest(contest); // Set the contest to delete
+        setOpenDeleteModal(true);
+    };
+
+    const handleCloseDeleteModal = () => {
+        setOpenDeleteModal(false);
+        setSelectedDeleteContest(null);
+        setModalUpdate(!modalUpdate); // Toggle to trigger re-fetch
     };
 
     const addJudge = (judge) => {
@@ -114,7 +132,7 @@ const OrganizerContestPage = () => {
             ...selectedJudgesContest,
             jury: [...selectedJudgesContest.jury, judge],
         };
-        setSelectedJudgesContest(updatedContest); // Update the contest for the Judges modal
+        setSelectedJudgesContest(updatedContest);
     };
 
     const addParticipant = (participant) => {
@@ -122,7 +140,7 @@ const OrganizerContestPage = () => {
             ...selectedParticipantsContest,
             participants: [...selectedParticipantsContest.participants, participant],
         };
-        setSelectedParticipantsContest(updatedContest); // Update the contest for the Participants modal
+        setSelectedParticipantsContest(updatedContest);
     };
 
     if (loading) {
@@ -176,13 +194,15 @@ const OrganizerContestPage = () => {
                                         >
                                             Judges
                                         </Button>
-                                        <Button
-                                            variant="outlined"
-                                            sx={{ color: 'white', borderColor: 'orange' }}
-                                            onClick={() => handleOpenParticipantsModal(contest)}
-                                        >
-                                            Participants
-                                        </Button>
+                                        {contest.private && ( // Show Invite button only for private contests
+                                            <Button
+                                                variant="outlined"
+                                                sx={{ color: 'white', borderColor: 'orange' }}
+                                                onClick={() => handleOpenParticipantsModal(contest)}
+                                            >
+                                                Participants
+                                            </Button>
+                                        )}
                                     </>
                                 )}
                                 <Button
@@ -195,7 +215,7 @@ const OrganizerContestPage = () => {
                                 <Button
                                     variant="outlined"
                                     sx={{ color: 'white', borderColor: 'orange' }}
-                                    onClick={() => handleViewContestInfo(contest)}
+                                    onClick={() => handleOpenDeleteModal(contest)} // Open delete modal
                                 >
                                     Delete
                                 </Button>
@@ -245,6 +265,14 @@ const OrganizerContestPage = () => {
                     onClose={handleCloseParticipantsModal}
                     participants={selectedParticipantsContest.participants}
                     addParticipant={addParticipant}
+                />
+            )}
+
+            {/* Delete Modal */}
+            {openDeleteModal && selectedDeleteContest && (
+                <DeleteContestModal
+                    onClose={handleCloseDeleteModal}
+                    contest={selectedDeleteContest}
                 />
             )}
         </Box>

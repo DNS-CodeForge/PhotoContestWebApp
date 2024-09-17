@@ -2,10 +2,12 @@ package com.photo_contest.repos;
 
 import com.photo_contest.models.Contest;
 
+import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
@@ -23,5 +25,8 @@ public interface ContestRepository extends JpaRepository<Contest, Long>, JpaSpec
     Page<Contest> findByOrganizerId(Long organizerId, Pageable pageable);
 
 
-
+    @Transactional
+    @Modifying
+    @Query("DELETE FROM Contest c WHERE c.id = ?1")
+    void deleteById(Long id);
 }
