@@ -60,7 +60,15 @@ class ContestServiceImplTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+
+
+        Contest mockContest = new Contest();
+        mockContest.setId(1L);
+        mockContest.setTitle("Test Contest");
+        when(contestRepository.findById(1L)).thenReturn(Optional.of(mockContest));
+        when(contestRepository.existsById(1L)).thenReturn(true);
     }
+
 
     @Test
     void testCreateContest_Success() {
@@ -98,16 +106,33 @@ class ContestServiceImplTest {
     }
 
     @Test
-    void testDeleteContest() {
+    void testDeleteContest_Success() {
         // Arrange
         Long contestId = 1L;
+        Contest contest = new Contest();  // Create a dummy contest
+
+        // Mock the repository to return the contest when findById is called
+        when(contestRepository.findById(contestId)).thenReturn(Optional.of(contest));
 
         // Act
         contestServiceImpl.deleteContest(contestId);
 
         // Assert
-        verify(contestRepository, times(1)).deleteById(contestId);
+        verify(contestRepository, times(1)).deleteById(contestId);  // Ensure deleteById was called once
     }
+
+    @Test
+    void testDeleteContest_ContestNotFound() {
+
+        Long contestId = 2L;
+
+        when(contestRepository.findById(contestId)).thenReturn(Optional.empty());
+
+
+        assertThrows(EntityNotFoundException.class, () -> contestServiceImpl.deleteContest(contestId));
+    }
+
+
 
     @Test
     void testUpdateContest_Success() {
