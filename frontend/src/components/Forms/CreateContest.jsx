@@ -255,7 +255,7 @@ export default function CreateContest({ onClose }) {
               label="Review phase duration"
               value={hour}
               onChange={handleHourChange}
-              placeholder="1-30"
+              placeholder="1-24"
               slotProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
               sx={{
                   marginTop: '1rem',

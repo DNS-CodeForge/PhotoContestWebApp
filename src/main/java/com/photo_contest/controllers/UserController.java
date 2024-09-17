@@ -5,7 +5,9 @@ import java.util.List;
 import java.util.Map;
 
 import com.photo_contest.config.AuthContextManager;
+import com.photo_contest.models.AppUser;
 import com.photo_contest.models.Contest;
+import com.photo_contest.models.DTO.UserAppProfileDTO;
 import com.photo_contest.models.PhotoSubmission;
 import com.photo_contest.models.UserProfile;
 import com.photo_contest.models.DTO.EditProfileDTO;
@@ -14,6 +16,7 @@ import com.photo_contest.services.contracts.PhotoSubmissionService;
 import com.photo_contest.services.contracts.UserService;
 
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -101,5 +104,26 @@ public class UserController {
         UserProfile user = userService.updateUserProfile(updatedUser);
         return ResponseEntity.ok(user);
     }
+    @GetMapping("/jury/suggestions")
+    public ResponseEntity<?> getUserSuggestions(
+            @RequestParam String query,
+            @RequestParam Long contestId) {
+        try {
+            List<UserAppProfileDTO> suggestions = userService.findUserWithProfileByUsernameAndNotInContest(query, contestId);
+            System.out.println(suggestions);
+            var map = new HashMap<String, Object>();
+//            map.put("data", suggestions);
+            return ResponseEntity.ok(suggestions);
+        } catch (Exception e) {
+            // Log the error for debugging
+            System.err.println("Error fetching user suggestions: " + e.getMessage());
+
+            // Return an error response
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Failed to fetch user suggestions: " + e.getMessage());
+        }
+    }
+
+
 
 }

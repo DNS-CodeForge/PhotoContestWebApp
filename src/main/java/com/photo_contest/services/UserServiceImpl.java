@@ -5,6 +5,7 @@ import java.util.List;
 import com.photo_contest.config.AuthContextManager;
 import com.photo_contest.models.AppUser;
 import com.photo_contest.models.Contest;
+import com.photo_contest.models.DTO.UserAppProfileDTO;
 import com.photo_contest.models.Role;
 import com.photo_contest.models.UserProfile;
 import com.photo_contest.models.DTO.EditProfileDTO;
@@ -132,5 +133,21 @@ public class UserServiceImpl implements UserService {
     public List<Contest> getAllContestsByUserProfileId(Long userProfileId) {
         return contestRepository.findAllContestsByUserProfileId(userProfileId);
     }
+
+    public List<UserAppProfileDTO> findUserWithProfileByUsernameAndNotInContest(String query, Long contestId) {
+        // Add debug logs
+        System.out.println("Received query: " + query + " and contestId: " + contestId);
+
+        // Proceed with your query logic
+        List<UserAppProfileDTO> results = userRepository.findTop5ByUsernameContainingAndNotInContest(query, contestId);
+
+        // Log the result or handle errors
+        System.out.println("Fetched results: " + results.size());
+
+        return results;
+    }
+
+
+
 }
 

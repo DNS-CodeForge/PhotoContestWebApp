@@ -1,9 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Typography, Button, CircularProgress, Pagination, Modal } from '@mui/material';
+import { Box, Typography, Button, CircularProgress, Pagination, Modal, Stack } from '@mui/material';
 import ContestInfoModal from './ContestInfoModal';
+import JudgesModal from './JudgesModal'; // Import JudgesModal
+import ParticipantsModal from './ParticipantsModal'; // Import ParticipantsModal
 import CreateContest from '../Forms/CreateContest';
 import { refreshTokenIfNecessary } from '../../utils/authUtils';
+import { arrayToDate } from '../../utils/dateUtils';
 import { useNavigate, useParams } from 'react-router-dom';
+import moment from 'moment';
 
 const BACKEND_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
@@ -12,9 +16,15 @@ const OrganizerContestPage = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [showCreateModal, setShowCreateModal] = useState(false);
-    const [selectedContest, setSelectedContest] = useState(null);
+    const [selectedContest, setSelectedContest] = useState(null); // Used for Info modal only
+    const [selectedJudgesContest, setSelectedJudgesContest] = useState(null); // Separate state for Judges modal
+    const [selectedParticipantsContest, setSelectedParticipantsContest] = useState(null); // Separate state for Participants modal
     const [totalPages, setTotalPages] = useState(1);
     const pageSize = 10;
+
+    // Modal state for Judges and Participants
+    const [openJudgesModal, setOpenJudgesModal] = useState(false);
+    const [openParticipantsModal, setOpenParticipantsModal] = useState(false);
 
     const navigate = useNavigate();
     const { page } = useParams();
@@ -62,15 +72,57 @@ const OrganizerContestPage = () => {
     };
 
     const handleViewContestInfo = (contest) => {
-        setSelectedContest(contest);
+        setSelectedContest(contest); // Open the Info modal by setting selectedContest
     };
 
     const handleCloseInfoModal = () => {
-        setSelectedContest(null);
+        setSelectedContest(null); // Close Info modal
     };
 
     const handlePageChange = (event, value) => {
         navigate(`/organizer/page/${value}`);
+    };
+
+    const isBeforeStartDate = (startDate) => {
+        const now = moment();
+        const formattedStartDate = arrayToDate(startDate);
+        return now.isBefore(formattedStartDate);
+    };
+
+    const handleOpenJudgesModal = (contest) => {
+        setSelectedJudgesContest(contest); // Set contest for Judges modal
+        setOpenJudgesModal(true); // Open Judges modal
+    };
+
+    const handleCloseJudgesModal = () => {
+        setOpenJudgesModal(false); // Close Judges modal
+        setSelectedJudgesContest(null); // Clear selected contest for Judges modal
+    };
+
+    const handleOpenParticipantsModal = (contest) => {
+        setSelectedParticipantsContest(contest); // Set contest for Participants modal
+        setOpenParticipantsModal(true); // Open Participants modal
+    };
+
+    const handleCloseParticipantsModal = () => {
+        setOpenParticipantsModal(false); // Close Participants modal
+        setSelectedParticipantsContest(null); // Clear selected contest for Participants modal
+    };
+
+    const addJudge = (judge) => {
+        const updatedContest = {
+            ...selectedJudgesContest,
+            jury: [...selectedJudgesContest.jury, judge],
+        };
+        setSelectedJudgesContest(updatedContest); // Update the contest for the Judges modal
+    };
+
+    const addParticipant = (participant) => {
+        const updatedContest = {
+            ...selectedParticipantsContest,
+            participants: [...selectedParticipantsContest.participants, participant],
+        };
+        setSelectedParticipantsContest(updatedContest); // Update the contest for the Participants modal
     };
 
     if (loading) {
@@ -114,13 +166,40 @@ const OrganizerContestPage = () => {
                             }}
                         >
                             <Typography sx={{ color: 'white' }}>{contest.title}</Typography>
-                            <Button
-                                variant="outlined"
-                                sx={{ color: 'white', borderColor: 'orange' }}
-                                onClick={() => handleViewContestInfo(contest)}
-                            >
-                                View Info
-                            </Button>
+                            <Stack direction="row" spacing={2}>
+                                {isBeforeStartDate(contest.startDate) && (
+                                    <>
+                                        <Button
+                                            variant="outlined"
+                                            sx={{ color: 'white', borderColor: 'orange' }}
+                                            onClick={() => handleOpenJudgesModal(contest)}
+                                        >
+                                            Judges
+                                        </Button>
+                                        <Button
+                                            variant="outlined"
+                                            sx={{ color: 'white', borderColor: 'orange' }}
+                                            onClick={() => handleOpenParticipantsModal(contest)}
+                                        >
+                                            Participants
+                                        </Button>
+                                    </>
+                                )}
+                                <Button
+                                    variant="outlined"
+                                    sx={{ color: 'white', borderColor: 'orange' }}
+                                    onClick={() => handleViewContestInfo(contest)}
+                                >
+                                    Info
+                                </Button>
+                                <Button
+                                    variant="outlined"
+                                    sx={{ color: 'white', borderColor: 'orange' }}
+                                    onClick={() => handleViewContestInfo(contest)}
+                                >
+                                    Delete
+                                </Button>
+                            </Stack>
                         </Box>
                     ))
                 ) : (
@@ -142,8 +221,31 @@ const OrganizerContestPage = () => {
                     </Box>
                 </Modal>
             )}
+
+            {/* Info Modal */}
             {selectedContest && (
                 <ContestInfoModal selectedContest={selectedContest} handleCloseInfoModal={handleCloseInfoModal} />
+            )}
+
+            {/* Judges Modal */}
+            {selectedJudgesContest && (
+                <JudgesModal
+                    open={openJudgesModal}
+                    onClose={handleCloseJudgesModal}
+                    judges={selectedJudgesContest.jury}
+                    addJudge={addJudge}
+                    contestId={selectedJudgesContest.id}
+                />
+            )}
+
+            {/* Participants Modal */}
+            {selectedParticipantsContest && (
+                <ParticipantsModal
+                    open={openParticipantsModal}
+                    onClose={handleCloseParticipantsModal}
+                    participants={selectedParticipantsContest.participants}
+                    addParticipant={addParticipant}
+                />
             )}
         </Box>
     );

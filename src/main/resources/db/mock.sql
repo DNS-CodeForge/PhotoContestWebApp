@@ -130,7 +130,7 @@ CREATE TABLE IF NOT EXISTS photo_review
 
 -- Step 3: Insert roles
 INSERT INTO roles (authority)
-VALUES ('ADMIN'), ('USER');
+VALUES ('ADMIN'), ('USER'), ('MASTERUSER');
 
 -- Step 4: Insert users
 INSERT INTO app_user (username, password, email)

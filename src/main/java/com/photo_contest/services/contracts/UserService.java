@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.photo_contest.models.AppUser;
 import com.photo_contest.models.Contest;
+import com.photo_contest.models.DTO.UserAppProfileDTO;
 import com.photo_contest.models.UserProfile;
 import com.photo_contest.models.DTO.EditProfileDTO;
 
@@ -29,5 +30,6 @@ public interface UserService extends UserDetailsService {
 
     void addPoints(int userId, int pointsToAdd);
 
-    public List<Contest> getAllContestsByUserProfileId(Long userProfileId);
+    List<Contest> getAllContestsByUserProfileId(Long userProfileId);
+    List<UserAppProfileDTO> findUserWithProfileByUsernameAndNotInContest(String username, Long contestId);
 }
