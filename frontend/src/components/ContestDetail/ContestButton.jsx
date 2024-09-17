@@ -7,13 +7,10 @@ import LockIcon from '@mui/icons-material/Lock';
 import { useNavigate } from 'react-router-dom';
 import { getId } from '../../utils/jwtUtils';
 
-
-export default function ContestButton({ contest, phase, submissions, setShowJoinModal,  setShowEditModal }) {
+export default function ContestButton({ contest, phase, submissions, setShowJoinModal, setShowEditModal }) {
     const [userId, setUserId] = useState(null);
     const [userSubmission, setUserSubmission] = useState(null);
     const [isParticipant, setIsParticipant] = useState(false);
-
-
 
     useEffect(() => {
         const accessToken = localStorage.getItem('accessToken');
@@ -23,28 +20,26 @@ export default function ContestButton({ contest, phase, submissions, setShowJoin
         }
     }, []);
 
-
     useEffect(() => {
         if (userId && submissions) {
-            const submission = submissions.find(sub => sub.creator.id === userId);
-            console.log(submission.photoReviews);
-
+            const submission = submissions.find(sub => sub?.creator?.id === userId);
             setUserSubmission(submission);
-            const participant = contest.participants.some(participant => participant.id === userId);
+            const participant = contest?.participants?.some(participant => participant.id === userId);
             setIsParticipant(participant);
         }
     }, [userId, submissions, contest]);
 
+    if (!contest || !userId) {
+        return null;
+    }
 
     if (contest.organizer.id === userId) {
         return <EditContestButton contestId={contest.id} />;
     }
 
-
     if (phase !== 'Submission') {
         return null;
     }
-
 
     if (contest.private && !isParticipant) {
         return (
@@ -64,7 +59,6 @@ export default function ContestButton({ contest, phase, submissions, setShowJoin
                     cursor: 'not-allowed',
                     transition: 'background-color 0.3s ease',
                 }}
-
             >
                 <LockIcon sx={{ height: '2rem', width: '2rem', marginRight: '0.8rem' }} />
                 <Typography variant="body2" sx={{ fontSize: '1.5rem', fontFamily: 'sans-serif', fontWeight: 'bold' }}>
@@ -74,15 +68,14 @@ export default function ContestButton({ contest, phase, submissions, setShowJoin
         );
     }
 
-
-
     if (!userSubmission) {
         return <JoinContestButton onClick={() => setShowJoinModal(true)} />;
     }
 
-    if (userSubmission.photoReviews.length > 0) {
-        return null
+    if (userSubmission?.photoReviews?.length > 0) {
+        return null;
     }
+
     return <EditSubmissionButton onClick={() => setShowEditModal(true)} />;
 }
 

@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.photo_contest.config.AuthContextManager;
 import com.photo_contest.models.Contest;
 import com.photo_contest.models.PhotoSubmission;
 import com.photo_contest.models.UserProfile;
@@ -12,6 +13,7 @@ import com.photo_contest.services.contracts.ContestService;
 import com.photo_contest.services.contracts.PhotoSubmissionService;
 import com.photo_contest.services.contracts.UserService;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,11 +33,13 @@ public class UserController {
     private final UserService userService;
     private final ContestService contestService;
     private final PhotoSubmissionService photoSubmissionService;
+    private final AuthContextManager authContextManager;
 
-    public UserController(UserService userService, ContestService contestService, PhotoSubmissionService photoSubmissionService) {
+    public UserController(UserService userService, ContestService contestService, PhotoSubmissionService photoSubmissionService, @Qualifier("authContextManager") AuthContextManager authContextManager) {
         this.userService = userService;
         this.contestService = contestService;
         this.photoSubmissionService = photoSubmissionService;
+        this.authContextManager = authContextManager;
     }
 
     @GetMapping("/{id}")
@@ -80,7 +84,8 @@ public class UserController {
     }
 
     @GetMapping("/contest")
-    public ResponseEntity<List<Contest>> getAllContestsByUserProfileId(@RequestParam Long userProfileId) {
+    public ResponseEntity<List<Contest>> getAllContestsByUserProfileId() {
+        Long userProfileId = authContextManager.getLoggedInUser().getId();
         List<Contest> contests = userService.getAllContestsByUserProfileId(userProfileId);
         return ResponseEntity.ok(contests);
     }

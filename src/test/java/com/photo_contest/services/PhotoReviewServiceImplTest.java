@@ -76,6 +76,7 @@ class PhotoReviewServiceImplTest {
         when(contestService.getCurrentPhase(anyLong())).thenReturn(2); // Ensure this is Phase Two
 
         // Creating the photo review
+        System.out.println(contestService.getCurrentPhase(1L));
         PhotoReview createdPhotoReview = photoReviewService.createPhotoReview(photoReviewDTO, 1L);
 
         // Assertions

@@ -9,7 +9,6 @@ import HomeIcon from '@mui/icons-material/Home';
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 import GroupIcon from '@mui/icons-material/Group';
 import InfoIcon from '@mui/icons-material/Info';
-import CollectionsIcon from '@mui/icons-material/Collections';
 import HowToVoteIcon from '@mui/icons-material/HowToVote';
 import logo from '../../assets/logo.png';
 import {getRoles} from '../../utils/jwtUtils.jsx';
@@ -138,27 +137,8 @@ export default function ToolbarMenu() {
                             },
                         }}
                     >
-                        <CollectionsIcon sx={{mr: 1, color: '#fff'}}/>
-                        My Contests
-                    </MenuItem>
-                )}
-                {isLoggedIn && (
-
-                    <MenuItem
-                        onClick={() => handleNavigation('/my-submissions')}
-                        sx={{
-                            padding: '1rem 1rem',
-                            paddingRight: '3rem',
-                            fontSize: '1rem',
-                            justifyContent: 'flex-start',
-                            '&:hover': {
-                                backgroundColor: 'rgba(211, 84, 36, 0.8)',
-                                color: '#fff',
-                            },
-                        }}
-                    >
                         <HowToVoteIcon sx={{mr: 1, color: '#fff'}}/>
-                        My Submissions
+                        My Contests
                     </MenuItem>
 
                 )}

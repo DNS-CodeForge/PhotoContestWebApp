@@ -9,29 +9,25 @@ import HomePage from './HomePage';
 import { isAuthenticated } from '../utils/authUtils';
 import AboutPage from '../components/AboutPage.jsx';
 import FAQInfoPage from "./FAQInfoPage.jsx";
-
+import UserContestPage from '../components/UserProfile/UserContestPage.jsx';
 const routes = [
     {
         path: '/',
         element: <Layout />,
         children: [
             {
-
                 path: '/',
                 element: <HomePage />,
             },
             {
-
                 path: '/about',
                 element: <AboutPage />,
             },
             {
-
                 path: 'contest',
                 element: <Navigate to="/contest/page/1" replace />,
             },
             {
-
                 path: 'contest/page/:page',
                 element: (
                     <ProtectedRoute>
@@ -40,19 +36,16 @@ const routes = [
                 ),
             },
             {
-
                 path: 'login',
                 element: isAuthenticated() ? <Navigate to="/" replace /> : <HomePage />,
                 state: { modalType: 'login' },
             },
             {
-
                 path: 'register',
                 element: isAuthenticated() ? <Navigate to="/" replace /> : <HomePage />,
                 state: { modalType: 'register' },
             },
             {
-
                 path: 'contest/:id',
                 element: (
                     <ProtectedRoute>
@@ -61,25 +54,33 @@ const routes = [
                 ),
             },
             {
-
                 path: 'create-contest',
                 element: (
                     <ProtectedRoute>
                         <CreateContest />
                     </ProtectedRoute>
                 ),
-
             },
             {
                 path: '/faq-info',
-                element: <FAQInfoPage />,
+                element:
+                    <ProtectedRoute>
+                        <FAQInfoPage />
+                    </ProtectedRoute>
             },
             {
-
                 path: 'profile',
                 element: (
                     <ProtectedRoute>
                         <UserProfile />
+                    </ProtectedRoute>
+                ),
+            },
+            {
+                path: '/my-contests',
+                element: (
+                    <ProtectedRoute>
+                        <UserContestPage />
                     </ProtectedRoute>
                 ),
             },

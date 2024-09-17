@@ -17,7 +17,7 @@ const SectionBox = styled(Box)({
 
 const DeveloperCard = styled(Paper)(({ theme }) => ({
   padding: '24px',
-  backgroundColor: 'rgba(0, 0, 0, 0.7)', 
+  backgroundColor: 'rgba(0, 0, 0, 0.7)',
   color: theme.palette.text.primary,
   boxShadow: theme.shadows[3],
   borderRadius: '8px',
@@ -65,7 +65,7 @@ const AboutPage = () => {
                   <DeveloperAvatar>S</DeveloperAvatar>
                   <div>
                     <Typography variant="body1" component="p">
-                      <strong>S:</strong> S is a versatile developer with experience in both front-end and back-end technologies. S has focused on crafting a seamless user experience and ensuring the app's interface is both functional and aesthetically pleasing.
+                      <strong>S:</strong> S is a versatile developer with experience in both front-end and back-end technologies. S has focused on crafting a seamless user experience and ensuring the app&apos;s interface is both functional and aesthetically pleasing.
                     </Typography>
                     <Box>
                       <IconButton color="inherit" href="https://github.com/DNS-CodeForge" target="_blank">
@@ -83,7 +83,7 @@ const AboutPage = () => {
                   <DeveloperAvatar>D</DeveloperAvatar>
                   <div>
                     <Typography variant="body1" component="p">
-                      <strong>D:</strong> D is a skilled developer who has worked extensively on both the server-side and client-side aspects of the app. D's expertise in backend architecture and database management has been key in making sure the app performs efficiently and reliably.
+                      <strong>D:</strong> D is a skilled developer who has worked extensively on both the server-side and client-side aspects of the app. D&apos;s expertise in backend architecture and database management has been key in making sure the app performs efficiently and reliably.
                     </Typography>
                     <Box>
                       <IconButton color="inherit" href="https://github.com/DNS-CodeForge" target="_blank">
