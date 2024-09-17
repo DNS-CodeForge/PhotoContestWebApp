@@ -72,7 +72,7 @@ const OrganizerContestPage = () => {
 
     const handleCloseCreateModal = () => {
         setShowCreateModal(false);
-        setModalUpdate(!modalUpdate); // Toggle to trigger re-fetch
+        setModalUpdate(!modalUpdate);
     };
 
     const handleViewContestInfo = (contest) => {
@@ -81,7 +81,7 @@ const OrganizerContestPage = () => {
 
     const handleCloseInfoModal = () => {
         setSelectedContest(null);
-        setModalUpdate(!modalUpdate); // Toggle to trigger re-fetch
+        setModalUpdate(!modalUpdate);
     };
 
     const handlePageChange = (event, value) => {
@@ -102,7 +102,7 @@ const OrganizerContestPage = () => {
     const handleCloseJudgesModal = () => {
         setOpenJudgesModal(false);
         setSelectedJudgesContest(null);
-        setModalUpdate(!modalUpdate); // Toggle to trigger re-fetch
+        setModalUpdate(!modalUpdate);
     };
 
     const handleOpenParticipantsModal = (contest) => {
@@ -113,18 +113,18 @@ const OrganizerContestPage = () => {
     const handleCloseParticipantsModal = () => {
         setOpenParticipantsModal(false);
         setSelectedParticipantsContest(null);
-        setModalUpdate(!modalUpdate); // Toggle to trigger re-fetch
+        setModalUpdate(!modalUpdate);
     };
 
     const handleOpenDeleteModal = (contest) => {
-        setSelectedDeleteContest(contest); // Set the contest to delete
+        setSelectedDeleteContest(contest);
         setOpenDeleteModal(true);
     };
 
     const handleCloseDeleteModal = () => {
         setOpenDeleteModal(false);
         setSelectedDeleteContest(null);
-        setModalUpdate(!modalUpdate); // Toggle to trigger re-fetch
+        setModalUpdate(!modalUpdate);
     };
 
     const addJudge = (judge) => {
@@ -185,8 +185,8 @@ const OrganizerContestPage = () => {
                         >
                             <Typography sx={{ color: 'white' }}>{contest.title}</Typography>
                             <Stack direction="row" spacing={2}>
-                                {isBeforeStartDate(contest.startDate) && (
-                                    <>
+                                {/*{isBeforeStartDate(contest.startDate) && (*/}
+                                {/*    <>*/}
                                         <Button
                                             variant="outlined"
                                             sx={{ color: 'white', borderColor: 'orange' }}
@@ -194,7 +194,7 @@ const OrganizerContestPage = () => {
                                         >
                                             Judges
                                         </Button>
-                                        {contest.private && ( // Show Invite button only for private contests
+                                        {contest.private && (
                                             <Button
                                                 variant="outlined"
                                                 sx={{ color: 'white', borderColor: 'orange' }}
@@ -203,8 +203,8 @@ const OrganizerContestPage = () => {
                                                 Participants
                                             </Button>
                                         )}
-                                    </>
-                                )}
+                                    {/*</>*/}
+                                {/*)}*/}
                                 <Button
                                     variant="outlined"
                                     sx={{ color: 'white', borderColor: 'orange' }}
@@ -215,7 +215,7 @@ const OrganizerContestPage = () => {
                                 <Button
                                     variant="outlined"
                                     sx={{ color: 'white', borderColor: 'orange' }}
-                                    onClick={() => handleOpenDeleteModal(contest)} // Open delete modal
+                                    onClick={() => handleOpenDeleteModal(contest)}
                                 >
                                     Delete
                                 </Button>
@@ -242,12 +242,10 @@ const OrganizerContestPage = () => {
                 </Modal>
             )}
 
-            {/* Info Modal */}
             {selectedContest && (
                 <ContestInfoModal selectedContest={selectedContest} handleCloseInfoModal={handleCloseInfoModal} />
             )}
 
-            {/* Judges Modal */}
             {selectedJudgesContest && (
                 <JudgesModal
                     open={openJudgesModal}
@@ -258,17 +256,16 @@ const OrganizerContestPage = () => {
                 />
             )}
 
-            {/* Participants Modal */}
             {selectedParticipantsContest && (
                 <ParticipantsModal
                     open={openParticipantsModal}
                     onClose={handleCloseParticipantsModal}
                     participants={selectedParticipantsContest.participants}
                     addParticipant={addParticipant}
+                    contestId={selectedParticipantsContest.id}
                 />
             )}
 
-            {/* Delete Modal */}
             {openDeleteModal && selectedDeleteContest && (
                 <DeleteContestModal
                     onClose={handleCloseDeleteModal}

@@ -134,17 +134,12 @@ public class UserServiceImpl implements UserService {
         return contestRepository.findAllContestsByUserProfileId(userProfileId);
     }
 
-    public List<UserAppProfileDTO> findUserWithProfileByUsernameAndNotInContest(String query, Long contestId) {
-        // Add debug logs
-        System.out.println("Received query: " + query + " and contestId: " + contestId);
+    public List<UserAppProfileDTO> findJurySuggestionsByUsernameNotInContest(String query, Long contestId) {
+        return userRepository.findTop5JurySuggestionsByUsernameNotInContest(query, contestId);
+    }
+    public List<UserAppProfileDTO> findParticipantSuggestionsByUsernameNotInContest(String query, Long contestId) {
 
-        // Proceed with your query logic
-        List<UserAppProfileDTO> results = userRepository.findTop5ByUsernameContainingAndNotInContest(query, contestId);
-
-        // Log the result or handle errors
-        System.out.println("Fetched results: " + results.size());
-
-        return results;
+        return userRepository.findTop5ParticipantsSuggestionsByUsernameInContest(query, contestId);
     }
 
 

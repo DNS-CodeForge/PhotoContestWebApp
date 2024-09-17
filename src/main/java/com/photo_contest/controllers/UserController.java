@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 
 import com.photo_contest.config.AuthContextManager;
-import com.photo_contest.models.AppUser;
 import com.photo_contest.models.Contest;
 import com.photo_contest.models.DTO.UserAppProfileDTO;
 import com.photo_contest.models.PhotoSubmission;
@@ -105,11 +104,26 @@ public class UserController {
         return ResponseEntity.ok(user);
     }
     @GetMapping("/jury/suggestions")
+    public ResponseEntity<?> getUserJurySuggestions(
+            @RequestParam String query,
+            @RequestParam Long contestId) {
+        try {
+            List<UserAppProfileDTO> suggestions = userService.findJurySuggestionsByUsernameNotInContest(query, contestId);
+
+            return ResponseEntity.ok(suggestions);
+        } catch (Exception e) {
+
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Failed to fetch user suggestions: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/participant/suggestions")
     public ResponseEntity<?> getUserSuggestions(
             @RequestParam String query,
             @RequestParam Long contestId) {
         try {
-            List<UserAppProfileDTO> suggestions = userService.findUserWithProfileByUsernameAndNotInContest(query, contestId);
+            List<UserAppProfileDTO> suggestions = userService.findParticipantSuggestionsByUsernameNotInContest(query, contestId);
 
             return ResponseEntity.ok(suggestions);
         } catch (Exception e) {

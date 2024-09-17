@@ -31,5 +31,6 @@ public interface UserService extends UserDetailsService {
     void addPoints(int userId, int pointsToAdd);
 
     List<Contest> getAllContestsByUserProfileId(Long userProfileId);
-    List<UserAppProfileDTO> findUserWithProfileByUsernameAndNotInContest(String username, Long contestId);
+    List<UserAppProfileDTO> findJurySuggestionsByUsernameNotInContest(String username, Long contestId);
+    List<UserAppProfileDTO> findParticipantSuggestionsByUsernameNotInContest(String query, Long contestId);
 }

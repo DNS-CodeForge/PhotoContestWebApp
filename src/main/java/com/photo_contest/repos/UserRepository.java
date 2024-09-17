@@ -29,7 +29,20 @@ public interface UserRepository extends JpaRepository<AppUser, Long>{
             "AND u.id NOT IN (SELECT participant.id FROM Contest c JOIN c.participants participant WHERE c.id = :contestId) " +
             "AND u.id NOT IN (SELECT jury.id FROM Contest c JOIN c.jury jury WHERE c.id = :contestId) " +
             "ORDER BY u.username ASC")
-    List<UserAppProfileDTO> findTop5ByUsernameContainingAndNotInContest(@Param("username") String username, @Param("contestId") Long contestId);
+    List<UserAppProfileDTO> findTop5JurySuggestionsByUsernameNotInContest(@Param("username") String username, @Param("contestId") Long contestId);
+    @Query("SELECT new com.photo_contest.models.DTO.UserAppProfileDTO(u.id, u.username, u.email, p.firstName, p.lastName, 'PARTICIPANT', " +
+            "CASE WHEN p.rank = 'JUNKIE' THEN 'JUNKIE' " +
+            "WHEN p.rank = 'ENTHUSIAST' THEN 'ENTHUSIAST' " +
+            "WHEN p.rank = 'MASTER' THEN 'MASTER' " +
+            "WHEN p.rank = 'DICTATOR' THEN 'DICTATOR' " +
+            "WHEN p.rank = 'ORGANIZER' THEN 'ORGANIZER' ELSE 'UNKNOWN' END) " +
+            "FROM AppUser u " +
+            "JOIN UserProfile p ON u.id = p.id " +
+            "WHERE u.username LIKE %:username% " +
+            "AND u.id NOT IN (SELECT participant.id FROM Contest c JOIN c.participants participant WHERE c.id = :contestId) " +
+            "AND u.id NOT IN (SELECT jury.id FROM Contest c JOIN c.jury jury WHERE c.id = :contestId) " +
+            "ORDER BY u.username ASC")
+    List<UserAppProfileDTO> findTop5ParticipantsSuggestionsByUsernameInContest(@Param("username") String username, @Param("contestId") Long contestId);
 
 
 

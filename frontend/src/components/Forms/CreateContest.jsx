@@ -244,7 +244,7 @@ export default function CreateContest({ onClose }) {
       label="Submission phase end date"
       value={endDateTime}
       onChange={handleEndDateTimeChange}
-      minDate={dayjs().add(1, 'day')}
+      minDate={dayjs().add(2, 'day')}
       maxDate={dayjs().add(31, 'day')}
       />
           </DemoContainer>

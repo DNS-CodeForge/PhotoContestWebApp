@@ -30,7 +30,7 @@ const JudgesModal = ({ open, onClose, judges, contestId }) => {
         if (typingTimeout) clearTimeout(typingTimeout);
 
         if (value.length >= 3) {
-            setTypingTimeout(setTimeout(() => fetchSuggestions(value), 200));
+            setTypingTimeout(setTimeout(() => fetchSuggestions(value), 500));
         } else {
             setSuggestions([]);
         }
@@ -72,7 +72,7 @@ const JudgesModal = ({ open, onClose, judges, contestId }) => {
     };
 
     const handleSubmit = async () => {
-        const selectedJudgeIds = newlyAddedJudges.map(judge => judge.id); // Get selected judge IDs
+        const selectedJudgeIds = newlyAddedJudges.map(judge => judge.id);
         const url = `${BACKEND_BASE_URL}api/contest/${contestId}/judges/invite`;
 
         try {
@@ -90,8 +90,7 @@ const JudgesModal = ({ open, onClose, judges, contestId }) => {
 
             if (!response.ok) throw new Error(`Failed to invite judges: ${response.statusText}`);
 
-            // After successful submission, close the modal and call the parent refresh function
-            onClose(); // Close the modal
+            onClose();
         } catch (error) {
             console.error("Error submitting judges:", error);
         }
