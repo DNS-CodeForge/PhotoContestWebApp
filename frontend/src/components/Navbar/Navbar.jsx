@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
@@ -10,7 +10,6 @@ import LoginForm from '../Forms/LoginForm';
 import RegisterForm from '../Forms/RegisterForm.jsx';
 import UserProfileMenu from './UserProfileMenu';
 import classes from './Navbar.module.css';
-import { useState, useEffect } from 'react';
 import { isAuthenticated } from '../../utils/authUtils';
 import ToolbarMenu from './ToolbarMenu.jsx';
 
@@ -47,8 +46,19 @@ export default function Navbar() {
         navigate('/');
     };
 
-    const handleSearch = (searchTerm) => {
-        navigate(`/contest/page/1?query=${encodeURIComponent(searchTerm)}`);
+    const handleSearch = (searchParams) => {
+        // Create a URLSearchParams instance and append non-null values
+        const params = new URLSearchParams();
+        
+        Object.entries(searchParams).forEach(([key, value]) => {
+            if (value !== null && value !== '') {
+                params.append(key, value);
+            }
+        });
+        
+        const searchParamsString = params.toString();
+        console.log(params.toString())
+        navigate(`/contest/page/1?${searchParamsString}`);
     };
 
     return (
@@ -75,9 +85,7 @@ export default function Navbar() {
                 <Toolbar>
                     <ToolbarMenu />
                     <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'center' }}>
-                        {isAuthenticated(localStorage.getItem('accessToken')) && (
-                            <SearchBar onSearch={handleSearch} />
-                        )}
+                        {authenticated && <SearchBar onSearch={handleSearch} />}
                     </Box>
 
                     {!authenticated ? (

@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import ContestList from '../components/ContestList/ContestList.jsx';
@@ -35,7 +36,8 @@ function ContestPage() {
     const [currentPage, setCurrentPage] = useState(Number(page) || 1);
     const [totalPages, setTotalPages] = useState(null);
     const [currentBreakpoint, setCurrentBreakpoint] = useState(getSizeBasedOnScreenWidth());
-    const [searchQuery, setSearchQuery] = useState(new URLSearchParams(location.search).get('query') || '');
+
+    const [searchQuery, setSearchQuery] = useState(new URLSearchParams(location.search).toString());
 
     const fetchContests = async (page = 1, size = 12, query = '') => {
         try {
@@ -45,7 +47,7 @@ function ContestPage() {
             }
 
             const accessToken = localStorage.getItem('accessToken');
-            const response = await fetch(`${BACKEND_BASE_URL}api/contest?page=${page - 1}&size=${size}&title=${encodeURIComponent(query)}`, {
+            const response = await fetch(`${BACKEND_BASE_URL}api/contest?page=${page - 1}&size=${size}&${query}`, {
                 method: 'GET',
                 headers: {
                     Authorization: `Bearer ${accessToken}`,
@@ -96,7 +98,7 @@ function ContestPage() {
     }, [currentPage, currentBreakpoint, searchQuery]);
 
     useEffect(() => {
-        const query = new URLSearchParams(location.search).get('query') || '';
+        const query = new URLSearchParams(location.search).toString();
         if (query !== searchQuery) {
             setSearchQuery(query);
             setCurrentPage(1); // Reset to page 1 on new search
@@ -105,7 +107,7 @@ function ContestPage() {
 
     const handlePageChange = (event, value) => {
         setCurrentPage(value);
-        navigate(`/contest/page/${value}?query=${encodeURIComponent(searchQuery)}`);
+        navigate(`/contest/page/${value}?${searchQuery}`);
     };
 
     if (loading) {

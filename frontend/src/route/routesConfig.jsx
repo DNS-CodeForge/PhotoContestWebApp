@@ -26,7 +26,7 @@ const routes = [
             },
             {
                 path: 'contest',
-                element: <Navigate to="/contest/page/1" replace />,
+                element: <Navigate to="/contest" replace />,
             },
             {
                 path: 'contest/page/:page',
