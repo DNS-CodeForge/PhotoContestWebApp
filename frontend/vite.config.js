@@ -12,7 +12,7 @@ export default defineConfig({
   },
   optimizeDeps: {
     esbuildOptions: {
-      sourcemap: false,  // Disable source maps for dependencies (like React)
+      sourcemap: false,
     },
   },
 })

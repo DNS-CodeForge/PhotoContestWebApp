@@ -75,7 +75,7 @@ export default function CreateContest({ onClose }) {
       category,
       phaseDurationInDays,
       phaseTwoDurationInHours: Number(hour),
-      isPrivate,
+      private: isPrivate,
     };
 
       try {
@@ -307,7 +307,7 @@ export default function CreateContest({ onClose }) {
             <span></span>
             <span></span>
             <span></span>
-            Create 
+            Create
           </button>
           </Box>
 

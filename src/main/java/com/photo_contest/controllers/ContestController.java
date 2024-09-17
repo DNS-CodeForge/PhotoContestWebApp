@@ -123,6 +123,13 @@ public class ContestController {
 
         return new ResponseEntity<>(ranking, HttpStatus.OK);
     }
+    @GetMapping("/organizer")
+    public Page<Contest> getContestsByOrganizerId(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        return contestService.getContestsByOrganizerId(page, size);
+    }
+
 
     @PostMapping("/{id}/award-points")
     public ResponseEntity<List<RankedUserResponseDTO>> awardPoints(@PathVariable Long id) {

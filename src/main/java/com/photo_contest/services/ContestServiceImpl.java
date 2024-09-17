@@ -34,7 +34,9 @@ import com.photo_contest.services.contracts.PhaseService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
@@ -64,7 +66,7 @@ public class ContestServiceImpl implements ContestService {
         this.photoSubmissionRepository = photoSubmissionRepository;
         this.userProfileRepository = userProfileRepository;
         this.roleRepository = roleRepository;
-       ;
+
     }
 
     @Override
@@ -76,8 +78,9 @@ public class ContestServiceImpl implements ContestService {
         LocalDateTime phaseOneEndDate = calculatePhaseOneEndDate(startDateTime, createContestDTO.getPhaseDurationInDays()).truncatedTo(ChronoUnit.MINUTES);
         LocalDateTime phaseTwoStartDateTime = phaseOneEndDate.plusDays(1).truncatedTo(ChronoUnit.MINUTES);
         LocalDateTime contestEndDate = calculateEndDate(phaseTwoStartDateTime, createContestDTO.getPhaseTwoDurationInHours()).truncatedTo(ChronoUnit.MINUTES);
-// TODO: Refactor
+
         Contest contest = createNewContest(createContestDTO, startDateTime, contestEndDate, phaseOneEndDate);
+        contest.setPrivate(createContestDTO.isPrivate());
         Contest savedContest = contestRepository.save(contest);
 
         Phase phaseOne = phaseService.createPhaseOne(savedContest, createContestDTO.getPhaseDurationInDays());
@@ -107,6 +110,13 @@ public class ContestServiceImpl implements ContestService {
         } else {
             throw new EntityNotFoundException(INVALID_ID.formatted("Contest", contestId));
         }
+    }
+
+    public Page<Contest> getContestsByOrganizerId(int page, int size) {
+        UserProfile loggedInUser = authContextManager.getLoggedInUser(); // Get the logged-in user
+        PageRequest pageRequest = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt")); // Sort by createdAt in descending order
+
+        return contestRepository.findByOrganizerId(loggedInUser.getId(), pageRequest);
     }
 
     @Override

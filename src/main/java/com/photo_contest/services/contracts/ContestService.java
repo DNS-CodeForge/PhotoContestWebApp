@@ -37,4 +37,6 @@ public interface ContestService {
     int getCurrentPhase(Long contestId);
 
     List<Contest> findAllContestsByUserProfileId(long id);
+
+    Page<Contest> getContestsByOrganizerId(int page, int size);
 }
