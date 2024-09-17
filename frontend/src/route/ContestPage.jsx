@@ -5,6 +5,7 @@ import Pagination from '../components/ContestList/Pagination.jsx';
 import Box from "@mui/material/Box";
 import CircularProgress from "@mui/material/CircularProgress";
 import { refreshTokenIfNecessary } from '../utils/authUtils';
+import { Typography } from '@mui/material';
 
 const BACKEND_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
@@ -120,7 +121,9 @@ function ContestPage() {
     }
 
     if (contests.length === 0) {
-        return <div>No contests available at the moment.</div>;
+      return  <Box width={'100%'} height={'61vh'} alignItems={'center'} justifyContent={'center'} display={'flex'}>
+        <Typography variant='h3'>No contests available at the moment</Typography>
+        </Box>
     }
 
     return (
