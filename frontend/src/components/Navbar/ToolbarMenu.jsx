@@ -1,5 +1,5 @@
-import React, {useState} from 'react';
-import {useNavigate} from 'react-router-dom';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import IconButton from '@mui/material/IconButton';
@@ -10,9 +10,10 @@ import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 import GroupIcon from '@mui/icons-material/Group';
 import InfoIcon from '@mui/icons-material/Info';
 import HowToVoteIcon from '@mui/icons-material/HowToVote';
+import GavelIcon from '@mui/icons-material/Gavel'; // Import the judge hammer icon
 import logo from '../../assets/logo.png';
-import {getRoles} from '../../utils/jwtUtils.jsx';
-import {isAuthenticated} from '../../utils/authUtils.jsx';
+import { getRoles } from '../../utils/jwtUtils.jsx';
+import { isAuthenticated } from '../../utils/authUtils.jsx';
 
 export default function ToolbarMenu() {
     const navigate = useNavigate();
@@ -31,13 +32,14 @@ export default function ToolbarMenu() {
         handleMenuClose();
     };
 
-
     const accessToken = localStorage.getItem('accessToken');
     const isLoggedIn = isAuthenticated(accessToken);
-    const isAdmin = isLoggedIn && getRoles(accessToken).includes('ADMIN');
+    const userRoles = isLoggedIn ? getRoles(accessToken) : [];
+    const isAdmin = userRoles.includes('ADMIN');
+    const isMasterUser = userRoles.includes('MASTERUSER');
 
     return (
-        <Box sx={{display: 'flex', alignItems: 'center', textAlign: 'center'}}>
+        <Box sx={{ display: 'flex', alignItems: 'center', textAlign: 'center' }}>
             <Tooltip title="Navigation" placement="bottom">
                 <IconButton
                     onClick={handleMenuOpen}
@@ -52,7 +54,7 @@ export default function ToolbarMenu() {
                         overflow: 'hidden',
                     }}
                 >
-                    <img src={logo} alt="Logo" style={{height: '3rem', width: '3rem', borderRadius: '50%'}}/>
+                    <img src={logo} alt="Logo" style={{ height: '3rem', width: '3rem', borderRadius: '50%' }} />
                 </IconButton>
             </Tooltip>
 
@@ -99,12 +101,11 @@ export default function ToolbarMenu() {
                         },
                     }}
                 >
-                    <HomeIcon sx={{mr: 1, color: '#fff'}}/>
+                    <HomeIcon sx={{ mr: 1, color: '#fff' }} />
                     Home
                 </MenuItem>
 
                 {isLoggedIn && (
-
                     <MenuItem
                         onClick={() => handleNavigation('/contest/page/1')}
                         sx={{
@@ -118,12 +119,12 @@ export default function ToolbarMenu() {
                             },
                         }}
                     >
-                        <EmojiEventsIcon sx={{mr: 1, color: '#fff'}}/>
+                        <EmojiEventsIcon sx={{ mr: 1, color: '#fff' }} />
                         Contest
                     </MenuItem>
                 )}
-                {isLoggedIn && (
 
+                {isLoggedIn && (
                     <MenuItem
                         onClick={() => handleNavigation('/my-contests')}
                         sx={{
@@ -137,10 +138,29 @@ export default function ToolbarMenu() {
                             },
                         }}
                     >
-                        <HowToVoteIcon sx={{mr: 1, color: '#fff'}}/>
+                        <HowToVoteIcon sx={{ mr: 1, color: '#fff' }} />
                         My Contests
                     </MenuItem>
+                )}
 
+
+                {(isAdmin || isMasterUser) && (
+                    <MenuItem
+                        onClick={() => handleNavigation('/jury')}
+                        sx={{
+                            padding: '1rem 1rem',
+                            paddingRight: '3rem',
+                            fontSize: '1rem',
+                            justifyContent: 'flex-start',
+                            '&:hover': {
+                                backgroundColor: 'rgba(211, 84, 36, 0.8)',
+                                color: '#fff',
+                            },
+                        }}
+                    >
+                        <GavelIcon sx={{ mr: 1, color: '#fff' }} />
+                        Jury
+                    </MenuItem>
                 )}
 
                 {isAdmin && (
@@ -157,7 +177,7 @@ export default function ToolbarMenu() {
                             },
                         }}
                     >
-                        <GroupIcon sx={{mr: 1, color: '#fff'}}/>
+                        <GroupIcon sx={{ mr: 1, color: '#fff' }} />
                         Organizer
                     </MenuItem>
                 )}
@@ -175,11 +195,10 @@ export default function ToolbarMenu() {
                         },
                     }}
                 >
-                    <InfoIcon sx={{mr: 1, color: '#fff'}}/>
+                    <InfoIcon sx={{ mr: 1, color: '#fff' }} />
                     About
                 </MenuItem>
             </Menu>
         </Box>
-    )
-        ;
+    );
 }

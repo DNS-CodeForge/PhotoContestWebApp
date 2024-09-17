@@ -18,6 +18,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import static com.photo_contest.constants.ModelValidationConstants.*;
 
@@ -52,6 +53,7 @@ public class PhotoReview {
     @ManyToOne
     @JoinColumn(name = "photo_submission_id", nullable = false)
     @JsonBackReference
+    @ToString.Exclude
     private PhotoSubmission photoSubmission;
 
     @Column(nullable = false)

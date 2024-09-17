@@ -10,7 +10,8 @@ import { isAuthenticated } from '../utils/authUtils';
 import AboutPage from '../components/AboutPage.jsx';
 import FAQInfoPage from "./FAQInfoPage.jsx";
 import UserContestPage from '../components/UserProfile/UserContestPage.jsx';
-import OrganizerContestPage from "../components/Organizer/OrganizerContestPage.jsx";
+import OrganizerContestPage from "./OrganizerContestPage.jsx";
+import JuryPage from "./JuryPage.jsx";
 const routes = [
     {
         path: '/',
@@ -74,6 +75,14 @@ const routes = [
                 element: (
                     <ProtectedRoute>
                         <UserProfile />
+                    </ProtectedRoute>
+                ),
+            },
+            {
+                path: 'jury',
+                element: (
+                    <ProtectedRoute>
+                        <JuryPage />
                     </ProtectedRoute>
                 ),
             },

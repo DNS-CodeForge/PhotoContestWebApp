@@ -3,6 +3,7 @@ package com.photo_contest.services.contracts;
 import java.io.IOException;
 import java.util.List;
 
+import com.photo_contest.models.DTO.ContestPhotoDTO;
 import com.photo_contest.models.PhotoSubmission;
 import com.photo_contest.models.DTO.PhotoSubmissionDTO;
 
@@ -21,5 +22,7 @@ public interface PhotoSubmissionService {
 
     void deletePhotoSubmission(Long id);
 
-    List<PhotoSubmission> getSubmissionsByUserId(Long userId); 
+    List<PhotoSubmission> getSubmissionsByUserId(Long userId);
+
+    List<ContestPhotoDTO> getSubmissionsByJuryMemberId();
 }

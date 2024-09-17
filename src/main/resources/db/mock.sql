@@ -245,3 +245,11 @@ FROM contest c, app_user u WHERE c.title = 'Serenity''s Serenity' AND u.username
 INSERT INTO photo_review (category_mismatch, is_reviewed, score, jury_id, photo_submission_id, comment)
 SELECT FALSE, TRUE, FLOOR(RANDOM() * 10 + 1), (SELECT id FROM user_profile WHERE id = (SELECT id FROM app_user WHERE username = 'admin')), s.id, 'Great photo!'
 FROM photo_submission s WHERE s.contest_id IN (SELECT id FROM contest WHERE id <= 6);
+
+INSERT INTO photo_submission (creator_id, contest_id, title, story, photo_url)
+VALUES
+    (2, 1, 'Sunset over the hills', 'A beautiful sunset taken from the hills.', 'https://res.cloudinary.com/dzrqfix7k/image/upload/v1726137146/samples/landscapes/nature-mountains.jpg'),
+    (3, 1, 'Cityscape', 'An evening cityscape with the skyline.', 'https://res.cloudinary.com/dzrqfix7k/image/upload/v1726137145/samples/landscapes/beach-boat.jpg'),
+    (4, 1, 'Mountain Peak', 'The summit of a snowy mountain.', 'https://res.cloudinary.com/dzrqfix7k/image/upload/v1726137144/samples/sheep.jpg'),
+    (5, 1, 'Forest Path', 'A serene path through the forest.', 'https://res.cloudinary.com/dzrqfix7k/image/upload/v1726137144/samples/animals/reindeer.jpg'),
+    (6, 1, 'Beach Waves', 'Waves crashing onto the beach.', 'https://res.cloudinary.com/dzrqfix7k/image/upload/v1726137143/samples/animals/cat.jpg');

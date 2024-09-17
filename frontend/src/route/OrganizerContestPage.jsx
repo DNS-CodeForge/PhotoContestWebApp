@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Typography, Button, CircularProgress, Pagination, Stack, Modal } from '@mui/material';
-import ContestInfoModal from './ContestInfoModal';
-import JudgesModal from './JudgesModal';
-import ParticipantsModal from './ParticipantsModal';
-import CreateContest from '../Forms/CreateContest';
-import DeleteContestModal from './DeleteContestModal'; // Import the delete modal
-import { refreshTokenIfNecessary } from '../../utils/authUtils';
-import { arrayToDate } from '../../utils/dateUtils';
+import ContestInfoModal from '../components/Organizer/ContestInfoModal.jsx';
+import JudgesModal from '../components/Organizer/JudgesModal.jsx';
+import ParticipantsModal from '../components/Organizer/ParticipantsModal.jsx';
+import CreateContest from '../components/Forms/CreateContest.jsx';
+import DeleteContestModal from '../components/Organizer/DeleteContestModal.jsx';
+import { refreshTokenIfNecessary } from '../utils/authUtils.jsx';
+import { arrayToDate } from '../utils/dateUtils.jsx';
 import { useNavigate, useParams } from 'react-router-dom';
 import moment from 'moment';
 
@@ -20,14 +20,14 @@ const OrganizerContestPage = () => {
     const [selectedContest, setSelectedContest] = useState(null);
     const [selectedJudgesContest, setSelectedJudgesContest] = useState(null);
     const [selectedParticipantsContest, setSelectedParticipantsContest] = useState(null);
-    const [selectedDeleteContest, setSelectedDeleteContest] = useState(null); // State for the contest to delete
+    const [selectedDeleteContest, setSelectedDeleteContest] = useState(null);
     const [totalPages, setTotalPages] = useState(1);
     const pageSize = 10;
 
     const [openJudgesModal, setOpenJudgesModal] = useState(false);
     const [openParticipantsModal, setOpenParticipantsModal] = useState(false);
-    const [openDeleteModal, setOpenDeleteModal] = useState(false); // State for delete modal
-    const [modalUpdate, setModalUpdate] = useState(false); // State to trigger re-fetch
+    const [openDeleteModal, setOpenDeleteModal] = useState(false);
+    const [modalUpdate, setModalUpdate] = useState(false);
 
     const navigate = useNavigate();
     const { page } = useParams();

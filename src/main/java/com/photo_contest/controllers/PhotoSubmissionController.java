@@ -3,6 +3,7 @@ package com.photo_contest.controllers;
 import java.io.IOException;
 import java.util.List;
 
+import com.photo_contest.models.DTO.ContestPhotoDTO;
 import com.photo_contest.models.PhotoSubmission;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.photo_contest.models.DTO.PhotoSubmissionDTO;
@@ -74,5 +75,11 @@ public class PhotoSubmissionController {
     public ResponseEntity<Void> deletePhotoSubmission(@PathVariable Long id) {
         photoSubmissionService.deletePhotoSubmission(id);
         return ResponseEntity.noContent().build();
+    }
+    @GetMapping("/jury/submissions")
+    public ResponseEntity<List<ContestPhotoDTO>> getSubmissionsByJuryMemberId() {
+        List<ContestPhotoDTO> submissions = photoSubmissionService.getSubmissionsByJuryMemberId();
+        System.out.println(submissions);
+        return ResponseEntity.ok(submissions);
     }
 }

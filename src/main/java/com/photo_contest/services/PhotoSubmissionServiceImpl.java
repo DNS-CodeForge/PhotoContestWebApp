@@ -8,7 +8,9 @@ import static com.photo_contest.constants.ModelValidationConstants.PH_ONE_SUBMIS
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import com.photo_contest.models.DTO.ContestPhotoDTO;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 
@@ -48,6 +50,7 @@ public class PhotoSubmissionServiceImpl implements PhotoSubmissionService {
         this.contestService = contestService;
         this.cloudinaryImageService = cloudinaryImageService;
     }
+
     @Override
     public PhotoSubmission createPhotoSubmission(Long contestId, PhotoSubmissionDTO photoSubmissionDTO, MultipartFile file) {
         Contest contest = contestRepository.findById(contestId)
@@ -84,7 +87,6 @@ public class PhotoSubmissionServiceImpl implements PhotoSubmissionService {
         photoSubmission.setPhotoReviews(Collections.emptyList());
 
 
-
         contestService.joinContest(contestId, userId);
 
         return photoSubmissionRepository.save(photoSubmission);
@@ -96,7 +98,6 @@ public class PhotoSubmissionServiceImpl implements PhotoSubmissionService {
                 .orElseThrow(() -> new EntityNotFoundException(INVALID_ID.formatted("Contest", contestId)));
         return photoSubmissionRepository.findByContestId(contestId);
     }
-
 
 
     @Override
@@ -141,7 +142,33 @@ public class PhotoSubmissionServiceImpl implements PhotoSubmissionService {
     }
 
     @Override
-     public List<PhotoSubmission> getSubmissionsByUserId(Long userId) {
+    public List<PhotoSubmission> getSubmissionsByUserId(Long userId) {
         return photoSubmissionRepository.findByCreatorId(userId);
     }
+
+    @Override
+    public List<ContestPhotoDTO> getSubmissionsByJuryMemberId() {
+        Long juryMemberId = authContextManager.getId();
+        List<PhotoSubmission> submissions = photoSubmissionRepository.findSubmissionsByJuryMemberId(juryMemberId);
+
+        System.out.println(submissions);
+
+        return submissions.stream().map(submission -> {
+
+            List<Long> reviewedByJuryIds = submission.getPhotoReviews().stream()
+                    .map(review -> review.getJury().getId())
+                    .collect(Collectors.toList());
+
+
+            return new ContestPhotoDTO(
+                    submission.getId(),
+                    submission.getTitle(),
+                    submission.getStory(),
+                    submission.getPhotoUrl(),
+                    submission.getContest().getId(),
+                    reviewedByJuryIds
+            );
+        }).collect(Collectors.toList());
+    }
+
 }

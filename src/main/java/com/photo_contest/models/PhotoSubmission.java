@@ -21,6 +21,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import static com.photo_contest.constants.ModelValidationConstants.*;
 
@@ -61,5 +62,6 @@ public class PhotoSubmission {
 
     @OneToMany(mappedBy = "photoSubmission", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JsonManagedReference
+    @ToString.Exclude
     private List<PhotoReview> photoReviews;
 }

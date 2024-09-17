@@ -32,6 +32,11 @@ public interface PhotoSubmissionRepository extends JpaRepository<PhotoSubmission
     List<RankedUserResponseDTO> getFinalScoresByContestId(@Param("contestId") Long contestId);
 
     boolean existsByContestIdAndCreatorId(Long contestId, Long creatorId);
+    @Query(value = "SELECT ps.* FROM photo_submission ps " +
+            "JOIN contest c ON ps.contest_id = c.id " +
+            "JOIN contest_jury cj ON cj.contest_id = c.id " +
+            "WHERE cj.app_user_id = :juryMemberId", nativeQuery = true)
+    List<PhotoSubmission> findSubmissionsByJuryMemberId(@Param("juryMemberId") Long juryMemberId);
 
 
     List<PhotoSubmission> findByContestId(Long contestId);
