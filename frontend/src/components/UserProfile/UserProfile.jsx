@@ -4,6 +4,7 @@ import { Box, Typography, CircularProgress, Button, Avatar } from '@mui/material
 import SubmissionsList from '../ContestDetail/SubmissionsList';
 import ContestList from '../ContestList/ContestList';
 import EditProfileForm from '../Forms/EditProfileForm';
+import UserReviewPage from './UserReviewPage';
 
 const BACKEND_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 import organizerImage from '../../assets/organizer.png';
@@ -216,6 +217,7 @@ export default function UserProfile() {
             <Box sx={{ marginTop: '5px' }}>
                 {selectedTab === 'submissions' && <SubmissionsList itemData={userData.submissions} />}
                 {selectedTab === 'contests' && <ContestList contests={userData.contests} />}
+                {selectedTab === 'reviews' && <UserReviewPage reviews={userData.reviews} />}
             </Box>
         </>
     );
