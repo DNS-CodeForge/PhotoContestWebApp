@@ -125,6 +125,7 @@ VALUES ('ADMIN'), ('USER'), ('MASTERUSER');
 INSERT INTO app_user (username, password, email)
 VALUES
     ('admin', '$2a$10$fn/K6upEvwqz9ndoGgEVr.kjL0TsDsX4qvJmYNvvDg1Cgf34dR.LS', 'admin@example.com'),
+    ('admin1', '$2a$10$fn/K6upEvwqz9ndoGgEVr.kjL0TsDsX4qvJmYNvvDg1Cgf34dR.LS', 'admin1@example.com'),
     ('user1', '$2a$10$fn/K6upEvwqz9ndoGgEVr.kjL0TsDsX4qvJmYNvvDg1Cgf34dR.LS', 'john.doe@example.com'),
     ('user2', '$2a$10$fn/K6upEvwqz9ndoGgEVr.kjL0TsDsX4qvJmYNvvDg1Cgf34dR.LS', 'jane.doe@example.com'),
     ('user3', '$2a$10$fn/K6upEvwqz9ndoGgEVr.kjL0TsDsX4qvJmYNvvDg1Cgf34dR.LS', 'alex.smith@example.com'),
@@ -143,7 +144,7 @@ VALUES
 INSERT INTO user_roles (user_id, role_id)
 SELECT u.id, r.role_id
 FROM app_user u, roles r
-WHERE u.username = 'admin' AND r.authority = 'ADMIN';
+WHERE u.username IN ('admin', 'admin1') AND r.authority = 'ADMIN';
 
 INSERT INTO user_roles (user_id, role_id)
 SELECT u.id, r.role_id
@@ -158,7 +159,8 @@ WHERE u.username IN ('masteruser1', 'masteruser2', 'masteruser3', 'masteruser4',
 -- Step 6: Insert user profiles
 INSERT INTO user_profile (id, first_name, last_name, rank)
 VALUES
-    ((SELECT id FROM app_user WHERE username = 'admin'), 'Admin', 'User', 'ORGANIZER'),
+    ((SELECT id FROM app_user WHERE username = 'admin'), 'Adam', 'Adams', 'ORGANIZER'),
+    ((SELECT id FROM app_user WHERE username = 'admin1'), 'Amanda', 'Adams', 'ORGANIZER'),
     ((SELECT id FROM app_user WHERE username = 'user1'), 'John', 'Doe', 'DICTATOR'),
     ((SELECT id FROM app_user WHERE username = 'user2'), 'Jane', 'Doe', 'MASTER'),
     ((SELECT id FROM app_user WHERE username = 'user3'), 'Alex', 'Smith', 'ENTHUSIAST'),
