@@ -6,7 +6,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import ManageSearchIcon from '@mui/icons-material/ManageSearch';
 import { TextField, Button, MenuItem, FormControl, InputLabel, Select, RadioGroup, FormControlLabel, Radio } from '@mui/material';
 
-const Search = styled('div')(({ theme, focused }) => ({
+const Search = styled('div')(({ theme, focused, showForm }) => ({
     position: 'relative',
     borderRadius: '20px',
     backgroundColor: alpha(theme.palette.common.white, 0.15),
@@ -14,12 +14,12 @@ const Search = styled('div')(({ theme, focused }) => ({
         backgroundColor: alpha(theme.palette.common.white, 0.25),
     },
     marginLeft: '3.5rem',
-    width: focused ? '300px' : '200px',
+    width: focused || showForm ? '300px' : '200px',
     transition: theme.transitions.create('width', {
         duration: theme.transitions.duration.standard,
     }),
     [theme.breakpoints.up('sm')]: {
-        width: focused ? '22rem' : '15rem',
+        width: focused || showForm ? '22rem' : '15rem',
     },
     zIndex: 2,
 }));
@@ -74,6 +74,7 @@ const FormWrapper = styled('div')(({ theme, open }) => ({
     display: open ? 'block' : 'none',
 }));
 
+
 export default function SearchBar({ onSearch }) {
     const [focused, setFocused] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
@@ -113,8 +114,8 @@ export default function SearchBar({ onSearch }) {
             title: searchTerm || null,
             category: category || null,
             isPrivate: privacy === 'private' ? true : privacy === 'public' ? false : null,
-            active: status === 'active' ? true : status === 'all' ? null : true,
-            activeSubmission: status === 'activeSubmission' ? true : status === 'all' ? null : null,
+            active: status === 'active' ? true : status === 'all' ? null : false,
+            activeSubmission: status === 'activeSubmission' ? true : status === 'all' ? null : false,
         };
         onSearch(formData);
         setShowForm(false);
@@ -122,8 +123,8 @@ export default function SearchBar({ onSearch }) {
 
     return (
         <div style={{ position: 'relative' }}>
-            <Search focused={focused}>
-                {focused ? (
+            <Search focused={focused} showForm={showForm}>
+                {focused || showForm ? (
                     <SettingsIconWrapper onClick={toggleForm}>
                         <ManageSearchIcon sx={{ color: '#EEEEEE' }} />
                     </SettingsIconWrapper>
