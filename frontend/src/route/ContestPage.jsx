@@ -128,13 +128,15 @@ function ContestPage() {
 
     return (
         <>
+        <Box minHeight={'60vh'}>
             <ContestList contests={contests} heading={"Contests"} />
-            <Pagination
+           <Pagination 
                 count={totalPages}
                 page={currentPage}
                 onPageChange={handlePageChange}
             />
-        </>
+        </Box>
+         </>
     );
 }
 
