@@ -6,11 +6,13 @@ import java.util.Map;
 
 import com.photo_contest.config.AuthContextManager;
 import com.photo_contest.models.Contest;
-import com.photo_contest.models.DTO.UserAppProfileDTO;
+import com.photo_contest.models.PhotoReview;
 import com.photo_contest.models.PhotoSubmission;
 import com.photo_contest.models.UserProfile;
 import com.photo_contest.models.DTO.EditProfileDTO;
+import com.photo_contest.models.DTO.UserAppProfileDTO;
 import com.photo_contest.services.contracts.ContestService;
+import com.photo_contest.services.contracts.PhotoReviewService;
 import com.photo_contest.services.contracts.PhotoSubmissionService;
 import com.photo_contest.services.contracts.UserService;
 
@@ -35,12 +37,14 @@ public class UserController {
     private final UserService userService;
     private final ContestService contestService;
     private final PhotoSubmissionService photoSubmissionService;
+    private final PhotoReviewService photoReviewService;
     private final AuthContextManager authContextManager;
 
-    public UserController(UserService userService, ContestService contestService, PhotoSubmissionService photoSubmissionService, @Qualifier("authContextManager") AuthContextManager authContextManager) {
+    public UserController(UserService userService, ContestService contestService, PhotoSubmissionService photoSubmissionService, @Qualifier("authContextManager") AuthContextManager authContextManager, PhotoReviewService photoReviewService) {
         this.userService = userService;
         this.contestService = contestService;
         this.photoSubmissionService = photoSubmissionService;
+        this.photoReviewService = photoReviewService;
         this.authContextManager = authContextManager;
     }
 
@@ -68,11 +72,13 @@ public class UserController {
         UserProfile userProfile = userService.getUserById(id);
         List<Contest> contests = contestService.findAllContestsByUserProfileId((long) id);
         List<PhotoSubmission> submissions = photoSubmissionService.getSubmissionsByUserId((long) id);
+        List<PhotoReview> reviews = photoReviewService.getReviewsByUserId((long) id);
 
         Map<String, Object> response = new HashMap<>();
         response.put("userProfile", userProfile);
         response.put("contests", contests);
         response.put("submissions", submissions);
+        response.put("reviews", reviews);
         response.put("email", userProfile.getAppUser().getEmail());
         response.put("username", userProfile.getAppUser().getUsername());
 

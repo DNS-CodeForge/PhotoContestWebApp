@@ -205,6 +205,12 @@ export default function UserProfile() {
                 >
                     Contests
                 </Button>
+                <Button
+                    sx={buttonStyle('reviews')}
+                    onClick={() => setSelectedTab('reviews')}
+                >
+                    Reviews
+                </Button>
             </Box>
 
             <Box sx={{ marginTop: '5px' }}>

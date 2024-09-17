@@ -11,4 +11,5 @@ import org.springframework.stereotype.Repository;
 public interface PhotoReviewRepository extends JpaRepository<PhotoReview, Long>{
     List<PhotoReview> findByPhotoSubmissionId(Long photoSubmissionId);
     List<PhotoReview> findByJuryId(Long juryId);
+    List<PhotoReview> findByPhotoSubmissionCreatorId(Long userId);
 }

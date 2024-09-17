@@ -20,4 +20,6 @@ public interface PhotoReviewService {
     List<PhotoReview> getPhotoReviewsByPhotoSubmissionId(Long photoSubmissionId);
 
     List<PhotoReview> getPhotoReviewsByJuryId(Long juryId);
+
+    List<PhotoReview> getReviewsByUserId(Long userId);
 }

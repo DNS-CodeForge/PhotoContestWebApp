@@ -1,7 +1,13 @@
 package com.photo_contest.services;
 
+import static com.photo_contest.constants.ModelValidationConstants.INVALID_ID;
+import static com.photo_contest.constants.ModelValidationConstants.PH_TWO_REVIEW;
+import static com.photo_contest.constants.ModelValidationConstants.USER_NOT_JURY;
+
 import java.util.List;
 import java.util.Optional;
+
+import jakarta.persistence.EntityNotFoundException;
 
 import com.photo_contest.config.AuthContextManager;
 import com.photo_contest.exeptions.AuthorizationException;
@@ -16,11 +22,8 @@ import com.photo_contest.repos.PhotoSubmissionRepository;
 import com.photo_contest.services.contracts.ContestService;
 import com.photo_contest.services.contracts.PhotoReviewService;
 
-import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import static com.photo_contest.constants.ModelValidationConstants.*;
 
 @Service
 public class PhotoReviewServiceImpl implements PhotoReviewService{
@@ -109,5 +112,10 @@ public class PhotoReviewServiceImpl implements PhotoReviewService{
     @Override
     public List<PhotoReview> getPhotoReviewsByJuryId(Long juryId) {
         return photoReviewRepository.findByJuryId(juryId);
+    }
+
+    @Override
+    public List<PhotoReview> getReviewsByUserId(Long userId) {
+        return photoReviewRepository.findByPhotoSubmissionCreatorId(userId);
     }
 }
