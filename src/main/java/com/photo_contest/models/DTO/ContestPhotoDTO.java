@@ -19,4 +19,5 @@ public class ContestPhotoDTO {
     private String photoUrl;
     private Long contestId;
     private List<Long> reviewedByJuryIds;
+    private boolean isActive;
 }

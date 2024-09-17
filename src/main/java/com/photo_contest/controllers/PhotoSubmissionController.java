@@ -79,7 +79,6 @@ public class PhotoSubmissionController {
     @GetMapping("/jury/submissions")
     public ResponseEntity<List<ContestPhotoDTO>> getSubmissionsByJuryMemberId() {
         List<ContestPhotoDTO> submissions = photoSubmissionService.getSubmissionsByJuryMemberId();
-        System.out.println(submissions);
         return ResponseEntity.ok(submissions);
     }
 }

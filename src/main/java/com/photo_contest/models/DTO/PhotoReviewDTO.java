@@ -11,7 +11,7 @@ import static com.photo_contest.constants.ModelValidationConstants.*;
 @Data
 public class PhotoReviewDTO {
 
-    @Min(value = 1, message = PR_SCR_MIN_MSG)
+    @Min(value = 0, message = PR_SCR_MIN_MSG)
     @Max(value = 10, message = PR_SCR_MAX_MSG)
     private int score = PR_DEFAULT_SCR;
 

@@ -33,7 +33,7 @@ public class PhotoReview {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Min(value = 1, message = PR_SCR_MIN_MSG)
+    @Min(value = 0, message = PR_SCR_MIN_MSG)
     @Max(value = 10, message = PR_SCR_MAX_MSG)
     @Column(nullable = false)
     private int score = PR_DEFAULT_SCR;

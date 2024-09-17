@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Typography, CircularProgress } from '@mui/material';
 import JurySubmissionView from '../components/Jury/JurySubmissionView';
+import { getId } from "../utils/jwtUtils.jsx";
 const BACKEND_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
 const JuryPage = () => {
@@ -28,12 +29,23 @@ const JuryPage = () => {
             }
 
             const data = await response.json();
-            setSubmissions(data);
+            const userId = getId(accessToken);
+
+            const filteredSubmissions = data.filter(submission =>
+                !submission.reviewedByJuryIds.includes(parseInt(userId)) && submission.active
+            );
+
+            setSubmissions(filteredSubmissions);
         } catch (err) {
             setError(err.message);
         } finally {
             setLoading(false);
         }
+    };
+
+
+    const handleReviewSuccess = () => {
+        fetchSubmissions();
     };
 
     useEffect(() => {
@@ -91,13 +103,18 @@ const JuryPage = () => {
                 }}
             >
                 <Typography variant="h4" sx={{ marginBottom: 2 }}>
-                    No Submissions Found
+                    No Submissions Currently Await Reviewing
                 </Typography>
             </Box>
         );
     }
 
-    return <JurySubmissionView itemData={submissions} />;
+    return (
+        <JurySubmissionView
+            itemData={submissions}
+            onReviewSuccess={handleReviewSuccess}
+        />
+    );
 };
 
 export default JuryPage;

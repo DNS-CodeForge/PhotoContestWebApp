@@ -53,15 +53,18 @@ public class PhotoReviewServiceImpl implements PhotoReviewService{
                 .orElseThrow(() -> new EntityNotFoundException(INVALID_ID.formatted("Photo Submission", photoSubmissionId)));
         Contest contest = photoSubmission.getContest();
 
+//        if (contestService.getCurrentPhase(contest.getId()) != 2) {
+//            throw new ContestPhaseViolationException(PH_TWO_REVIEW);
+//        }
+
         if(!contest.getJury().contains(jury)) {
             throw new AuthorizationException(USER_NOT_JURY);
         }
 
-
-        if (contestService.getCurrentPhase(contest.getId()) != 2) {
-            throw new ContestPhaseViolationException(PH_TWO_REVIEW);
+        Optional<PhotoReview> existingReview = photoReviewRepository.findByJuryAndPhotoSubmission(jury, photoSubmission);
+        if (existingReview.isPresent()) {
+            throw new EntityNotFoundException("Review by this jury for this submission already exists.");
         }
-            
         PhotoReview photoReview = new PhotoReview();
         photoReview.setScore(photoReviewDTO.getScore());
         photoReview.setComment(photoReviewDTO.getComment());

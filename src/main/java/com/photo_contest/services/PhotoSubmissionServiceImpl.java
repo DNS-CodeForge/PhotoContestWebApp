@@ -113,7 +113,7 @@ public class PhotoSubmissionServiceImpl implements PhotoSubmissionService {
 
     @Override
     public PhotoSubmission updatePhotoSubmission(Long id, PhotoSubmissionDTO photoSubmissionDTO, MultipartFile file) {
-        PhotoSubmission photoSubmission = getPhotoSubmissionById(id);
+        PhotoSubmission photoSubmission = getPhotoSubmissionById(   id);
         photoSubmission.setTitle(photoSubmissionDTO.getTitle());
         photoSubmission.setStory(photoSubmissionDTO.getStory());
 
@@ -151,14 +151,14 @@ public class PhotoSubmissionServiceImpl implements PhotoSubmissionService {
         Long juryMemberId = authContextManager.getId();
         List<PhotoSubmission> submissions = photoSubmissionRepository.findSubmissionsByJuryMemberId(juryMemberId);
 
-        System.out.println(submissions);
+
 
         return submissions.stream().map(submission -> {
 
             List<Long> reviewedByJuryIds = submission.getPhotoReviews().stream()
                     .map(review -> review.getJury().getId())
                     .collect(Collectors.toList());
-
+            boolean isActive = contestService.getCurrentPhase(submission.getContest().getId()) == 2;
 
             return new ContestPhotoDTO(
                     submission.getId(),
@@ -166,7 +166,9 @@ public class PhotoSubmissionServiceImpl implements PhotoSubmissionService {
                     submission.getStory(),
                     submission.getPhotoUrl(),
                     submission.getContest().getId(),
-                    reviewedByJuryIds
+                    reviewedByJuryIds,
+                    isActive
+
             );
         }).collect(Collectors.toList());
     }

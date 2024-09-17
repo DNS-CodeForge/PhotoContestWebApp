@@ -1,32 +1,27 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ImageList from '@mui/material/ImageList';
 import ImageListItem from '@mui/material/ImageListItem';
 import { Dialog, Button, Box, Typography } from '@mui/material';
-import { getId } from '../../utils/jwtUtils';
+import ReviewForm from '../Forms/ReviewForm';
 
-export default function JurySubmissionView({ itemData }) {
+export default function JurySubmissionView({ itemData, onReviewSuccess }) {
     const [selectedImage, setSelectedImage] = useState(null);
-    const [filteredSubmissions, setFilteredSubmissions] = useState([]);
+    const [currentIndex, setCurrentIndex] = useState(null);
+    const [isReviewing, setIsReviewing] = useState(false);
+
     const navigate = useNavigate();
 
-
-    const userId = getId(localStorage.getItem('accessToken'));
-
-    useEffect(() => {
-
-        const submissionsNotReviewedByUser = itemData.filter(item => !item.reviewedByJuryIds.includes(userId));
-        setFilteredSubmissions(submissionsNotReviewedByUser);
-    }, [itemData, userId]);
-
     const handleImageClick = (index) => {
-        setSelectedImage(filteredSubmissions[index]);
-
+        setSelectedImage(itemData[index]);
+        setCurrentIndex(index);
+        setIsReviewing(false);
     };
 
     const handleClose = () => {
         setSelectedImage(null);
-        
+        setCurrentIndex(null);
+        setIsReviewing(false);
     };
 
     const handleViewContest = () => {
@@ -37,16 +32,18 @@ export default function JurySubmissionView({ itemData }) {
     };
 
     const handleReviewSubmission = () => {
-        const submissionId = selectedImage.id;
-        console.log(`Review submission with id: ${submissionId}`);
+        setIsReviewing(true);
+    };
 
+    const handleReviewSubmitSuccess = (newReview) => {
+        onReviewSuccess(newReview);
+        handleClose();
     };
 
     return (
         <>
-
             <ImageList cols={6} gap={4} sx={{ margin: '1rem' }}>
-                {filteredSubmissions.map((item, index) => (
+                {itemData.map((item, index) => (
                     <ImageListItem
                         key={item.id}
                         onClick={() => handleImageClick(index)}
@@ -62,7 +59,6 @@ export default function JurySubmissionView({ itemData }) {
                     </ImageListItem>
                 ))}
             </ImageList>
-
 
             <Dialog
                 open={!!selectedImage}
@@ -88,57 +84,65 @@ export default function JurySubmissionView({ itemData }) {
                             textAlign: 'center',
                         }}
                     >
-                        <img
-                            src={selectedImage.photoUrl}
-                            alt={selectedImage.title}
-                            style={{
-                                maxWidth: '80%',
-                                maxHeight: '80vh',
-                                objectFit: 'contain',
-                            }}
-                        />
+                        {!isReviewing ? (
+                            <>
+                                <img
+                                    src={selectedImage.photoUrl}
+                                    alt={selectedImage.title}
+                                    style={{
+                                        maxWidth: '80%',
+                                        maxHeight: '80vh',
+                                        objectFit: 'contain',
+                                    }}
+                                />
 
-                        <Typography variant="h6" sx={{ marginTop: '1rem' }}>
-                            {selectedImage.title}
-                        </Typography>
+                                <Typography variant="h6" sx={{ marginTop: '1rem' }}>
+                                    {selectedImage.title}
+                                </Typography>
 
-                        <Typography variant="body2" sx={{ marginTop: '0.5rem', color: '#f4b400' }}>
-                            {selectedImage.story}
-                        </Typography>
+                                <Typography variant="body2" sx={{ marginTop: '0.5rem', color: '#f4b400' }}>
+                                    {selectedImage.story}
+                                </Typography>
 
+                                <Typography variant="body2" sx={{ marginTop: '0.5rem', color: '#f4b400' }}>
+                                    Reviewed by {selectedImage.reviewedByJuryIds.length} jury members
+                                </Typography>
 
-                        <Typography variant="body2" sx={{ marginTop: '0.5rem', color: '#f4b400' }}>
-                            Reviewed by {selectedImage.reviewedByJuryIds.length} jury members
-                        </Typography>
-
-
-                        <Box
-                            sx={{
-                                position: 'absolute',
-                                bottom: '2rem',
-                                right: '2rem',
-                                display: 'flex',
-                                flexDirection: 'column',
-                                gap: 1,
-                            }}
-                        >
-                            <Button
-                                variant="contained"
-                                color="primary"
-                                onClick={handleViewContest}
-                                sx={{ backgroundColor: '#502e0e', width: '150px' }}
-                            >
-                                View Contest
-                            </Button>
-                            <Button
-                                variant="contained"
-                                color="secondary"
-                                onClick={handleReviewSubmission}
-                                sx={{ backgroundColor: '#ff4646', width: '150px' }}
-                            >
-                                Review
-                            </Button>
-                        </Box>
+                                <Box
+                                    sx={{
+                                        position: 'absolute',
+                                        bottom: '2rem',
+                                        right: '2rem',
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        gap: 1,
+                                    }}
+                                >
+                                    <Button
+                                        variant="contained"
+                                        color="primary"
+                                        onClick={handleViewContest}
+                                        sx={{ backgroundColor: '#502e0e', width: '150px' }}
+                                    >
+                                        View Contest
+                                    </Button>
+                                    <Button
+                                        variant="contained"
+                                        color="secondary"
+                                        onClick={handleReviewSubmission}
+                                        sx={{ backgroundColor: '#ff4646', width: '150px' }}
+                                    >
+                                        Review
+                                    </Button>
+                                </Box>
+                            </>
+                        ) : (
+                            <ReviewForm
+                                submissionId={selectedImage.id}
+                                onClose={handleClose}
+                                onSubmitSuccess={handleReviewSubmitSuccess}
+                            />
+                        )}
                     </Box>
                 )}
             </Dialog>
