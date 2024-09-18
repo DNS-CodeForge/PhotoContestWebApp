@@ -32,15 +32,15 @@ public class PhaseServiceImpl implements PhaseService {
 
 
     public static final int HOURLY_CHECK_INTERVAL = 1;
-    private static final String HOURLY_CHECK_CRON = "0 0 0/" + HOURLY_CHECK_INTERVAL + " * * ?";
+    public static final String HOURLY_CHECK_CRON = "0 0 0/" + HOURLY_CHECK_INTERVAL + " * * ?";
            // "0 0/2 * * * ?";
 
 
-    private static final int AVAILABLE_PROCESSORS = Runtime.getRuntime().availableProcessors();
-    private static final int CORE_POOL_SIZE = AVAILABLE_PROCESSORS;
-    private static final int MAX_POOL_SIZE = AVAILABLE_PROCESSORS * 2;
-    private static final int QUEUE_CAPACITY = 500;
-    private static final String THREAD_NAME_PREFIX = "PhaseCheck-";
+    public static final int AVAILABLE_PROCESSORS = Runtime.getRuntime().availableProcessors();
+    public static final int CORE_POOL_SIZE = AVAILABLE_PROCESSORS;
+    public static final int MAX_POOL_SIZE = AVAILABLE_PROCESSORS * 2;
+    public static final int QUEUE_CAPACITY = 500;
+    public static final String THREAD_NAME_PREFIX = "PhaseCheck-";
 
 
     private final PhaseRepository phaseRepository;
