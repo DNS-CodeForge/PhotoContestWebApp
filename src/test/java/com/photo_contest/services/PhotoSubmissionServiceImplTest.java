@@ -3,6 +3,7 @@ package com.photo_contest.services;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.mock;
@@ -13,9 +14,9 @@ import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
-import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 
 import com.photo_contest.config.AuthContextManager;
@@ -23,8 +24,10 @@ import com.photo_contest.exeptions.AuthorizationException;
 import com.photo_contest.exeptions.ContestPhaseViolationException;
 import com.photo_contest.exeptions.ImageUploadException;
 import com.photo_contest.models.Contest;
+import com.photo_contest.models.PhotoReview;
 import com.photo_contest.models.PhotoSubmission;
 import com.photo_contest.models.UserProfile;
+import com.photo_contest.models.DTO.ContestPhotoDTO;
 import com.photo_contest.models.DTO.PhotoSubmissionDTO;
 import com.photo_contest.repos.ContestRepository;
 import com.photo_contest.repos.PhotoSubmissionRepository;
@@ -243,4 +246,124 @@ public class PhotoSubmissionServiceImplTest {
 
         verify(photoSubmissionRepository, never()).deleteById(anyLong());
     }
+
+   
+    @Test
+    void testUpdatePhotoSubmission_Success() throws IOException {
+        PhotoSubmission existingSubmission = new PhotoSubmission();
+        existingSubmission.setPhotoUrl("old_url");
+
+        // Stubbing the findById to return the existing photo submission
+        when(photoSubmissionRepository.findById(anyLong())).thenReturn(Optional.of(existingSubmission));
+        
+        // Stubbing the image upload service to return a new URL
+        when(cloudinaryImageService.uploadImage(any(MultipartFile.class))).thenReturn("new_uploaded_url");
+
+        // Stubbing the save method to return the updated photo submission
+        PhotoSubmission updatedSubmission = new PhotoSubmission();
+        updatedSubmission.setTitle("Updated Title");
+        updatedSubmission.setStory("Updated Story");
+        updatedSubmission.setPhotoUrl("new_uploaded_url");
+        when(photoSubmissionRepository.save(any(PhotoSubmission.class))).thenReturn(updatedSubmission);
+
+        PhotoSubmissionDTO photoSubmissionDTO = new PhotoSubmissionDTO();
+        photoSubmissionDTO.setTitle("Updated Title");
+        photoSubmissionDTO.setStory("Updated Story");
+
+        MultipartFile mockFile = mock(MultipartFile.class);
+
+        // Calling the method under test
+        PhotoSubmission result = photoSubmissionService.updatePhotoSubmission(1L, photoSubmissionDTO, mockFile);
+
+        // Asserting that the result is not null and checking the updated values
+        assertNotNull(result);
+        assertEquals("Updated Title", result.getTitle());
+        assertEquals("Updated Story", result.getStory());
+        assertEquals("new_uploaded_url", result.getPhotoUrl());
+    }
+
+
+    @Test
+    void testUpdatePhotoSubmission_NoFile() {
+        // Arrange
+        PhotoSubmission existingSubmission = new PhotoSubmission();
+        existingSubmission.setPhotoUrl("existing_url");
+
+        // Stub the repository to return the existing submission
+        when(photoSubmissionRepository.findById(anyLong())).thenReturn(Optional.of(existingSubmission));
+
+        // Stub the save method to return the updated submission
+        PhotoSubmission updatedSubmission = new PhotoSubmission();
+        updatedSubmission.setTitle("Updated Title");
+        updatedSubmission.setStory("Updated Story");
+        updatedSubmission.setPhotoUrl("existing_url");
+        when(photoSubmissionRepository.save(any(PhotoSubmission.class))).thenReturn(updatedSubmission);
+
+        // No file provided
+        MultipartFile mockFile = null;
+
+        PhotoSubmissionDTO photoSubmissionDTO = new PhotoSubmissionDTO();
+        photoSubmissionDTO.setTitle("Updated Title");
+        photoSubmissionDTO.setStory("Updated Story");
+
+        // Act
+        PhotoSubmission result = photoSubmissionService.updatePhotoSubmission(1L, photoSubmissionDTO, mockFile);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals("Updated Title", result.getTitle());
+        assertEquals("Updated Story", result.getStory());
+        assertEquals("existing_url", result.getPhotoUrl());
+    }
+
+    @Test
+    void testUpdatePhotoSubmission_ImageUploadFailure() throws IOException {
+        PhotoSubmission existingSubmission = new PhotoSubmission();
+        existingSubmission.setPhotoUrl("existing_url");
+
+        when(photoSubmissionRepository.findById(anyLong())).thenReturn(Optional.of(existingSubmission));
+        when(cloudinaryImageService.uploadImage(any(MultipartFile.class))).thenThrow(new IOException());
+
+        PhotoSubmissionDTO photoSubmissionDTO = new PhotoSubmissionDTO();
+        MultipartFile mockFile = mock(MultipartFile.class);
+
+        assertThrows(ImageUploadException.class, () -> {
+            photoSubmissionService.updatePhotoSubmission(1L, photoSubmissionDTO, mockFile);
+        });
+    }
+
+    @Test
+    void testGetSubmissionsByUserId_Success() {
+        PhotoSubmission submission = new PhotoSubmission();
+        when(photoSubmissionRepository.findByCreatorId(anyLong())).thenReturn(Collections.singletonList(submission));
+
+        var submissions = photoSubmissionService.getSubmissionsByUserId(1L);
+
+        assertNotNull(submissions);
+        assertEquals(1, submissions.size());
+        verify(photoSubmissionRepository, times(1)).findByCreatorId(1L);
+    }
+
+    @Test
+    void testGetSubmissionsByUserId_NoSubmissions() {
+        when(photoSubmissionRepository.findByCreatorId(anyLong())).thenReturn(Collections.emptyList());
+
+        var submissions = photoSubmissionService.getSubmissionsByUserId(1L);
+
+        assertNotNull(submissions);
+        assertTrue(submissions.isEmpty());
+        verify(photoSubmissionRepository, times(1)).findByCreatorId(1L);
+    }
+
+    @Test
+    void testGetSubmissionsByJuryMemberId_EmptySubmissions() {
+        when(authContextManager.getId()).thenReturn(1L);
+        when(photoSubmissionRepository.findSubmissionsByJuryMemberId(anyLong())).thenReturn(Collections.emptyList());
+
+        List<ContestPhotoDTO> result = photoSubmissionService.getSubmissionsByJuryMemberId();
+
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+    }
+
 }

@@ -3,6 +3,7 @@ package com.photo_contest.services;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -157,5 +158,38 @@ public class UserServiceImplTest {
         when(contestRepository.findAllContestsByUserProfileId(1L)).thenReturn(Arrays.asList(contest1, contest2));
 
         assertEquals(2, userService.getAllContestsByUserProfileId(1L).size());
+    }
+
+    @Test
+    void testAddPoints_UpdatingRankToMaster() {
+        AppUser appUser = new AppUser();
+        appUser.setRoles(new HashSet<Role>());
+        UserProfile userProfile = new UserProfile();
+        userProfile.setPoints(100);
+        appUser.setUserProfile(userProfile);
+        userProfile.setAppUser(appUser);
+
+        when(userRepository.findById(1L)).thenReturn(Optional.of(appUser));
+        when(userRepository.save(appUser)).thenReturn(appUser);
+        when(roleRepository.findByAuthority("MASTERUSER")).thenReturn(Optional.of(new Role("MASTERUSER")));
+
+        userService.addPoints(1, 52);
+
+        assertEquals(UserProfile.Rank.MASTER, userProfile.getRank());
+        verify(userRepository).save(appUser);
+    }
+
+    @Test
+    void testAddPoints_NoRankUpdateForOrganizer() {
+        AppUser appUser = new AppUser();
+        UserProfile userProfile = new UserProfile();
+        userProfile.setRank(UserProfile.Rank.ORGANIZER); // Rank is ORGANIZER
+        appUser.setUserProfile(userProfile);
+        when(userRepository.findById(1L)).thenReturn(Optional.of(appUser));
+
+        userService.addPoints(1, 10);
+
+        assertEquals(UserProfile.Rank.ORGANIZER, appUser.getUserProfile().getRank());
+        verify(userRepository, never()).save(appUser); 
     }
 }
