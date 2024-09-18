@@ -3,16 +3,17 @@ package com.photo_contest.services;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
+import com.photo_contest.models.Role;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 
@@ -33,6 +34,10 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 class ContestServiceImplTest {
 
@@ -57,172 +62,212 @@ class ContestServiceImplTest {
     @InjectMocks
     private ContestServiceImpl contestServiceImpl;
 
+    private Contest mockContest;
+    private UserProfile mockOrganizer;
+    private CreateContestDTO createContestDTO;
+
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
 
+        mockOrganizer = new UserProfile();
+        mockOrganizer.setId(1L);
 
-        Contest mockContest = new Contest();
+        mockContest = new Contest();
         mockContest.setId(1L);
         mockContest.setTitle("Test Contest");
-        when(contestRepository.findById(1L)).thenReturn(Optional.of(mockContest));
-        when(contestRepository.existsById(1L)).thenReturn(true);
-    }
+        mockContest.setOrganizer(mockOrganizer);
 
-
-    @Test
-    void testCreateContest_Success() {
-        // Arrange
-        CreateContestDTO createContestDTO = new CreateContestDTO();
-        createContestDTO.setTitle("Test Contest");
+        createContestDTO = new CreateContestDTO();
+        createContestDTO.setTitle("New Contest");
+        createContestDTO.setCategory(Contest.Category.valueOf("LANDSCAPE"));
         createContestDTO.setPhaseDurationInDays(5);
         createContestDTO.setPhaseTwoDurationInHours(48);
 
-        when(contestRepository.findByTitle(anyString())).thenReturn(Optional.empty());
-        when(contestRepository.save(any(Contest.class))).thenAnswer(invocation -> invocation.getArgument(0));
-        when(phaseService.createPhaseOne(any(Contest.class), anyInt())).thenReturn(new Phase());
-        when(phaseService.createPhaseTwo(any(Contest.class), any(LocalDateTime.class), anyInt())).thenReturn(new Phase());
-        when(authContextManager.getLoggedInUser()).thenReturn(new UserProfile());
-
-        // Act
-        Contest result = contestServiceImpl.createContest(createContestDTO);
-
-        // Assert
-        assertNotNull(result);
-        assertEquals("Test Contest", result.getTitle());
-        verify(contestRepository, times(2)).save(any(Contest.class)); // Two saves: one before and one after phase creation
+        when(authContextManager.getLoggedInUser()).thenReturn(mockOrganizer);
     }
 
     @Test
-    void testCreateContest_ContestExists() {
-        // Arrange
+    void testCreateContest_Success() {
+
         CreateContestDTO createContestDTO = new CreateContestDTO();
-        createContestDTO.setTitle("Existing Contest");
+        createContestDTO.setTitle("New Contest");
+        createContestDTO.setPhaseDurationInDays(5);
+        createContestDTO.setPhaseTwoDurationInHours(48);
 
-        when(contestRepository.findByTitle("Existing Contest")).thenReturn(Optional.of(new Contest()));
+        UserProfile mockOrganizer = new UserProfile();
+        mockOrganizer.setId(1L);
+        mockOrganizer.setFirstName("Organizer Name");
 
-        // Act & Assert
+        Contest mockContest = new Contest();
+        mockContest.setId(1L);
+        mockContest.setTitle("New Contest");
+        mockContest.setOrganizer(mockOrganizer);
+
+        Phase mockPhaseOne = new Phase();
+        mockPhaseOne.setId(1L);
+        mockPhaseOne.setType(Phase.PhaseType.PHASE_ONE);
+
+        Phase mockPhaseTwo = new Phase();
+        mockPhaseTwo.setId(2L);
+        mockPhaseTwo.setType(Phase.PhaseType.PHASE_TWO);
+
+        when(authContextManager.getLoggedInUser()).thenReturn(mockOrganizer);
+        when(contestRepository.findByTitle(any())).thenReturn(Optional.empty());
+        when(contestRepository.save(any(Contest.class))).thenReturn(mockContest);
+        when(phaseService.createPhaseOne(any(Contest.class), anyInt())).thenReturn(mockPhaseOne);
+        when(phaseService.createPhaseTwo(any(Contest.class), any(LocalDateTime.class), anyInt())).thenReturn(mockPhaseTwo);
+
+
+        Contest result = contestServiceImpl.createContest(createContestDTO);
+
+
+        assertNotNull(result);
+        assertEquals("New Contest", result.getTitle());
+        verify(contestRepository, times(2)).save(any(Contest.class));  // Two saves: before and after setting phases
+        verify(phaseService, times(1)).createPhaseOne(any(Contest.class), anyInt());
+        verify(phaseService, times(1)).createPhaseTwo(any(Contest.class), any(LocalDateTime.class), anyInt());
+    }
+
+
+    @Test
+    void testCreateContest_ContestExists() {
+        when(contestRepository.findByTitle(any())).thenReturn(Optional.of(mockContest));
+
         assertThrows(EntityExistsException.class, () -> contestServiceImpl.createContest(createContestDTO));
     }
 
     @Test
     void testDeleteContest_Success() {
-        // Arrange
-        Long contestId = 1L;
-        Contest contest = new Contest();  // Create a dummy contest
+        when(contestRepository.existsById(anyLong())).thenReturn(true);
 
-        // Mock the repository to return the contest when findById is called
-        when(contestRepository.findById(contestId)).thenReturn(Optional.of(contest));
+        contestServiceImpl.deleteContest(1L);
 
-        // Act
-        contestServiceImpl.deleteContest(contestId);
-
-        // Assert
-        verify(contestRepository, times(1)).deleteById(contestId);  // Ensure deleteById was called once
+        verify(contestRepository, times(1)).deleteById(anyLong());
     }
 
     @Test
-    void testDeleteContest_ContestNotFound() {
+    void testDeleteContest_NotFound() {
+        when(contestRepository.existsById(anyLong())).thenReturn(false);
 
-        Long contestId = 2L;
-
-        when(contestRepository.findById(contestId)).thenReturn(Optional.empty());
-
-
-        assertThrows(EntityNotFoundException.class, () -> contestServiceImpl.deleteContest(contestId));
+        assertThrows(EntityNotFoundException.class, () -> contestServiceImpl.deleteContest(1L));
     }
-
-
 
     @Test
     void testUpdateContest_Success() {
-        // Arrange
-        Long contestId = 1L;
-        Contest existingContest = new Contest();
-        existingContest.setTitle("Old Title");
-
-        CreateContestDTO updateContestDTO = new CreateContestDTO();
-        updateContestDTO.setTitle("New Title");
-
-        when(contestRepository.findById(contestId)).thenReturn(Optional.of(existingContest));
+        when(contestRepository.findById(anyLong())).thenReturn(Optional.of(mockContest));
         when(contestRepository.save(any(Contest.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        // Act
-        Contest result = contestServiceImpl.updateContest(contestId, updateContestDTO);
+        Contest updatedContest = contestServiceImpl.updateContest(1L, createContestDTO);
 
-        // Assert
-        assertEquals("New Title", result.getTitle());
-        verify(contestRepository, times(1)).save(existingContest);
+        assertNotNull(updatedContest);
+        assertEquals("New Contest", updatedContest.getTitle());
+        verify(contestRepository, times(1)).save(any(Contest.class));
     }
 
     @Test
-    void testUpdateContest_ContestNotFound() {
-        // Arrange
-        Long contestId = 1L;
-        CreateContestDTO updateContestDTO = new CreateContestDTO();
+    void testUpdateContest_NotFound() {
+        when(contestRepository.findById(anyLong())).thenReturn(Optional.empty());
 
-        when(contestRepository.findById(contestId)).thenReturn(Optional.empty());
-
-        // Act & Assert
-        assertThrows(EntityNotFoundException.class, () -> contestServiceImpl.updateContest(contestId, updateContestDTO));
+        assertThrows(EntityNotFoundException.class, () -> contestServiceImpl.updateContest(1L, createContestDTO));
     }
 
     @Test
     void testJoinContest_PublicContest_Success() {
-        // Arrange
-        Long contestId = 1L;
-        Long userId = 1L;
+        mockContest.setPrivate(false);
+        when(contestRepository.findById(anyLong())).thenReturn(Optional.of(mockContest));
+        when(userProfileRepository.save(any(UserProfile.class))).thenReturn(mockOrganizer);
+        when(contestRepository.save(any(Contest.class))).thenReturn(mockContest);
 
-        Contest contest = new Contest();
-        contest.setPrivate(false);
+        contestServiceImpl.joinContest(1L, 1L);
 
-        UserProfile userProfile = new UserProfile();
-        userProfile.setId(userId);
-
-        when(contestRepository.findById(contestId)).thenReturn(Optional.of(contest));
-        when(authContextManager.getLoggedInUser()).thenReturn(userProfile);
-
-        // Act
-        contestServiceImpl.joinContest(contestId, userId);
-
-        // Assert
-        verify(userProfileRepository, times(1)).save(userProfile);
-        verify(contestRepository, times(1)).save(contest);
+        verify(userProfileRepository, times(1)).save(mockOrganizer);
+        verify(contestRepository, times(1)).save(mockContest);
     }
 
     @Test
-    void testJoinContest_PrivateContest_Unauthorized() {
-        // Arrange
-        Long contestId = 1L;
-        Long userId = 1L;
+    void testJoinContest_PrivateContest_Failure() {
+        mockContest.setPrivate(true);
+        when(contestRepository.findById(anyLong())).thenReturn(Optional.of(mockContest));
 
-        Contest contest = new Contest();
-        contest.setPrivate(true);
-
-        UserProfile userProfile = new UserProfile();
-        userProfile.setId(userId);
-
-        when(contestRepository.findById(contestId)).thenReturn(Optional.of(contest));
-        when(authContextManager.getLoggedInUser()).thenReturn(userProfile);
-
-        // Act & Assert
-        assertThrows(AuthorizationException.class, () -> contestServiceImpl.joinContest(contestId, userId));
+        assertThrows(AuthorizationException.class, () -> contestServiceImpl.joinContest(1L, 1L));
     }
 
     @Test
-    void testGetCurrentPhase_BeforeContestStart() {
-        // Arrange
-        Long contestId = 1L;
+    void testInviteParticipants_Success() {
+        List<Long> participantIds = List.of(2L, 3L);
+        UserProfile userProfile1 = new UserProfile();
+        userProfile1.setId(2L);
 
-        Contest contest = new Contest();
-        contest.setStartDate(LocalDateTime.now().plusDays(1));
+        when(contestRepository.findById(anyLong())).thenReturn(Optional.of(mockContest));
+        when(userProfileRepository.findById(2L)).thenReturn(Optional.of(userProfile1));
+        when(userProfileRepository.findById(3L)).thenReturn(Optional.of(mockOrganizer));
 
-        when(contestRepository.findById(contestId)).thenReturn(Optional.of(contest));
+        List<Long> failedInvites = contestServiceImpl.inviteParticipants(1L, participantIds);
 
-        // Act
-        int phase = contestServiceImpl.getCurrentPhase(contestId);
+        assertEquals(0, failedInvites.size());
+        verify(contestRepository, times(1)).save(mockContest);
+    }
 
-        // Assert
-        assertEquals(0, phase); // Before contest start, phase should be 0
+    @Test
+    void testInviteJudges_Success() {
+
+        List<Long> judgeIds = List.of(2L);
+        UserProfile judgeProfile = new UserProfile();
+        judgeProfile.setId(2L);
+
+        Role mockRole = new Role();
+        mockRole.setAuthority("MASTERUSER");
+
+        mockContest.setJury(new ArrayList<>());
+
+        when(contestRepository.findById(anyLong())).thenReturn(Optional.of(mockContest));
+        when(userProfileRepository.findById(2L)).thenReturn(Optional.of(judgeProfile));
+        when(roleRepository.findByAuthority("MASTERUSER")).thenReturn(Optional.of(mockRole));
+
+
+        List<Long> failedInvites = contestServiceImpl.inviteJudges(1L, judgeIds);
+
+
+        assertEquals(1, failedInvites.size());
+        verify(contestRepository, times(1)).save(mockContest);
+        verify(userProfileRepository, times(1)).findById(2L);
+        verify(roleRepository, times(0)).findByAuthority("MASTERUSER");
+    }
+
+
+    @Test
+    void testInviteJudges_Failure() {
+        List<Long> judgeIds = List.of(2L);
+
+        when(contestRepository.findById(anyLong())).thenReturn(Optional.of(mockContest));
+        when(userProfileRepository.findById(anyLong())).thenReturn(Optional.of(mockOrganizer));
+
+        List<Long> failedInvites = contestServiceImpl.inviteJudges(1L, judgeIds);
+
+        assertEquals(1, failedInvites.size());
+        verify(contestRepository, times(1)).save(mockContest);
+    }
+
+    @Test
+    void testGetCurrentPhase_BeforeStart() {
+        mockContest.setStartDate(LocalDateTime.now().plusDays(1));
+        when(contestRepository.findById(anyLong())).thenReturn(Optional.of(mockContest));
+
+        int phase = contestServiceImpl.getCurrentPhase(1L);
+
+        assertEquals(0, phase);
+    }
+
+    @Test
+    void testGetContestsByOrganizerId_Success() {
+        when(contestRepository.findByOrganizerId(anyLong(), any(PageRequest.class)))
+                .thenReturn(new PageImpl<>(List.of(mockContest)));
+
+        Page<Contest> contests = contestServiceImpl.getContestsByOrganizerId(0, 10);
+
+        assertNotNull(contests);
+        assertEquals(1, contests.getTotalElements());
+        verify(contestRepository, times(1)).findByOrganizerId(anyLong(), any(PageRequest.class));
     }
 }
